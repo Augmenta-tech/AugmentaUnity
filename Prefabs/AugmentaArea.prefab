@@ -55,27 +55,27 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1077286462109982}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4733989382475658}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!4 &4733989382475658
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1641406523596634}
-  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4322944844106208}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!20 &20136894504925516
 Camera:
   m_ObjectHideFlags: 1
@@ -84,8 +84,8 @@ Camera:
   m_GameObject: {fileID: 1077286462109982}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.103773594, g: 0.103773594, b: 0.103773594, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -179,10 +179,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d5d01c9980312b4690a30eeb7a5e2a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DistanceToAugmentaArea: 80
+  CamDistToAugmenta: 50
   NearFrustrum: 0.01
-  drawNearCone: 0
-  drawFrustum: 0
+  drawNearCone: 1
+  drawFrustum: 1
   lookTarget: {fileID: 4733989382475658}
 --- !u!114 &114545180351306980
 MonoBehaviour:
@@ -216,10 +216,14 @@ MonoBehaviour:
   DebugTransparency: 0.75
   DrawGizmos: 1
   AspectRatio: 0
-  PixelPerMeter: 10
+  PixelPerMeter: 15
   Zoom: 1
+  FlipX: 0
+  FlipY: 0
   PointTimeOut: 1
   NbAugmentaPoints: 0
+  ActualPointType: 0
+  AskedPoints: 1
 --- !u!124 &124627026414161148
 Behaviour:
   m_ObjectHideFlags: 1
