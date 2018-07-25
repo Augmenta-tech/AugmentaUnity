@@ -76,9 +76,38 @@ public class AugmentaArea : MonoBehaviour  {
     [Header("Debug")]
     public bool Mute;
     public bool Mire;
-    public bool AugmentaDebug;
-    [Range(0.0f,1.0f)]
-    public float DebugTransparency;
+    public AugmentaDebuggerManager AugmentaDebugger;
+
+    [SerializeField]
+    private bool _augmentaDebug;
+    public bool AugmentaDebug
+    {
+        get
+        {
+            return _augmentaDebug;
+        }
+        set
+        {
+            _augmentaDebug = value;
+            AugmentaDebugger.gameObject.SetActive(_augmentaDebug);
+            AugmentaDebugger.Transparency = _debugTransparency;
+        }
+    }
+    [SerializeField]
+    [Range(0,1)]
+    private float _debugTransparency;
+    public float DebugTransparency
+    {
+        get
+        {
+            return _debugTransparency;
+        }
+        set
+        {
+            _debugTransparency = value;
+            AugmentaDebugger.Transparency = _debugTransparency;
+        }
+    }
     public bool DrawGizmos;
 
     [Header("Augmenta camera settings")]
@@ -116,61 +145,6 @@ public class AugmentaArea : MonoBehaviour  {
 
     private TestCards.TestOverlay[] overlays;
 
-    public void SendAugmentaEvent(AugmentaEventType type, AugmentaPerson person = null)
-    {
-        if (ActualPointType == AugmentaPointType.Oldest && type != AugmentaEventType.SceneUpdated)
-        {
-            var askedOldest = GetOldestPoints(AskedPoints);
-            if (!askedOldest.Contains(person))
-                type = AugmentaEventType.PersonWillLeave;
-        }
-
-        if(ActualPointType == AugmentaPointType.Newest && type != AugmentaEventType.SceneUpdated)
-        {
-            var askedNewest = GetNewestPoints(AskedPoints);
-            if (!askedNewest.Contains(person))
-                type = AugmentaEventType.PersonWillLeave;
-        }
-
-        switch(type)
-        {
-            case AugmentaEventType.PersonEntered:
-                if (personEntered != null)
-                    personEntered(person);
-                break;
-
-            case AugmentaEventType.PersonUpdated:
-                if (personUpdated!= null)
-                    personUpdated(person);
-                break;
-
-            case AugmentaEventType.PersonWillLeave:
-                if (personLeaving!= null)
-                    personLeaving(person);
-                break;
-
-            case AugmentaEventType.SceneUpdated:
-                if (sceneUpdated != null)
-                    sceneUpdated(augmentaScene);
-                break;
-        }
-    }
-
-    public static bool HasObjects()
-    {
-        if (AugmentaPoints.Count >= 1)
-            return true;
-        else
-            return false;
-    }
-
-    public int arrayPersonCount(){
-		return AugmentaPoints.Count;
-	}
-
-	public static Dictionary<int, AugmentaPerson> getPeopleArray(){
-		return AugmentaPoints;
-	}
 
     public static AugmentaScene augmentaScene;
 
@@ -185,12 +159,14 @@ public class AugmentaArea : MonoBehaviour  {
         OSCMaster.instance.messageAvailable += OSCMessageReceived; // TODO : Remove link to OCF
 
         augmentaScene = new AugmentaScene();
-
+        
         StopAllCoroutines();
 		// Start the coroutine that check if everyone is alive
 		StartCoroutine("checkAlive");
 
         overlays = FindObjectsOfType<TestCards.TestOverlay>();
+        AugmentaDebugger.gameObject.SetActive(AugmentaDebug);
+        AugmentaDebugger.Transparency = DebugTransparency;
     }
 
 	public void OnDestroy(){
@@ -275,6 +251,9 @@ public class AugmentaArea : MonoBehaviour  {
 
     private void Update()
     {
+        AugmentaDebugger.gameObject.SetActive(_augmentaDebug); //Because Unity doesn't support Properties in Inspector
+        AugmentaDebugger.Transparency = _debugTransparency;//Because Unity doesn't support Properties in Inspector
+
         if (_oldPixelMeterCoeff != PixelPerMeter || _oldZoom != Zoom)
         {
             _oldZoom = Zoom;
@@ -286,36 +265,96 @@ public class AugmentaArea : MonoBehaviour  {
             overlay.enabled = Mire;
 
 
-        GetComponent<MeshRenderer>().enabled = AugmentaDebug; 
+//        GetComponent<MeshRenderer>().enabled = AugmentaDebug; 
 
-        if(AugmentaDebug)
+        //if(AugmentaDebug)
+        //{
+        //    var materialProperty = new MaterialPropertyBlock();
+        //    var augmentaPointsToShader = new List<Vector4>();
+        //    foreach (var value in AugmentaPoints.Values)
+        //    {
+        //        var test = value.Position;
+        //        test -= 2 * transform.GetChild(0).transform.forward;
+
+        //        var hits = Physics.RaycastAll(test, transform.GetChild(0).transform.forward);
+        //        if (hits.Length == 0 )
+        //            return;
+
+        //        foreach (var hit in hits) {
+        //            if(hit.collider.name == "AugmentaArea")
+        //                augmentaPointsToShader.Add(hit.textureCoord);
+        //        }
+        //    }
+
+        //    if (augmentaPointsToShader.Count == 0) 
+        //        materialProperty.SetVectorArray("AugmentaPoints", new Vector4[1] { new Vector4(0, 0) });
+        //    else
+        //        materialProperty.SetVectorArray("AugmentaPoints", augmentaPointsToShader.ToArray());
+
+        //    materialProperty.SetFloat("_Transparency", DebugTransparency);
+        //    gameObject.GetComponent<Renderer>().SetPropertyBlock(materialProperty);
+        //}
+    }
+
+
+    public void SendAugmentaEvent(AugmentaEventType type, AugmentaPerson person = null)
+    {
+        if (ActualPointType == AugmentaPointType.Oldest && type != AugmentaEventType.SceneUpdated)
         {
-            var materialProperty = new MaterialPropertyBlock();
-            var augmentaPointsToShader = new List<Vector4>();
-            foreach (var value in AugmentaPoints.Values)
-            {
-                var test = value.Position;
-                test -= 2 * transform.GetChild(0).transform.forward;
+            var askedOldest = GetOldestPoints(AskedPoints);
+            if (!askedOldest.Contains(person))
+                type = AugmentaEventType.PersonWillLeave;
+        }
 
-                var hits = Physics.RaycastAll(test, transform.GetChild(0).transform.forward);
-                if (hits.Length == 0 )
-                    return;
+        if (ActualPointType == AugmentaPointType.Newest && type != AugmentaEventType.SceneUpdated)
+        {
+            var askedNewest = GetNewestPoints(AskedPoints);
+            if (!askedNewest.Contains(person))
+                type = AugmentaEventType.PersonWillLeave;
+        }
 
-                foreach (var hit in hits) {
-                    if(hit.collider.name == "AugmentaArea")
-                        augmentaPointsToShader.Add(hit.textureCoord);
-                }
-            }
+        switch (type)
+        {
+            case AugmentaEventType.PersonEntered:
+                if (personEntered != null)
+                    personEntered(person);
+                break;
 
-            if (augmentaPointsToShader.Count == 0) 
-                materialProperty.SetVectorArray("AugmentaPoints", new Vector4[1] { new Vector4(0, 0) });
-            else
-                materialProperty.SetVectorArray("AugmentaPoints", augmentaPointsToShader.ToArray());
+            case AugmentaEventType.PersonUpdated:
+                if (personUpdated != null)
+                    personUpdated(person);
+                break;
 
-            materialProperty.SetFloat("_Transparency", DebugTransparency);
-            gameObject.GetComponent<Renderer>().SetPropertyBlock(materialProperty);
+            case AugmentaEventType.PersonWillLeave:
+                if (personLeaving != null)
+                    personLeaving(person);
+                break;
+
+            case AugmentaEventType.SceneUpdated:
+                if (sceneUpdated != null)
+                    sceneUpdated(augmentaScene);
+                break;
         }
     }
+
+    public static bool HasObjects()
+    {
+        if (AugmentaPoints.Count >= 1)
+            return true;
+        else
+            return false;
+    }
+
+    public int arrayPersonCount()
+    {
+        return AugmentaPoints.Count;
+    }
+
+    public static Dictionary<int, AugmentaPerson> getPeopleArray()
+    {
+        return AugmentaPoints;
+    }
+
 
     void OnDrawGizmos()
     {

@@ -28,7 +28,7 @@ namespace Augmenta
         public void AddVelocity(Vector3 velocity)
         {
             Velocities.Add(velocity);
-            if (Velocities.Count > VelocitySmooth)
+            while (Velocities.Count > VelocitySmooth)
                 Velocities.RemoveAt(0);
         }
 

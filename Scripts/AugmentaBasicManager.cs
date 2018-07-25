@@ -17,6 +17,9 @@ public class AugmentaBasicManager : MonoBehaviour {
 
     public virtual void Update()
     {
+        //for object to always face AugmentaCamera
+        transform.rotation = AugmentaArea.Instance.transform.rotation;
+
         foreach (var element in InstantiatedObjects)
         {
             if (!AugmentaArea.AugmentaPoints.ContainsKey(element.Key)) continue;
@@ -56,6 +59,7 @@ public class AugmentaBasicManager : MonoBehaviour {
         if(!InstantiatedObjects.ContainsKey(p.pid))
         {
             var newObject = Instantiate(PrefabToInstantiate, p.Position, Quaternion.identity, this.transform);
+            newObject.transform.localRotation = Quaternion.Euler(Vector3.zero);
             InstantiatedObjects.Add(p.pid, newObject);
 
             var augBehaviour = newObject.GetComponent<AugmentaBehaviour>();
