@@ -6,13 +6,13 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: UnlitAndOnTop
+  m_Name: UnlitAndOnTop3
   m_Shader: {fileID: 4800000, guid: 3507d417f0316c64b8fc8dc8f3a437cf, type: 3}
   m_ShaderKeywords: _USETEXTURE_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 4990
+  m_CustomRenderQueue: 4500
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -39,7 +39,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: feb7bdbeada8b984b9b00b2773bd8f62, type: 3}
+        m_Texture: {fileID: 2800000, guid: b779b90a173440d4ea9971d2257d2cd8, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -55,7 +55,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _BorderThickness: 0.029
+    - _BorderThickness: 1
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
@@ -70,12 +70,13 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _Transparency: 1
+    - _Transparency: 0.272
     - _UVSec: 0
+    - _UseBorder: 0
     - _UseTexture: 1
     - _ZWrite: 1
     m_Colors:
-    - _BorderColor: {r: 1, g: 0, b: 0.010103226, a: 1}
-    - _CenterColor: {r: 0.103773594, g: 0.103773594, b: 0.103773594, a: 1}
+    - _BorderColor: {r: 1, g: 1, b: 1, a: 1}
+    - _CenterColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

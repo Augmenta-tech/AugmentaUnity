@@ -23,7 +23,7 @@ public class AugmentaSceneSettings : MonoBehaviour {
     public float Near;
 
     [Header("OffAxis settings")]
-    [Range(0.01f,500f)]
+    [Range(0.01f,200f)]
     public float CamDistToAugmenta;
 
     // Use this for initialization

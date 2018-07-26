@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class AugmentaDebuggerManager : AugmentaBasicManager {
 
+    public GameObject Background;
     private float _transparency;
     public float Transparency
     {
@@ -36,6 +37,9 @@ public class AugmentaDebuggerManager : AugmentaBasicManager {
 
         //because it is under aAugmnetaArea and is scaled by it, to keep correct aspect ratio
         transform.localScale = new Vector3(1 / AugmentaArea.Instance.transform.localScale.x, 1 / AugmentaArea.Instance.transform.localScale.y, 1);
+
+        Background.transform.localScale = AugmentaArea.Instance.transform.localScale;
+        Background.GetComponent<Renderer>().material.mainTextureScale = AugmentaArea.Instance.transform.localScale;
         base.Update();
     }
 

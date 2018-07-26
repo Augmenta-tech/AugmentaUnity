@@ -2,6 +2,8 @@
 {
 	Properties
 	{
+		[Toggle] _UseTexture("Use texture", Float) = 0
+		[Toggle] _UseBorder("Use border", Float) = 1
 		_MainTex ("Texture", 2D) = "white" {}
 		_CenterColor("Center color", Color) = (0,0,0,0)
 		_BorderColor("Border color", Color) = (0,0,0,0)
@@ -23,8 +25,6 @@
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag
-			// make fog work
-			#pragma multi_compile_fog
 			
 			#include "UnityCG.cginc"
 
@@ -45,7 +45,8 @@
 			float4 _BorderColor;
 			float _BorderThickness;
 			float _Transparency;
-
+			float _UseTexture;
+			float _UseBorder;
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
 			
@@ -54,21 +55,20 @@
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-				UNITY_TRANSFER_FOG(o,o.vertex);
 				return o;
 			}
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				fixed4 col = _CenterColor;
-
+				fixed4 col = _CenterColor * (1-_UseTexture) + tex2D(_MainTex, i.uv) * _UseTexture;
 				
-				if(i.uv.x < _BorderThickness  || i.uv.x > 1 - _BorderThickness || i.uv.y < _BorderThickness || i.uv.y > 1 - _BorderThickness) {
+				if (_UseBorder) {
+					if (i.uv.x < _BorderThickness || i.uv.x > 1 - _BorderThickness || i.uv.y < _BorderThickness || i.uv.y > 1 - _BorderThickness) {
 						col = _BorderColor;
-					
+					}
 				}
 				
-				col.a = _Transparency;
+				col.a = col.a * _Transparency;
 
 				return col;
 			}
