@@ -263,37 +263,6 @@ public class AugmentaArea : MonoBehaviour  {
 
         foreach(var overlay in overlays)
             overlay.enabled = Mire;
-
-
-//        GetComponent<MeshRenderer>().enabled = AugmentaDebug; 
-
-        //if(AugmentaDebug)
-        //{
-        //    var materialProperty = new MaterialPropertyBlock();
-        //    var augmentaPointsToShader = new List<Vector4>();
-        //    foreach (var value in AugmentaPoints.Values)
-        //    {
-        //        var test = value.Position;
-        //        test -= 2 * transform.GetChild(0).transform.forward;
-
-        //        var hits = Physics.RaycastAll(test, transform.GetChild(0).transform.forward);
-        //        if (hits.Length == 0 )
-        //            return;
-
-        //        foreach (var hit in hits) {
-        //            if(hit.collider.name == "AugmentaArea")
-        //                augmentaPointsToShader.Add(hit.textureCoord);
-        //        }
-        //    }
-
-        //    if (augmentaPointsToShader.Count == 0) 
-        //        materialProperty.SetVectorArray("AugmentaPoints", new Vector4[1] { new Vector4(0, 0) });
-        //    else
-        //        materialProperty.SetVectorArray("AugmentaPoints", augmentaPointsToShader.ToArray());
-
-        //    materialProperty.SetFloat("_Transparency", DebugTransparency);
-        //    gameObject.GetComponent<Renderer>().SetPropertyBlock(materialProperty);
-        //}
     }
 
 
@@ -363,14 +332,6 @@ public class AugmentaArea : MonoBehaviour  {
         if (!DrawGizmos) return;
 
         Gizmos.color = Color.red;
-        //foreach (var value in AugmentaPoints.Values)
-        //{
-        //    var test = value.Position;
-        //    test -= 2* transform.GetChild(0).transform.forward;
-
-        //    Gizmos.DrawLine(test, 100 * transform.GetChild(0).transform.forward);
-        //}
-        //Draw area
         DrawGizmoCube(transform.position, transform.rotation, transform.localScale);
 
         //Draw persons

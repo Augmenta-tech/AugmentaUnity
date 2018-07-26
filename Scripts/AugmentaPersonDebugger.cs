@@ -27,8 +27,10 @@ public class AugmentaPersonDebugger : MonoBehaviour {
         //Update bouding box
         Point.transform.localScale = new Vector3(MyAugmentaPerson.boundingRect.width * AugmentaArea.Instance.transform.localScale.x, MyAugmentaPerson.boundingRect.height * AugmentaArea.Instance.transform.localScale.y, 0.1f);
 
+        //Update centroid
+
         //udpate text
-        PointInfoText.text = "PID : " + MyAugmentaPerson.pid + '\n' + "OID : " + MyAugmentaPerson.oid;
+        PointInfoText.text = "PID : " + MyAugmentaPerson.pid + '\n' + '\n' + '\n' + "OID : " + MyAugmentaPerson.oid;
 
         //Update velocity
         float angle = Mathf.Atan2(MyAugmentaPerson.GetSmoothedVelocity().y, MyAugmentaPerson.GetSmoothedVelocity().x)*180 / Mathf.PI;

@@ -290,14 +290,16 @@ TextMesh:
   m_GameObject: {fileID: 1169550248677634}
   m_Text: 'PID : 0
 
+
+
     OID : 0'
   m_OffsetZ: 0
-  m_CharacterSize: 30
+  m_CharacterSize: 17
   m_LineSpacing: 1
   m_Anchor: 4
   m_Alignment: 1
   m_TabSize: 4
-  m_FontSize: 0
+  m_FontSize: 20
   m_FontStyle: 0
   m_RichText: 1
   m_Font: {fileID: 12800000, guid: fc8f0d3d51ea02b4ba4bf838dd2a3fca, type: 3}
