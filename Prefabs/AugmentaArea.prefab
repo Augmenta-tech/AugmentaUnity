@@ -23,9 +23,6 @@ GameObject:
   - component: {fileID: 124627026414161148}
   - component: {fileID: 114545180351306980}
   - component: {fileID: 114255069118496728}
-  - component: {fileID: 114150435307753610}
-  - component: {fileID: 114717163672779524}
-  - component: {fileID: 114224689743374316}
   m_Layer: 0
   m_Name: AugmentaCamera
   m_TagString: Untagged
@@ -215,30 +212,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1774977100704186}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &114150435307753610
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1077286462109982}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b783b80e4ce215240b3dc5e45abbf156, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  IsMaster: 0
-  MyProfile: {fileID: 0}
---- !u!114 &114224689743374316
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1077286462109982}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1bb4a88ac8ee3904d89f139b101c21ce, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &114255069118496728
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -296,18 +269,6 @@ MonoBehaviour:
   NbAugmentaPoints: 0
   ActualPointType: 0
   AskedPoints: 1
---- !u!114 &114717163672779524
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1077286462109982}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff26db721962cdf4a8edcdfa9a767d2a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  profile: {fileID: 0}
 --- !u!114 &114936487958699388
 MonoBehaviour:
   m_ObjectHideFlags: 1
