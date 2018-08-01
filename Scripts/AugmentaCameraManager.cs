@@ -32,7 +32,6 @@ public class AugmentaCameraManager : MonoBehaviour
     {
        // Debug.Log("Pixel meter coeff : " + augmentaSceneSettings.PixelToMeterCoeff);
         AugmentaArea.Instance.Zoom = augmentaSceneSettings.Zoom;
-        AugmentaArea.Instance.PointTimeOut = augmentaSceneSettings.PointTimeOut;
 
         theCam.renderingPath = augmentaSceneSettings.MyCameraRenderingPath;
         theCam.backgroundColor = augmentaSceneSettings.BackgroundColor;

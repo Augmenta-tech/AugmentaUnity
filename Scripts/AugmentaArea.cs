@@ -374,14 +374,14 @@ public class AugmentaArea : MonoBehaviour  {
         if (FlipX)
         {
             centroid.x = 1 - centroid.x;
-            velocity.x = 1 - velocity.x;
+            velocity.x = -velocity.x;
             boudingRect.x = 1 - boudingRect.x;
             highest.x = 1 - highest.x;
         }
         if (FlipY)
         {
             centroid.y = 1 - centroid.y;
-            velocity.y = 1 - velocity.y;
+            velocity.y = -velocity.y;
             boudingRect.y = 1 - boudingRect.y;
             highest.y = 1 - highest.y;
         }
@@ -430,7 +430,8 @@ public class AugmentaArea : MonoBehaviour  {
        // Debug.Log("Orderedoid size : " + _orderedPids.Count + "augmentaPoints size " + AugmentaPoints.Count + "oidRange size : " + oidRange.Count);
         for (var i=0; i < oidRange.Count; i++)
         {
-            oldestPersons.Add(AugmentaPoints[oidRange[i]]);
+            if (AugmentaPoints.ContainsKey(oidRange[i]))
+                oldestPersons.Add(AugmentaPoints[oidRange[i]]);
         }
         
         //Debug.Log("Oldest count : " + oldestPersons.Count);
@@ -451,7 +452,8 @@ public class AugmentaArea : MonoBehaviour  {
         // Debug.Log("Orderedoid size : " + _orderedPids.Count + "augmentaPoints size " + AugmentaPoints.Count + "oidRange size : " + oidRange.Count);
         for (var i = 0; i < oidRange.Count; i++)
         {
-            newestPersons.Add(AugmentaPoints[oidRange[i]]);
+            if(AugmentaPoints.ContainsKey(oidRange[i]))
+                newestPersons.Add(AugmentaPoints[oidRange[i]]);
         }
 
         //Debug.Log("Oldest count : " + oldestPersons.Count);

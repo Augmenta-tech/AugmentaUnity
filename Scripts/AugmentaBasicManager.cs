@@ -9,6 +9,20 @@ public class AugmentaBasicManager : MonoBehaviour {
 
     public Dictionary<int, GameObject> InstantiatedObjects;
 
+    [Tooltip("In seconds")]
+    private float _pointTimeOut = 1;
+    public float PointTimeOut {
+        get
+        {
+            return _pointTimeOut;
+        }
+        set
+        {
+            _pointTimeOut = value;
+            AugmentaArea.Instance.PointTimeOut = _pointTimeOut;
+        }
+    }
+
     [Range(1, 20)]
     public float PositionFollowTightness = 10;
 

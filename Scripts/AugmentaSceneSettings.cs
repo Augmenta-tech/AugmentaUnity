@@ -8,8 +8,6 @@ public class AugmentaSceneSettings : MonoBehaviour {
 
     [Header("Augmenta settings")]
     public float Zoom = 1;
-    [Tooltip("In seconds")]
-    public float PointTimeOut = 1;
 
     [Header("Camera settings")]
     public CameraClearFlags MyCameraClearFlags;

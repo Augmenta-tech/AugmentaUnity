@@ -39,7 +39,7 @@ public class AugmentaDebuggerManager : AugmentaBasicManager {
         transform.localScale = new Vector3(1 / AugmentaArea.Instance.transform.localScale.x, 1 / AugmentaArea.Instance.transform.localScale.y, 1);
 
         Background.transform.localScale = AugmentaArea.Instance.transform.localScale;
-        Background.GetComponent<Renderer>().material.mainTextureScale = AugmentaArea.Instance.transform.localScale;
+        Background.GetComponent<Renderer>().material.mainTextureScale = AugmentaArea.Instance.transform.localScale * 0.5f; //because texture is made of 4 same size squares ;
         base.Update();
     }
 

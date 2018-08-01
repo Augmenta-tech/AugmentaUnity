@@ -62,7 +62,6 @@ namespace TestCards
 
             _material.color = _color;
             _material.SetFloat("_Scale", 1.0f / Mathf.Pow(2, _scale));
-
             Graphics.Blit(source, destination, _material, (int)_mode);
         }
 

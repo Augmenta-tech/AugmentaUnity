@@ -49,6 +49,8 @@
 
     half4 frag_pattern(v2f_img i) : SV_Target
     {
+		//_MainTex_TexelSize = Vector4(1 / width, 1 / height, width, height)
+
         float scale = 27 * _MainTex_TexelSize.y;          // Grid scale
         float2 p0 = (i.uv - 0.5) * _MainTex_TexelSize.zw; // Position (pixel)
         float2 p1 = p0 * scale;                           // Position (half grid)
@@ -68,19 +70,35 @@
         if (any(abs(p1) > area)) c1 = abs(checker.x - checker.y);
 
         half corner = sqrt(8) - length(abs(p1) - area + 4); // Corner circles
-        half circle = 12 - length(p1);                      // Big center circle
+        half circle = 12 * saturate(aspect - 0.1) - length(p1);                      // Big center circle
         half mask = saturate(circle / scale);               // Center circls mask
 
         // Grayscale bars
-        half bar1 = saturate(p1.y < 5 ? floor(p1.x / 4 + 3) / 5 : p1.x / 16 + 0.5);
-        if (abs(5 - p1.y) < 4 * mask) c1 = bar1;
+        half bar1 = saturate(p1.y < (5* saturate(aspect - 0.1)) ? floor(p1.x / (4 * saturate(aspect - 0.1)) + 3) / 5 : p1.x / (16* saturate(aspect - 0.1)) + 0.5);
+        if (abs((5 * saturate(aspect - 0.1)) - p1.y) < (4 * saturate(aspect - 0.1)) * mask) c1 = bar1;
 
         // Basic color bars
-        half3 bar2 = HueToRGB((p1.y > -5 ? floor(p1.x / 4) / 6 : p1.x / 16) + 0.5);
-        float3 rgb = abs(-5 - p1.y) < 4 * mask ? bar2 : saturate(c1);
+        half3 bar2 = HueToRGB((p1.y > (-5 * saturate(aspect - 0.1)) ? floor(p1.x / (4 * saturate(aspect - 0.1))) / 6 : p1.x / (16 * saturate(aspect - 0.1))) + 0.5);
+        float3 rgb = abs((-5 * saturate(aspect - 0.1)) - p1.y) < (4 * saturate(aspect - 0.1)) * mask ? bar2 : saturate(c1);
 
         // Circle lines
         rgb = lerp(rgb, 1, saturate(1.5 - abs(max(circle, corner)) / scale));
+
+		//diagonals
+		float thickness =  0.75;
+		float tlbr =  lerp(0, 1, saturate((p0.x - (p1.x - thickness)) * _MainTex_TexelSize.w + (p0.y - (p1.y - thickness))*_MainTex_TexelSize.z));
+		float tlbr2 = lerp(0, 1, 1-saturate((p0.x - (p1.x + thickness)) * _MainTex_TexelSize.w + (p0.y - (p1.y + thickness))*_MainTex_TexelSize.z));
+		rgb = lerp(rgb, 1, tlbr*tlbr2);
+
+		float trbl =  lerp(0, 1, saturate((-p0.x - (p1.x - thickness)) * (_MainTex_TexelSize.w - 50) + (p0.y - (p1.y - thickness))*_MainTex_TexelSize.z));
+		float trbl2 = lerp(0, 1, 1 - saturate((-p0.x - (p1.x + thickness)) * (_MainTex_TexelSize.w - 50) + (p0.y - (p1.y + thickness))*_MainTex_TexelSize.z));
+		rgb = lerp(rgb, 1, trbl*trbl2);
+
+		//rgb = lerp(rgb, 1, saturate((p0.x - (p1.x + 3)) * _MainTex_TexelSize.w + (_MainTex_TexelSize.z*scale - p0.y - (p1.y + 3))*_MainTex_TexelSize.z));
+
+
+		//rgb = lerp(rgb, 1, saturate((p0.x - (p1.x-(0.1_MainTex_TexelSize.z*scale)) * _MainTex_TexelSize.w + (p0.y - (p1.y - 0.1))*_MainTex_TexelSize.z));
+		//rgb = lerp(rgb, 1, saturate(((_MainTex_TexelSize.z*scale - p0.x) - (p1.x - 0.1)) * _MainTex_TexelSize.w +( (p0.y - (_MainTex_TexelSize.w*scale - p1.y) - 0.1))*_MainTex_TexelSize.z));
 
         #if !defined(UNITY_COLORSPACE_GAMMA)
         rgb = GammaToLinearSpace(rgb);
