@@ -113,7 +113,7 @@ public class AugmentaArea : MonoBehaviour  {
     [Header("Augmenta camera settings")]
     [HideInInspector]
     public float AspectRatio;
-    public float MeterPerPixel;
+    public float MeterPerPixel= 0.01f;
     public float Zoom;
 
     [Header("Augmenta points settings")]
