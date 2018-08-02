@@ -322,4 +322,4 @@ MonoBehaviour:
   Point: {fileID: 4710600893311042}
   Magic: 1.9
   VelocityVisualizer: {fileID: 4878275728533324}
-  VelocityThickness: 0.025
+  VelocityThickness: 2

@@ -113,7 +113,7 @@ public class AugmentaArea : MonoBehaviour  {
     [Header("Augmenta camera settings")]
     [HideInInspector]
     public float AspectRatio;
-    public float PixelPerMeter;
+    public float MeterPerPixel;
     public float Zoom;
 
     [Header("Augmenta points settings")]
@@ -239,7 +239,7 @@ public class AugmentaArea : MonoBehaviour  {
             augmentaScene.Height = (int)args[6];
 
             AspectRatio = (augmentaScene.Width / augmentaScene.Height);
-            transform.localScale = new Vector3(AspectRatio * PixelPerMeter * Zoom, PixelPerMeter * Zoom, 0.1f);
+            transform.localScale = new Vector3(augmentaScene.Width * (MeterPerPixel) * Zoom, augmentaScene.Height *(MeterPerPixel) * Zoom, 0.1f);
 
             SendAugmentaEvent(AugmentaEventType.SceneUpdated);
         }
@@ -254,10 +254,10 @@ public class AugmentaArea : MonoBehaviour  {
         AugmentaDebugger.gameObject.SetActive(_augmentaDebug); //Because Unity doesn't support Properties in Inspector
         AugmentaDebugger.Transparency = _debugTransparency;//Because Unity doesn't support Properties in Inspector
 
-        if (_oldPixelMeterCoeff != PixelPerMeter || _oldZoom != Zoom)
+        if (_oldPixelMeterCoeff != MeterPerPixel || _oldZoom != Zoom)
         {
             _oldZoom = Zoom;
-            _oldPixelMeterCoeff = PixelPerMeter;
+            _oldPixelMeterCoeff = MeterPerPixel;
             SendAugmentaEvent(AugmentaEventType.SceneUpdated);
         }
 
@@ -338,7 +338,8 @@ public class AugmentaArea : MonoBehaviour  {
         Gizmos.color = Color.green;
         foreach (var person in AugmentaPoints)
         {
-            Gizmos.DrawWireCube(person.Value.Position, new Vector3(person.Value.boundingRect.width, person.Value.boundingRect.height, 0.1f));
+            // Gizmos.DrawWireCube(person.Value.Position, new Vector3(person.Value.boundingRect.width * MeterPerPixel, person.Value.boundingRect.height * MeterPerPixel, person.Value.boundingRect.height * MeterPerPixel));
+            DrawGizmoCube(person.Value.Position, Quaternion.identity, new Vector3(person.Value.boundingRect.width, person.Value.boundingRect.height, person.Value.boundingRect.height));
         }
     }
 
