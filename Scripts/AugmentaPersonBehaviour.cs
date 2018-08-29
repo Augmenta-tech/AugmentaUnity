@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AugmentaBehaviour : MonoBehaviour {
+public class AugmentaPersonBehaviour : MonoBehaviour {
 
     public int pid;
-    public float AbstractValue;
+    public float AnimatedValue;
 
     [Header("Appeareance animation")]
     public float AppearAnimDuration;
@@ -30,19 +30,18 @@ public class AugmentaBehaviour : MonoBehaviour {
         while(currentTime < duration)
         {
             if (animCurve != null)
-                AbstractValue = animCurve.Evaluate(currentTime / duration);// Mathf.Lerp(startValue, endValue, animCurve.Evaluate(currentTime / duration));
+                AnimatedValue = animCurve.Evaluate(currentTime / duration);// Mathf.Lerp(startValue, endValue, animCurve.Evaluate(currentTime / duration));
             else
-                AbstractValue = currentTime / duration;// Mathf.Lerp(startValue, endValue, currentTime / duration);
+                AnimatedValue = currentTime / duration;// Mathf.Lerp(startValue, endValue, currentTime / duration);
 
             currentTime += Time.deltaTime;
             yield return new WaitForFixedUpdate();
         }
-        AbstractValue = animCurve.Evaluate(1.0f);
+        AnimatedValue = animCurve.Evaluate(1.0f);
 
         if (callBack != null)
             callBack();
 
-        yield return null;
     }
 
     public virtual void AliveCallBack()
@@ -66,7 +65,7 @@ public class AugmentaBehaviour : MonoBehaviour {
     {
         if (StartWithActualValue)
         {
-            DisappearAnimCurve.MoveKey(0, new Keyframe(0.0f, AbstractValue));
+            DisappearAnimCurve.MoveKey(0, new Keyframe(0.0f, AnimatedValue));
         }
         
         StartCoroutine(ValueAnimation(DisappearAnimDuration, DisappearAnimCurve, DisappearCallBack));

@@ -7,7 +7,7 @@ public class AugmentaBasicManager : MonoBehaviour {
 
     public GameObject PrefabToInstantiate;
 
-    public float AbstractValueIntensity = 1.0f;
+    public float AnimatedValueIntensity = 1.0f;
 
     public Dictionary<int, GameObject> InstantiatedObjects;
 
@@ -30,6 +30,21 @@ public class AugmentaBasicManager : MonoBehaviour {
 
     [Range(1, 20)]
     public int VelocityAverageValueCount = 1;
+
+    [Range(0, 1)]
+    private float _masterVolume = 1;
+    public float MasterVolume
+    {
+        get
+        {
+            return _masterVolume;
+        }
+        set
+        {
+            _masterVolume = Mathf.Clamp01(value);
+            UpdateMasterVolume();
+        }
+    }
 
     public virtual void Update()
     {
@@ -78,7 +93,7 @@ public class AugmentaBasicManager : MonoBehaviour {
             newObject.transform.localRotation = Quaternion.Euler(Vector3.zero);
             InstantiatedObjects.Add(p.pid, newObject);
 
-            var augBehaviour = newObject.GetComponent<AugmentaBehaviour>();
+            var augBehaviour = newObject.GetComponent<AugmentaPersonBehaviour>();
             if (augBehaviour != null)
             {
                 augBehaviour.pid = p.pid;
@@ -104,7 +119,7 @@ public class AugmentaBasicManager : MonoBehaviour {
     {
         if (InstantiatedObjects.ContainsKey(p.pid))
         {
-            var augBehaviour = InstantiatedObjects[p.pid].GetComponent<AugmentaBehaviour>();
+            var augBehaviour = InstantiatedObjects[p.pid].GetComponent<AugmentaPersonBehaviour>();
             if (augBehaviour != null)
                 augBehaviour.Disappear();
             else
@@ -120,5 +135,10 @@ public class AugmentaBasicManager : MonoBehaviour {
         var objectToDestroy = InstantiatedObjects[pid];
         Destroy(objectToDestroy);
         InstantiatedObjects.Remove(pid);
+    }
+
+    private void UpdateMasterVolume()
+    {
+        AudioListener.volume = _masterVolume;
     }
 }
