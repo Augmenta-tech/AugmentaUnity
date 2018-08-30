@@ -5,74 +5,68 @@ using UnityEngine;
 public class AugmentaPersonBehaviour : MonoBehaviour {
 
     public int pid;
-    public float AnimatedValue;
 
-    [Header("Appeareance animation")]
-    public float AppearAnimDuration;
-    public AnimationCurve AppearAnimCurve;
-
-    [Header("Alive animation")]
-    public float AliveAnimDuration;
-    public AnimationCurve AliveAnimCurve;
     public bool LoopAliveAnimation;
-
-    [Header("Disappeareance animation")]
-    public float DisappearAnimDuration;
-    public bool StartWithActualValue;
-    public AnimationCurve DisappearAnimCurve;
 
     public delegate void DisappearAnimationCompleted(int pid);
     public event DisappearAnimationCompleted disappearAnimationCompleted;
 
-    public virtual IEnumerator ValueAnimation(float duration, AnimationCurve animCurve = null, System.Action callBack = null)
+    public void Appear()
     {
-        var currentTime = 0.0f;
-        while(currentTime < duration)
-        {
-            if (animCurve != null)
-                AnimatedValue = animCurve.Evaluate(currentTime / duration);// Mathf.Lerp(startValue, endValue, animCurve.Evaluate(currentTime / duration));
-            else
-                AnimatedValue = currentTime / duration;// Mathf.Lerp(startValue, endValue, currentTime / duration);
-
-            currentTime += Time.deltaTime;
-            yield return new WaitForFixedUpdate();
-        }
-        AnimatedValue = animCurve.Evaluate(1.0f);
-
-        if (callBack != null)
-            callBack();
-
+        StartCoroutine(AppearAnimation(AppearCallBack));
     }
 
-    public virtual void AliveCallBack()
+    public void Disappear()
     {
-        if(LoopAliveAnimation)
-            StartCoroutine(ValueAnimation(AliveAnimDuration, AliveAnimCurve, AliveCallBack));
+        StartCoroutine(DisappearAnimation(DisappearCallBack));
     }
 
-    public virtual void AppearCallBack()
+    #region Callback Functions
+
+    protected virtual void AppearCallBack()
     {
-        StartCoroutine(ValueAnimation(AliveAnimDuration, AliveAnimCurve, AliveCallBack));
+        StartCoroutine(AliveAnimation(AliveCallBack));
     }
 
-    public virtual void DisappearCallBack()
+    protected virtual void AliveCallBack()
+    {
+        if (LoopAliveAnimation)
+            StartCoroutine(AliveAnimation(AliveCallBack));
+    }
+
+    protected virtual void DisappearCallBack()
     {
         if (disappearAnimationCompleted != null)
             disappearAnimationCompleted(pid);
     }
 
-    public void Disappear()
+    #endregion
+
+    #region Animation Coroutines
+
+    protected virtual IEnumerator AppearAnimation(System.Action callBack = null)
     {
-        if (StartWithActualValue)
-        {
-            DisappearAnimCurve.MoveKey(0, new Keyframe(0.0f, AnimatedValue));
-        }
-        
-        StartCoroutine(ValueAnimation(DisappearAnimDuration, DisappearAnimCurve, DisappearCallBack));
+        yield return 0;
+
+        if (callBack != null)
+            callBack();
     }
 
-    public void Appear()
+    protected virtual IEnumerator AliveAnimation(System.Action callBack = null)
     {
-        StartCoroutine(ValueAnimation(AppearAnimDuration, AppearAnimCurve, AppearCallBack));
+        yield return 0;
+
+        if (callBack != null)
+            callBack();
     }
+
+    protected virtual IEnumerator DisappearAnimation(System.Action callBack = null)
+    {
+        yield return 0;
+
+        if (callBack != null)
+            callBack();
+    }
+
+    #endregion
 }

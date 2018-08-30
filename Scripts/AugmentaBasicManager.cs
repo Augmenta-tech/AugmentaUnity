@@ -7,8 +7,6 @@ public class AugmentaBasicManager : MonoBehaviour {
 
     public GameObject PrefabToInstantiate;
 
-    public float AnimatedValueIntensity = 1.0f;
-
     public Dictionary<int, GameObject> InstantiatedObjects;
 
     [Tooltip("In seconds")]
