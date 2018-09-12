@@ -239,7 +239,7 @@ public class AugmentaArea : MonoBehaviour  {
             augmentaScene.Height = (int)args[6];
 
             AspectRatio = (augmentaScene.Width / augmentaScene.Height);
-            transform.localScale = new Vector3(augmentaScene.Width * (MeterPerPixel) * Zoom, augmentaScene.Height *(MeterPerPixel) * Zoom, 0.1f);
+            transform.localScale = new Vector3(augmentaScene.Width * (MeterPerPixel) * Zoom, augmentaScene.Height *(MeterPerPixel) * Zoom, 1.0f);
 
             SendAugmentaEvent(AugmentaEventType.SceneUpdated);
         }
