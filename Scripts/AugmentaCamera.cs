@@ -20,7 +20,7 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
     public float Zoom = 1;
 
     [Range(0.01f, 200f)]
-    public float CamDistToAugmenta;
+    public float CamDistToAugmenta = 10;
 
     public float NearFrustrum = 0.01f;
     public bool drawNearCone, drawFrustum;
