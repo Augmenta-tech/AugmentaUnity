@@ -47,7 +47,8 @@ public class AugmentaBasicManager : MonoBehaviour {
     public virtual void Update()
     {
         //for object to always face AugmentaCamera
-        transform.rotation = AugmentaArea.Instance.transform.rotation;
+        if(AugmentaArea.Instance)
+            transform.rotation = AugmentaArea.Instance.transform.rotation;
 
         foreach (var element in InstantiatedObjects)
         {
@@ -56,6 +57,7 @@ public class AugmentaBasicManager : MonoBehaviour {
             element.Value.transform.position = Vector3.Lerp(element.Value.transform.position, AugmentaArea.AugmentaPoints[element.Key].Position, Time.deltaTime * PositionFollowTightness);
         }
     }
+
 	// Use this for initialization
 	public virtual void OnEnable () {
         InstantiatedObjects = new Dictionary<int, GameObject>();

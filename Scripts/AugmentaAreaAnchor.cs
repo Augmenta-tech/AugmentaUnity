@@ -15,8 +15,11 @@ public class AugmentaAreaAnchor : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        AugmentaArea.Instance.gameObject.transform.position = transform.position;
-        AugmentaArea.Instance.gameObject.transform.rotation = transform.rotation;
+        if (AugmentaArea.Instance)
+        {
+            AugmentaArea.Instance.gameObject.transform.position = transform.position;
+            AugmentaArea.Instance.gameObject.transform.rotation = transform.rotation;
+        }
         UpdateScale();
     }
 

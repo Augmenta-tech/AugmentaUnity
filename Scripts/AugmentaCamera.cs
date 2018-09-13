@@ -34,16 +34,17 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
 
     // Use this for initialization
     public virtual void Start () {
+
         UpdateTargetCamera(updateTransformOnStart, updateCameraOnStart, updatePostProcessOnStart && hasPostProcessLayer);
+
         if (updateAugmentaOnStart)
-        {
             CopyAugmentaSettings();
-        }
     }
 
     public void ForceCoreCameraUpdate()
     {
         UpdateTargetCamera(false, true, true);
+        CopyAugmentaSettings();
     }
 
     void Update()
@@ -94,15 +95,14 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
     {
         base.UpdateTargetCamera(updateTransform, updateCamera, updatePostProcess && hasPostProcessLayer);
 
-        if (alwaysUpdateAugmenta)
-        {
+        if(alwaysUpdateAugmenta)
             CopyAugmentaSettings();
-        }
     }
 
     private void CopyAugmentaSettings()
     {
-        AugmentaCameraManager.Instance.UpdateCameraSettings(this);
+        if(AugmentaMainCamera.Instance)
+            AugmentaMainCamera.Instance.UpdateCameraSettings(this);
     }
 
     void ComputeOrthoCamera()

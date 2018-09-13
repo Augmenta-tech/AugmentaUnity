@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AugmentaCameraManager : AugmentaCamera
+public class AugmentaMainCamera : AugmentaCamera
 {
-    public static AugmentaCameraManager Instance;
+    public static AugmentaMainCamera Instance;
 
     public delegate void CameraUpdated(AugmentaCamera settings);
     public static event CameraUpdated cameraUpdated;
@@ -19,11 +19,9 @@ public class AugmentaCameraManager : AugmentaCamera
 
         useAnchor = false;
 
-        updateAugmentaOnStart = false;
         updateCameraOnStart = false;
         updateTransformOnStart = false;
         updatePostProcessOnStart = false;
-        alwaysUpdateAugmenta = false;
         alwaysUpdateCamera = false;
         alwaysUpdateTransform = false;
         alwaysUpdatePostProcess = false;
@@ -32,7 +30,10 @@ public class AugmentaCameraManager : AugmentaCamera
 
     public void UpdateCameraSettings(AugmentaCamera augmentaCamera)
     {
-       // Debug.Log("Pixel meter coeff : " + augmentaSceneSettings.PixelToMeterCoeff);
+        //Don't update self
+        if (augmentaCamera.gameObject == gameObject)
+            return;
+
         AugmentaArea.Instance.Zoom = augmentaCamera.Zoom;
 
         CamDistToAugmenta = Mathf.Clamp(augmentaCamera.CamDistToAugmenta, 1.0f, 500);
