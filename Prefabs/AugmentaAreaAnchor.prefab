@@ -228,7 +228,7 @@ MonoBehaviour:
   updateAugmentaOnStart: 1
   alwaysUpdateAugmenta: 0
   Zoom: 1
-  CamDistToAugmenta: 80
+  CamDistToAugmenta: 10
   NearFrustrum: 0.01
   drawNearCone: 1
   drawFrustum: 1
