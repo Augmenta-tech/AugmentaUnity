@@ -22,10 +22,9 @@ GameObject:
   - component: {fileID: 20136894504925516}
   - component: {fileID: 114545180351306980}
   - component: {fileID: 114255069118496728}
-  - component: {fileID: 114893278423126526}
-  - component: {fileID: 114925498516656342}
   - component: {fileID: 114894795057741748}
-  m_Layer: 0
+  - component: {fileID: 114624218286067010}
+  m_Layer: 12
   m_Name: AugmentaCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -289,7 +288,7 @@ MonoBehaviour:
   NbAugmentaPoints: 0
   ActualPointType: 0
   AskedPoints: 1
---- !u!114 &114893278423126526
+--- !u!114 &114624218286067010
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -297,11 +296,56 @@ MonoBehaviour:
   m_GameObject: {fileID: 1077286462109982}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b783b80e4ce215240b3dc5e45abbf156, type: 3}
+  m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsMaster: 0
-  MyProfile: {fileID: 0}
+  volumeTrigger: {fileID: 4322944844106208}
+  volumeLayer:
+    serializedVersion: 2
+    m_Bits: 4096
+  stopNaNPropagation: 1
+  antialiasingMode: 0
+  temporalAntialiasing:
+    jitterSpread: 0.75
+    sharpness: 0.25
+    stationaryBlending: 0.95
+    motionBlending: 0.85
+  subpixelMorphologicalAntialiasing:
+    quality: 2
+  fastApproximateAntialiasing:
+    fastMode: 0
+    keepAlpha: 0
+  fog:
+    enabled: 1
+    excludeSkybox: 1
+  debugLayer:
+    lightMeter:
+      width: 512
+      height: 256
+      showCurves: 1
+    histogram:
+      width: 512
+      height: 256
+      channel: 3
+    waveform:
+      exposure: 0.12
+      height: 256
+    vectorscope:
+      size: 256
+      exposure: 0.12
+    overlaySettings:
+      linearDepth: 0
+      motionColorIntensity: 4
+      motionGridSize: 64
+      colorBlindnessType: 0
+      colorBlindnessStrength: 1
+  m_Resources: {fileID: 11400000, guid: d82512f9c8e5d4a4d938b575d47f88d4, type: 2}
+  m_ShowToolkit: 0
+  m_ShowCustomSorter: 0
+  breakBeforeColorGrading: 0
+  m_BeforeTransparentBundles: []
+  m_BeforeStackBundles: []
+  m_AfterStackBundles: []
 --- !u!114 &114894795057741748
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -315,18 +359,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FadeValue: 0
   FadeColor: {r: 0, g: 0, b: 0, a: 0}
---- !u!114 &114925498516656342
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1077286462109982}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff26db721962cdf4a8edcdfa9a767d2a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  profile: {fileID: 0}
 --- !u!114 &114936487958699388
 MonoBehaviour:
   m_ObjectHideFlags: 1
