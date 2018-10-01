@@ -10,11 +10,8 @@ public class AugmentaMainCamera : AugmentaCamera
     public delegate void CameraUpdated(AugmentaCamera settings);
     public static event CameraUpdated cameraUpdated;
 
-    private static Camera theCam;
-
     void Awake()
     {
-        theCam = GetComponent<Camera>();
         Instance = this;
 
         useAnchor = false;

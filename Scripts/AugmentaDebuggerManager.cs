@@ -24,8 +24,7 @@ public class AugmentaDebuggerManager : AugmentaBasicManager {
                 if(renderer.gameObject.name == "Text")//Font shader are different, if I could put a Transparency variable we could remove this
                 {
                     var textColor = renderer.material.GetColor("_TextColor"); 
-                    if (textColor != null)
-                        renderer.material.SetColor("_TextColor", new Vector4(textColor.r, textColor.g, textColor.b, _transparency));
+                    renderer.material.SetColor("_TextColor", new Vector4(textColor.r, textColor.g, textColor.b, _transparency));
                 }
             }
         }

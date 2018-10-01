@@ -4,6 +4,14 @@ using UnityEngine;
 
 public class AugmentaAreaAnchor : MonoBehaviour {
 
+    /// <summary>
+    /// The AugmentaAreaAnchor will update the AugmentaArea position, rotation and scale according to the AugmentaAreaAnchor parameters at every frame.
+    /// 
+    /// The position and rotation are copied from this object's transform position and rotation in world space.
+    /// The scale is updated according to the Width, Height, MeterPerPixel and Zoom values.
+    /// 
+    /// The AugmentaAreaAnchor is expected to have an AugmentaCamera as children and will use this AugmentaCamera Zoom value to compute its scale.
+    /// </summary>
     [Header("Augmenta Area Visualization")]
     public float Width;
     public float Height;

@@ -5,21 +5,30 @@ using Augmenta;
 
 public class AugmentaBasicManager : MonoBehaviour {
 
+    /// <summary>
+    /// The AugmentaBasicManager is an example of Augmenta manager that instantiate and move prefabs according to the AugmentaArea events and AugmentaPersons list.
+    /// 
+    /// A prefab is intantiated when the personEntered event is received.
+    /// When a personLeaving event is received, the AugmentaPersonBehaviour's Disappear animation of the prefab is played. If the prefab has no AugmentaPersonBehaviour, it is destroyed instantly.
+    /// The instantiated objects are moved each frame according to follow the AugmentaPersons.
+    /// 
+    /// 
+    /// </summary>
     public GameObject PrefabToInstantiate;
 
     public Dictionary<int, GameObject> InstantiatedObjects;
 
     [Tooltip("In seconds")]
-    private float _pointTimeOut = 1;
-    public float PointTimeOut {
+    private float _personTimeOut = 1;
+    public float PersonTimeOut {
         get
         {
-            return _pointTimeOut;
+            return _personTimeOut;
         }
         set
         {
-            _pointTimeOut = value;
-            AugmentaArea.Instance.PointTimeOut = _pointTimeOut;
+            _personTimeOut = value;
+            AugmentaArea.Instance.PersonTimeOut = _personTimeOut;
         }
     }
 
@@ -37,9 +46,9 @@ public class AugmentaBasicManager : MonoBehaviour {
 
         foreach (var element in InstantiatedObjects)
         {
-            if (!AugmentaArea.AugmentaPoints.ContainsKey(element.Key)) continue;
+            if (!AugmentaArea.AugmentaPersons.ContainsKey(element.Key)) continue;
 
-            element.Value.transform.position = Vector3.Lerp(element.Value.transform.position, AugmentaArea.AugmentaPoints[element.Key].Position, Time.deltaTime * PositionFollowTightness);
+            element.Value.transform.position = Vector3.Lerp(element.Value.transform.position, AugmentaArea.AugmentaPersons[element.Key].Position, Time.deltaTime * PositionFollowTightness);
         }
     }
 

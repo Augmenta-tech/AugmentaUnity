@@ -118,9 +118,16 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 
 	public virtual void UpdateTargetCamera(bool updateTransform, bool updateCamera, bool updatePostProcess) {
 
+        //Don't update if no target camera 
         if (!targetCameraObject)
         {
             Debug.LogWarning("No target camera object.");
+            return;
+        }
+
+        //Don't update self
+        if (targetCameraObject == gameObject)
+        {
             return;
         }
 

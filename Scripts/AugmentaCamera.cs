@@ -62,6 +62,20 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
             sourceCamera.transform.localPosition = new Vector3(sourceCamera.transform.localPosition.x, sourceCamera.transform.localPosition.y, CamDistToAugmenta);
         }
 
+        //Don't update camera with a 0 sized anchor
+        if (useAnchor && (augmentaAreaAnchor.Width == 0 || augmentaAreaAnchor.Height == 0))
+            return;
+
+        //Don't update camera with a 0 sized AugmentaArea
+        if (!useAnchor && (AugmentaArea.AugmentaScene.Width == 0 || AugmentaArea.AugmentaScene.Height == 0))
+            return;
+
+        else
+        {
+            sourceCamera.aspect = AugmentaArea.Instance.AspectRatio;
+            sourceCamera.orthographicSize = AugmentaArea.Instance.transform.localScale.y / 2;
+        }
+
         if (sourceCamera.orthographic)
         {
             ComputeOrthoCamera();
@@ -131,8 +145,8 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
             sourceCamera.aspect = augmentaAreaAnchor.Width / augmentaAreaAnchor.Height;
         } else
         {
-            sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(AugmentaArea.augmentaScene.Height * 0.5f * AugmentaArea.Instance.MeterPerPixel * Zoom, CamDistToAugmenta);
-            sourceCamera.aspect = AugmentaArea.augmentaScene.Width / AugmentaArea.augmentaScene.Height;
+            sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(AugmentaArea.AugmentaScene.Height * 0.5f * AugmentaArea.Instance.MeterPerPixel * Zoom, CamDistToAugmenta);
+            sourceCamera.aspect = AugmentaArea.AugmentaScene.Width / AugmentaArea.AugmentaScene.Height;
         }
     }
 
