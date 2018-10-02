@@ -185,7 +185,7 @@ public class AugmentaArea : MonoBehaviour  {
 
         Debug.Log("[Augmenta] Subscribing to OSC Message Receiver");
 
-        OSCMaster.instance.messageAvailable += OSCMessageReceived; // TODO : Remove link to OCF
+        OSCMaster.messageAvailable += OSCMessageReceived; // TODO : Remove link to OCF
 
         AugmentaScene = new AugmentaScene();
         
@@ -200,7 +200,7 @@ public class AugmentaArea : MonoBehaviour  {
 
 	public void OnDestroy(){
 		Debug.Log("[Augmenta] Unsubscribing to OSC Message Receiver");
-        OSCMaster.instance.messageAvailable -= OSCMessageReceived; // TODO : Remove link to OCF
+        OSCMaster.messageAvailable -= OSCMessageReceived; // TODO : Remove link to OCF
     }
 
 	public void OSCMessageReceived(OSCMessage message){
