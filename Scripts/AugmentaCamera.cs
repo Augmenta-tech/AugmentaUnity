@@ -70,12 +70,6 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
         if (!useAnchor && (AugmentaArea.AugmentaScene.Width == 0 || AugmentaArea.AugmentaScene.Height == 0))
             return;
 
-        else
-        {
-            sourceCamera.aspect = AugmentaArea.Instance.AspectRatio;
-            sourceCamera.orthographicSize = AugmentaArea.Instance.transform.localScale.y / 2;
-        }
-
         if (sourceCamera.orthographic)
         {
             ComputeOrthoCamera();
