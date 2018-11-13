@@ -19,9 +19,6 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
 
     public float Zoom = 1;
 
-    [Range(0.01f, 200f)]
-    public float CamDistToAugmenta = 10;
-
     public float NearFrustrum = 0.01f;
     public bool drawNearCone, drawFrustum;
     public bool centerOnAugmentaArea;
@@ -55,11 +52,11 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
 
         if (centerOnAugmentaArea)
         {
-            sourceCamera.transform.localPosition = new Vector3(0, 0, CamDistToAugmenta);
+            sourceCamera.transform.localPosition = new Vector3(0, 0, transform.localPosition.z);
         }
         else
         {
-            sourceCamera.transform.localPosition = new Vector3(sourceCamera.transform.localPosition.x, sourceCamera.transform.localPosition.y, CamDistToAugmenta);
+            sourceCamera.transform.localPosition = new Vector3(sourceCamera.transform.localPosition.x, sourceCamera.transform.localPosition.y, transform.localPosition.z);
         }
 
         //Don't update camera with a 0 sized anchor
@@ -130,16 +127,16 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
     void ComputePerspectiveCamera()
     {
         if (centerOnAugmentaArea) {
-            sourceCamera.transform.localPosition = new Vector3(0.0f, 0.0f, CamDistToAugmenta);
+            sourceCamera.transform.localPosition = new Vector3(0.0f, 0.0f, transform.localPosition.z);
         }
         
         if (useAnchor)
         {
-            sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(augmentaAreaAnchor.Height * 0.5f * augmentaAreaAnchor.MeterPerPixel * Zoom, CamDistToAugmenta);
+            sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(augmentaAreaAnchor.Height * 0.5f * augmentaAreaAnchor.MeterPerPixel * Zoom, transform.localPosition.z);
             sourceCamera.aspect = augmentaAreaAnchor.Width / augmentaAreaAnchor.Height;
         } else
         {
-            sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(AugmentaArea.AugmentaScene.Height * 0.5f * AugmentaArea.Instance.MeterPerPixel * Zoom, CamDistToAugmenta);
+            sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(AugmentaArea.AugmentaScene.Height * 0.5f * AugmentaArea.Instance.MeterPerPixel * Zoom, transform.localPosition.z);
             sourceCamera.aspect = AugmentaArea.AugmentaScene.Width / AugmentaArea.AugmentaScene.Height;
         }
     }

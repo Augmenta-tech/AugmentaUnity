@@ -33,7 +33,7 @@ public class AugmentaMainCamera : AugmentaCamera
 
         AugmentaArea.Instance.Zoom = augmentaCamera.Zoom;
 
-        CamDistToAugmenta = Mathf.Clamp(augmentaCamera.CamDistToAugmenta, 1.0f, 500);
+        sourceCamera.transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, augmentaCamera.transform.localPosition.z);
 
         augmentaCamera.gameObject.GetComponent<Camera>().enabled = false;
 

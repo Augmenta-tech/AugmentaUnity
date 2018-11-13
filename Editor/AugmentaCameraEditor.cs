@@ -59,7 +59,6 @@ public class AugmentaCameraEditor : Editor
         EditorGUILayout.LabelField("Augmenta Camera Settings", EditorStyles.boldLabel);
 
         augmentaCamera.Zoom = EditorGUILayout.FloatField("Zoom", augmentaCamera.Zoom);
-        augmentaCamera.CamDistToAugmenta = EditorGUILayout.Slider("Cam Dist To Augmenta", augmentaCamera.CamDistToAugmenta, 0.0f, 200.0f);
         augmentaCamera.NearFrustrum = EditorGUILayout.FloatField("Near Frustrum", augmentaCamera.NearFrustrum);
         augmentaCamera.drawNearCone = EditorGUILayout.Toggle("Draw Near Cone", augmentaCamera.drawNearCone);
         augmentaCamera.drawFrustum = EditorGUILayout.Toggle("Draw Frustum", augmentaCamera.drawFrustum);
