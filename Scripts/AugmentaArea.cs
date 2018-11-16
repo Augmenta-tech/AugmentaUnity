@@ -209,6 +209,9 @@ public class AugmentaArea : MonoBehaviour  {
 
         if (Mute) return;
 
+        if (message == null)
+            return;
+
         string address = message.Address;
 		ArrayList args = new ArrayList(message.Data); //message.Data.ToArray();
 
