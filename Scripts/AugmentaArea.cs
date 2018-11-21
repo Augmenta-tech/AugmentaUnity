@@ -139,7 +139,19 @@ public class AugmentaArea : MonoBehaviour  {
     public bool DrawGizmos;
 
     [Header("Augmenta settings")]
-    public int InputPort;
+    private int _inputPort = 12000;
+    public int InputPort
+    {
+        get
+        {
+            return _inputPort;
+        }
+        set
+        {
+            _inputPort = value;
+            CreateAugmentaOSCListener();
+        }
+    }
     public float MeterPerPixel= 0.01f;
     public float Zoom;
 
@@ -186,7 +198,7 @@ public class AugmentaArea : MonoBehaviour  {
 
         Debug.Log("[Augmenta] Subscribing to OSC Message Receiver");
 
-        OSCMaster.CreateReceiver("AugmentaInput", InputPort).messageReceived += OSCMessageReceived; // TODO : Remove link to OCF
+        CreateAugmentaOSCListener();
 
         AugmentaScene = new AugmentaScene();
         
@@ -201,8 +213,17 @@ public class AugmentaArea : MonoBehaviour  {
 
 	public void OnDestroy(){
 		Debug.Log("[Augmenta] Unsubscribing to OSC Message Receiver");
-        OSCMaster.Receivers["AugmentaInput"].messageReceived -= OSCMessageReceived;
-        OSCMaster.RemoveReceiver("AugmentaInput");
+
+    }
+
+    public void CreateAugmentaOSCListener()
+    {
+        if(OSCMaster.Receivers.ContainsKey("AugmentaInput"))
+        {
+            OSCMaster.Receivers["AugmentaInput"].messageReceived -= OSCMessageReceived;
+            OSCMaster.RemoveReceiver("AugmentaInput");
+        }
+        OSCMaster.CreateReceiver("AugmentaInput", InputPort).messageReceived += OSCMessageReceived; // TODO : Remove link to OCF
     }
 
 	public void OSCMessageReceived(OSCMessage message){
