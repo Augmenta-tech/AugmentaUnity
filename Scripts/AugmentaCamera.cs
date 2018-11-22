@@ -64,7 +64,7 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
             return;
 
         //Don't update camera with a 0 sized AugmentaArea
-        if (!useAnchor && (AugmentaArea.AugmentaScene.Width == 0 || AugmentaArea.AugmentaScene.Height == 0))
+        if (!useAnchor && (augmentaAreaAnchor.linkedAugmentaArea.AugmentaScene.Width == 0 || augmentaAreaAnchor.linkedAugmentaArea.AugmentaScene.Height == 0))
             return;
 
         if (sourceCamera.orthographic)
@@ -88,10 +88,10 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
         }
         else
         {
-            BottomLeftCorner = AugmentaArea.Instance.transform.TransformPoint(new Vector3(-0.5f, 0.5f, 0));
-            BottomRightCorner = AugmentaArea.Instance.transform.TransformPoint(new Vector3(0.5f, 0.5f, 0));
-            TopLeftCorner = AugmentaArea.Instance.transform.TransformPoint(new Vector3(-0.5f, -0.5f, 0));
-            TopRightCorner = AugmentaArea.Instance.transform.TransformPoint(new Vector3(0.5f, -0.5f, 0));
+            BottomLeftCorner = augmentaAreaAnchor.linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, 0.5f, 0));
+            BottomRightCorner = augmentaAreaAnchor.linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, 0.5f, 0));
+            TopLeftCorner = augmentaAreaAnchor.linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, -0.5f, 0));
+            TopRightCorner = augmentaAreaAnchor.linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, -0.5f, 0));
         }
     }
 
@@ -106,8 +106,8 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
 
     private void CopyAugmentaSettings()
     {
-        if(AugmentaMainCamera.Instance)
-            AugmentaMainCamera.Instance.UpdateCameraSettings(this);
+        if(augmentaAreaAnchor.linkedAugmentaArea.mainAugmentaCamera)
+            augmentaAreaAnchor.linkedAugmentaArea.mainAugmentaCamera.UpdateCameraSettings(this);
     }
 
     void ComputeOrthoCamera()
@@ -118,8 +118,8 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
             sourceCamera.orthographicSize = augmentaAreaAnchor.transform.localScale.y / 2;
         } else
         {
-            sourceCamera.aspect = AugmentaArea.Instance.AspectRatio;
-            sourceCamera.orthographicSize = AugmentaArea.Instance.transform.localScale.y / 2;
+            sourceCamera.aspect = augmentaAreaAnchor.linkedAugmentaArea.AspectRatio;
+            sourceCamera.orthographicSize = augmentaAreaAnchor.linkedAugmentaArea.transform.localScale.y / 2;
         }
         sourceCamera.ResetProjectionMatrix();
     }
@@ -136,8 +136,8 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
             sourceCamera.aspect = augmentaAreaAnchor.Width / augmentaAreaAnchor.Height;
         } else
         {
-            sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(AugmentaArea.AugmentaScene.Height * 0.5f * AugmentaArea.Instance.MeterPerPixel * Zoom, transform.localPosition.z);
-            sourceCamera.aspect = AugmentaArea.AugmentaScene.Width / AugmentaArea.AugmentaScene.Height;
+            sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(augmentaAreaAnchor.linkedAugmentaArea.AugmentaScene.Height * 0.5f * augmentaAreaAnchor.linkedAugmentaArea.MeterPerPixel * Zoom, transform.localPosition.z);
+            sourceCamera.aspect = augmentaAreaAnchor.linkedAugmentaArea.AugmentaScene.Width / augmentaAreaAnchor.linkedAugmentaArea.AugmentaScene.Height;
         }
     }
 

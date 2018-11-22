@@ -35,10 +35,10 @@ public class AugmentaDebuggerManager : AugmentaBasicManager {
         PositionFollowTightness = 20; //To prevent people from touching it
 
         //because it is under aAugmnetaArea and is scaled by it, to keep correct aspect ratio
-        transform.localScale = new Vector3(1 / AugmentaArea.Instance.transform.localScale.x, 1 / AugmentaArea.Instance.transform.localScale.y, 1);
+        transform.localScale = new Vector3(1 / linkedAugmentaAreaAnchor.linkedAugmentaArea.transform.localScale.x, 1 / linkedAugmentaAreaAnchor.linkedAugmentaArea.transform.localScale.y, 1);
 
-        Background.transform.localScale = AugmentaArea.Instance.transform.localScale;
-        Background.GetComponent<Renderer>().material.mainTextureScale = AugmentaArea.Instance.transform.localScale * 0.5f; //because texture is made of 4 same size squares ;
+        Background.transform.localScale = new Vector3(linkedAugmentaAreaAnchor.linkedAugmentaArea.transform.localScale.x, linkedAugmentaAreaAnchor.linkedAugmentaArea.transform.localScale.y, 0.01f); ;
+        Background.GetComponent<Renderer>().material.mainTextureScale = linkedAugmentaAreaAnchor.linkedAugmentaArea.transform.localScale * 0.5f; //because texture is made of 4 same size squares ;
         base.Update();
     }
 
@@ -46,6 +46,7 @@ public class AugmentaDebuggerManager : AugmentaBasicManager {
     {
         base.PersonEntered(p);
         InstantiatedObjects[p.pid].GetComponent<AugmentaPersonDebugger>().BorderColor = Color.HSVToRGB(UnityEngine.Random.value, 0.85f, 0.75f);
+        InstantiatedObjects[p.pid].GetComponent<AugmentaPersonDebugger>().augmentaBasicManager = this;
     }
 
     public override void PersonUpdated(AugmentaPerson p)

@@ -12,6 +12,7 @@ public class AugmentaMainCameraEditor : Editor
 
         EditorGUILayout.LabelField("Augmenta Camera Settings", EditorStyles.boldLabel);
 
+        augmentaMainCamera.augmentaAreaAnchor = (AugmentaAreaAnchor)EditorGUILayout.ObjectField("Augmenta area anchor", augmentaMainCamera.augmentaAreaAnchor, typeof(AugmentaAreaAnchor), false);
         augmentaMainCamera.Zoom = EditorGUILayout.FloatField("Zoom", augmentaMainCamera.Zoom);
         augmentaMainCamera.NearFrustrum = EditorGUILayout.FloatField("Near Frustrum", augmentaMainCamera.NearFrustrum);
         augmentaMainCamera.drawNearCone = EditorGUILayout.Toggle("Draw Near Cone", augmentaMainCamera.drawNearCone);

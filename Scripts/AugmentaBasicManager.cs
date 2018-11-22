@@ -14,6 +14,9 @@ public class AugmentaBasicManager : MonoBehaviour {
     /// 
     /// 
     /// </summary>
+
+
+
     public GameObject PrefabToInstantiate;
 
     public Dictionary<int, GameObject> InstantiatedObjects;
@@ -28,7 +31,7 @@ public class AugmentaBasicManager : MonoBehaviour {
         set
         {
             _personTimeOut = value;
-            AugmentaArea.Instance.PersonTimeOut = _personTimeOut;
+            linkedAugmentaAreaAnchor.linkedAugmentaArea.PersonTimeOut = _personTimeOut;
         }
     }
 
@@ -38,17 +41,19 @@ public class AugmentaBasicManager : MonoBehaviour {
     [Range(1, 20)]
     public int VelocityAverageValueCount = 1;
 
+    public AugmentaAreaAnchor linkedAugmentaAreaAnchor;
+
     public virtual void Update()
     {
         //for object to always face AugmentaCamera
-        if(AugmentaArea.Instance)
-            transform.rotation = AugmentaArea.Instance.transform.rotation;
+        if(linkedAugmentaAreaAnchor != null)
+            transform.rotation = linkedAugmentaAreaAnchor.transform.rotation;
 
         foreach (var element in InstantiatedObjects)
         {
-            if (!AugmentaArea.AugmentaPersons.ContainsKey(element.Key)) continue;
+            if (!linkedAugmentaAreaAnchor.linkedAugmentaArea.AugmentaPersons.ContainsKey(element.Key)) continue;
 
-            element.Value.transform.position = Vector3.Lerp(element.Value.transform.position, AugmentaArea.AugmentaPersons[element.Key].Position, Time.deltaTime * PositionFollowTightness);
+            element.Value.transform.position = Vector3.Lerp(element.Value.transform.position, linkedAugmentaAreaAnchor.linkedAugmentaArea.AugmentaPersons[element.Key].Position, Time.deltaTime * PositionFollowTightness);
         }
     }
 
@@ -56,10 +61,10 @@ public class AugmentaBasicManager : MonoBehaviour {
 	public virtual void OnEnable () {
         InstantiatedObjects = new Dictionary<int, GameObject>();
 
-        AugmentaArea.personEntered += PersonEntered;
-        AugmentaArea.personUpdated += PersonUpdated;
-        AugmentaArea.personLeaving += PersonLeft;
-        AugmentaArea.sceneUpdated += SceneUpdated;
+        linkedAugmentaAreaAnchor.linkedAugmentaArea.personEntered += PersonEntered;
+        linkedAugmentaAreaAnchor.linkedAugmentaArea.personUpdated += PersonUpdated;
+        linkedAugmentaAreaAnchor.linkedAugmentaArea.personLeaving += PersonLeft;
+        linkedAugmentaAreaAnchor.linkedAugmentaArea.sceneUpdated += SceneUpdated;
     }
 
     // Use this for initialization
@@ -70,10 +75,10 @@ public class AugmentaBasicManager : MonoBehaviour {
 
         InstantiatedObjects.Clear();
 
-        AugmentaArea.personEntered -= PersonEntered;
-        AugmentaArea.personUpdated -= PersonUpdated;
-        AugmentaArea.personLeaving -= PersonLeft;
-        AugmentaArea.sceneUpdated -= SceneUpdated;
+        linkedAugmentaAreaAnchor.linkedAugmentaArea.personEntered -= PersonEntered;
+        linkedAugmentaAreaAnchor.linkedAugmentaArea.personUpdated -= PersonUpdated;
+        linkedAugmentaAreaAnchor.linkedAugmentaArea.personLeaving -= PersonLeft;
+        linkedAugmentaAreaAnchor.linkedAugmentaArea.sceneUpdated -= SceneUpdated;
     }
 
     public virtual void SceneUpdated(AugmentaScene s)

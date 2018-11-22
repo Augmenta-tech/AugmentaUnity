@@ -98,7 +98,6 @@ public enum AugmentaEventType
 
 public class AugmentaArea : MonoBehaviour  {
 
-    public static AugmentaArea Instance;
     public static Camera AugmentaCam;
 
     [Header("Debug")]
@@ -138,7 +137,14 @@ public class AugmentaArea : MonoBehaviour  {
     }
     public bool DrawGizmos;
 
+    public AugmentaMainCamera mainAugmentaCamera;
+
     [Header("Augmenta settings")]
+    public string augmentaAreaId;
+    public static Dictionary<string, AugmentaArea> augmentaAreas;
+
+    public int defaultInputPort;
+
     private int _inputPort = 12000;
     public int InputPort
     {
@@ -171,33 +177,47 @@ public class AugmentaArea : MonoBehaviour  {
 
     /* Events */
     public delegate void PersonEntered(AugmentaPerson p);
-    public static event PersonEntered personEntered;
+    public event PersonEntered personEntered;
 
     public delegate void PersonUpdated(AugmentaPerson p);
-    public static event PersonUpdated personUpdated;
+    public event PersonUpdated personUpdated;
 
     public delegate void PersonLeaving(AugmentaPerson p);
-    public static event PersonLeaving personLeaving;
+    public event PersonLeaving personLeaving;
 
     public delegate void SceneUpdated(AugmentaScene s);
-    public static event SceneUpdated sceneUpdated;
+    public event SceneUpdated sceneUpdated;
 
-	public static Dictionary<int, AugmentaPerson> AugmentaPersons = new Dictionary<int, AugmentaPerson>(); // Containing all current persons
-    private static List<int> _orderedPids = new List<int>(); //Used to find oldest and newest
+	public Dictionary<int, AugmentaPerson> AugmentaPersons = new Dictionary<int, AugmentaPerson>(); // Containing all current persons
+    private List<int> _orderedPids = new List<int>(); //Used to find oldest and newest
 
     private TestCards.TestOverlay[] overlays;
 
 
-    public static AugmentaScene AugmentaScene;
+    public AugmentaScene AugmentaScene;
+
+    void RegisterArea()
+    {
+        if (augmentaAreas == null)
+            augmentaAreas = new Dictionary<string, AugmentaArea>();
+
+        if (string.IsNullOrEmpty(augmentaAreaId))
+            Debug.LogWarning("Augmenta area doesn't have an ID !");
+
+        augmentaAreas.Add(augmentaAreaId, this);
+    }
 
 	void Awake(){
-        Instance = this;
+
+        RegisterArea();
+
         _orderedPids = new List<int>();
         AugmentaCam = transform.Find("AugmentaCamera").GetComponent<Camera>();
         AspectRatio = 1;
 
         Debug.Log("[Augmenta] Subscribing to OSC Message Receiver");
 
+        InputPort = defaultInputPort;
         CreateAugmentaOSCListener();
 
         AugmentaScene = new AugmentaScene();
@@ -213,17 +233,18 @@ public class AugmentaArea : MonoBehaviour  {
 
 	public void OnDestroy(){
 		Debug.Log("[Augmenta] Unsubscribing to OSC Message Receiver");
-
     }
 
     public void CreateAugmentaOSCListener()
     {
-        if(OSCMaster.Receivers.ContainsKey("AugmentaInput"))
+        if(OSCMaster.Receivers.ContainsKey("AugmentaInput-" + augmentaAreaId))
         {
-            OSCMaster.Receivers["AugmentaInput"].messageReceived -= OSCMessageReceived;
-            OSCMaster.RemoveReceiver("AugmentaInput");
+            OSCMaster.Receivers["AugmentaInput-" + augmentaAreaId].messageReceived -= OSCMessageReceived;
+            OSCMaster.RemoveReceiver("AugmentaInput-" + augmentaAreaId);
         }
-        OSCMaster.CreateReceiver("AugmentaInput", InputPort).messageReceived += OSCMessageReceived; // TODO : Remove link to OCF
+        if (OSCMaster.CreateReceiver("AugmentaInput-" + augmentaAreaId, InputPort) != null) {
+            OSCMaster.Receivers["AugmentaInput-" + augmentaAreaId].messageReceived += OSCMessageReceived; 
+        }
     }
 
 	public void OSCMessageReceived(OSCMessage message){
@@ -361,7 +382,7 @@ public class AugmentaArea : MonoBehaviour  {
         }
     }
 
-    public static bool HasObjects()
+    public bool HasObjects()
     {
         if (AugmentaPersons.Count >= 1)
             return true;
@@ -374,7 +395,7 @@ public class AugmentaArea : MonoBehaviour  {
         return AugmentaPersons.Count;
     }
 
-    public static Dictionary<int, AugmentaPerson> getPeopleArray()
+    public Dictionary<int, AugmentaPerson> getPeopleArray()
     {
         return AugmentaPersons;
     }
@@ -472,7 +493,7 @@ public class AugmentaArea : MonoBehaviour  {
         AugmentaPersons.Clear();
     }
 
-    public static List<AugmentaPerson> GetOldestPersons(int count)
+    public List<AugmentaPerson> GetOldestPersons(int count)
     {
         var oldestPersons = new List<AugmentaPerson>();
 
@@ -494,7 +515,7 @@ public class AugmentaArea : MonoBehaviour  {
         return oldestPersons;
     }
 
-    public static List<AugmentaPerson> GetNewestPersons(int count)
+    public List<AugmentaPerson> GetNewestPersons(int count)
     {
         var newestPersons = new List<AugmentaPerson>();
 

@@ -5,15 +5,11 @@ using UnityEngine;
 
 public class AugmentaMainCamera : AugmentaCamera
 {
-    public static AugmentaMainCamera Instance;
-
     public delegate void CameraUpdated(AugmentaCamera settings);
-    public static event CameraUpdated cameraUpdated;
+    public event CameraUpdated cameraUpdated;
 
     void Awake()
     {
-        Instance = this;
-
         useAnchor = false;
 
         updateCameraOnStart = false;
@@ -31,7 +27,7 @@ public class AugmentaMainCamera : AugmentaCamera
         if (augmentaCamera.gameObject == gameObject)
             return;
 
-        AugmentaArea.Instance.Zoom = augmentaCamera.Zoom;
+        augmentaAreaAnchor.linkedAugmentaArea.Zoom = augmentaCamera.Zoom;
 
         sourceCamera.transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, augmentaCamera.transform.localPosition.z);
 

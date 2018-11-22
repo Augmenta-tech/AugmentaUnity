@@ -12,6 +12,10 @@ public class AugmentaAreaAnchor : MonoBehaviour {
     /// 
     /// The AugmentaAreaAnchor is expected to have an AugmentaCamera as children and will use this AugmentaCamera Zoom value to compute its scale.
     /// </summary>
+    /// 
+    public string linkedAugmentaAreaId;
+
+
     [Header("Augmenta Area Visualization")]
     public float Width;
     public float Height;
@@ -19,22 +23,26 @@ public class AugmentaAreaAnchor : MonoBehaviour {
     public bool DrawGizmos;
 
     [Header("Augmenta Camera")]
+    //public AugmentaCamera augmentaCamera;
+
+    public AugmentaArea linkedAugmentaArea;
     public AugmentaCamera augmentaCamera;
 
+    private void Awake()
+    {
+        if (string.IsNullOrEmpty(linkedAugmentaAreaId))
+            Debug.LogWarning("linkedAugmentaAreaId is empty !");
+
+        linkedAugmentaArea = AugmentaArea.augmentaAreas[linkedAugmentaAreaId];
+    }
     // Update is called once per frame
     void Update () {
-        if (AugmentaArea.Instance)
+        if (linkedAugmentaArea)
         {
-            AugmentaArea.Instance.gameObject.transform.position = transform.position;
-            AugmentaArea.Instance.gameObject.transform.rotation = transform.rotation;
+            linkedAugmentaArea.gameObject.transform.position = transform.position;
+            linkedAugmentaArea.gameObject.transform.rotation = transform.rotation;
         }
-        UpdateScale();
     }
-
-    void UpdateScale()
-    {
-        transform.localScale = new Vector3(Width * MeterPerPixel * augmentaCamera.Zoom, Height * MeterPerPixel * augmentaCamera.Zoom, 1.0f);
-    }   
 
     private void OnDrawGizmos()
     {
@@ -43,8 +51,7 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         Gizmos.color = Color.blue;
 
         //Draw area 
-        UpdateScale();
-        DrawGizmoCube(transform.position, transform.rotation, transform.localScale);
+        DrawGizmoCube(transform.position, transform.rotation, new Vector3(Width * MeterPerPixel * augmentaCamera.Zoom, Height * MeterPerPixel * augmentaCamera.Zoom, 1.0f));
     }
 
     public void DrawGizmoCube(Vector3 position, Quaternion rotation, Vector3 scale)

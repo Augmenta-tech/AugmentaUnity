@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class AugmentaPersonDebugger : MonoBehaviour {
 
+    public AugmentaBasicManager augmentaBasicManager;
     public Augmenta.AugmentaPerson MyAugmentaPerson;
 
     public Color BorderColor;
@@ -27,7 +28,7 @@ public class AugmentaPersonDebugger : MonoBehaviour {
             transform.localScale = Vector3.one;
 
         //Update bouding box
-        Point.transform.localScale = new Vector3(MyAugmentaPerson.boundingRect.width * AugmentaArea.Instance.transform.localScale.x, MyAugmentaPerson.boundingRect.height * AugmentaArea.Instance.transform.localScale.y, 0.1f);
+        Point.transform.localScale = new Vector3(MyAugmentaPerson.boundingRect.width * augmentaBasicManager.linkedAugmentaAreaAnchor.linkedAugmentaArea.transform.localScale.x, MyAugmentaPerson.boundingRect.height * augmentaBasicManager.linkedAugmentaAreaAnchor.linkedAugmentaArea.transform.localScale.y, 0.01f);
 
         //Update centroid
 
@@ -49,6 +50,6 @@ public class AugmentaPersonDebugger : MonoBehaviour {
         if (float.IsNaN(angle))
             return;
         VelocityVisualizer.localRotation = Quaternion.Euler(new Vector3(0, 0, -angle  +90));
-        VelocityVisualizer.localScale = new Vector3(VelocityThickness * AugmentaArea.Instance.MeterPerPixel, MyAugmentaPerson.GetSmoothedVelocity().magnitude * 100, VelocityThickness * AugmentaArea.Instance.MeterPerPixel);
+        VelocityVisualizer.localScale = new Vector3(VelocityThickness * augmentaBasicManager.linkedAugmentaAreaAnchor.linkedAugmentaArea.MeterPerPixel, MyAugmentaPerson.GetSmoothedVelocity().magnitude * 100, VelocityThickness * augmentaBasicManager.linkedAugmentaAreaAnchor.linkedAugmentaArea.MeterPerPixel);
     }
 }

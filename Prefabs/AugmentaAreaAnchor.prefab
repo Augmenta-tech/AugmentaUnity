@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4367033815543688}
   - component: {fileID: 114784919723292498}
+  - component: {fileID: 114183653244636344}
   m_Layer: 0
   m_Name: AugmentaAreaAnchor
   m_TagString: Untagged
@@ -39,7 +40,6 @@ GameObject:
   - component: {fileID: 124320720137961218}
   - component: {fileID: 81517664642306790}
   - component: {fileID: 114442291894484512}
-  - component: {fileID: 114010110579041276}
   - component: {fileID: 114202902021390870}
   m_Layer: 12
   m_Name: AugmentaSceneCamera
@@ -55,8 +55,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1470022884545152}
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 6.3999996, y: 7.2, z: 1}
+  m_LocalPosition: {x: -9.95, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4824704955623244}
   m_Father: {fileID: 0}
@@ -69,7 +69,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1617185360228212}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0, z: 3.37}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4367033815543688}
@@ -122,30 +122,22 @@ AudioListener:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1617185360228212}
   m_Enabled: 1
---- !u!114 &114010110579041276
+--- !u!114 &114183653244636344
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1617185360228212}
+  m_GameObject: {fileID: 1470022884545152}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb50165bc293a56439d530ca8d72ae56, type: 3}
+  m_Script: {fileID: 11500000, guid: 4e278c1202c0df244ab1a7c4ac2ad238, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetScript: {fileID: 0}
-  BarColor: {r: 1, g: 1, b: 1, a: 1}
-  id: 
-  folder: 
-  debug: 0
-  targetDirectory: 
-  sourceScene: 
-  usePanel: 1
-  usePresets: 1
-  currentPreset: 
-  presetList: []
-  CamDistToAugmenta: 80
-  Zoom: 0
+  PrefabToInstantiate: {fileID: 1676155804350704, guid: 6e281715cbdc31e439370780f4893989,
+    type: 2}
+  PositionFollowTightness: 10
+  VelocityAverageValueCount: 1
+  linkedAugmentaAreaAnchor: {fileID: 114784919723292498}
 --- !u!114 &114202902021390870
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -228,7 +220,6 @@ MonoBehaviour:
   updateAugmentaOnStart: 1
   alwaysUpdateAugmenta: 0
   Zoom: 1
-  CamDistToAugmenta: 10
   NearFrustrum: 0.01
   drawNearCone: 1
   drawFrustum: 1
@@ -245,10 +236,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 362e7420a46399f47968d1dc0e41a483, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  linkedAugmentaAreaId: Sol
   Width: 1280
-  Height: 1440
+  Height: 800
   MeterPerPixel: 0.005
   DrawGizmos: 1
+  linkedAugmentaArea: {fileID: 0}
   augmentaCamera: {fileID: 114442291894484512}
 --- !u!124 &124320720137961218
 Behaviour:
