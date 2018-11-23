@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class AugmentaPersonBehaviour : MonoBehaviour {
 
+    public AugmentaBasicManager augmentaBasicManager;
+
     public int pid;
 
     public bool LoopAliveAnimation;

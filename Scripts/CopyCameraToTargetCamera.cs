@@ -202,7 +202,7 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 	private void CopyPostProcessLayerComponent(PostProcessLayer source, PostProcessLayer destination) {
 
 		destination.volumeLayer = source.volumeLayer;
-		destination.volumeTrigger = source.volumeTrigger;
+		//destination.volumeTrigger = source.volumeTrigger;
 		destination.antialiasingMode = source.antialiasingMode;
 		destination.fastApproximateAntialiasing = source.fastApproximateAntialiasing;
 		destination.subpixelMorphologicalAntialiasing = source.subpixelMorphologicalAntialiasing;
