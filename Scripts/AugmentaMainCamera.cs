@@ -19,10 +19,13 @@ public class AugmentaMainCamera : AugmentaCamera
         alwaysUpdateTransform = false;
         alwaysUpdatePostProcess = false;
         disableAfterUpdate = false;
+
+        TargetCameraName = gameObject.name;
     }
 
     public void UpdateCameraSettings(AugmentaCamera augmentaCamera)
     {
+
         //Don't update self
         if (augmentaCamera.gameObject == gameObject)
             return;

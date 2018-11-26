@@ -106,6 +106,7 @@ public class AugmentaArea : MonoBehaviour  {
     public static Dictionary<string, AugmentaArea> augmentaAreas;
 
     public int defaultInputPort;
+    public bool connected;
 
     private int _inputPort = 12000;
     public int InputPort
@@ -117,7 +118,7 @@ public class AugmentaArea : MonoBehaviour  {
         set
         {
             _inputPort = value;
-            CreateAugmentaOSCListener();
+            connected = CreateAugmentaOSCListener();
         }
     }
     public float MeterPerPixel= 0.01f;
@@ -133,7 +134,7 @@ public class AugmentaArea : MonoBehaviour  {
     public float PersonTimeOut = 1.0f; // seconds
     public int NbAugmentaPeople;
     public AugmentaPersonType ActualPersonType;
-    public int AskedPersons = 1;
+    public int AskedPeople = 1;
 
     private float _oldPixelMeterCoeff, _oldZoom;
 
@@ -191,7 +192,7 @@ public class AugmentaArea : MonoBehaviour  {
 	public Dictionary<int, AugmentaPerson> AugmentaPersons = new Dictionary<int, AugmentaPerson>(); // Containing all current persons
     private List<int> _orderedPids = new List<int>(); //Used to find oldest and newest
 
-    private TestCards.TestOverlay[] overlays;
+    public List<TestCards.TestOverlay> overlays;
 
     public AugmentaScene AugmentaScene;
 
@@ -211,21 +212,19 @@ public class AugmentaArea : MonoBehaviour  {
         RegisterArea();
 
         _orderedPids = new List<int>();
-        mainAugmentaCamera = transform.Find("AugmentaCamera").GetComponent<AugmentaMainCamera>();
+        mainAugmentaCamera = transform.GetComponentInChildren<AugmentaMainCamera>();
         AspectRatio = 1;
 
         Debug.Log("[Augmenta] Subscribing to OSC Message Receiver");
 
         InputPort = defaultInputPort;
-        CreateAugmentaOSCListener();
+        connected = CreateAugmentaOSCListener();
 
         AugmentaScene = new AugmentaScene();
         
         StopAllCoroutines();
 		// Start the coroutine that check if everyone is alive
 		StartCoroutine("checkAlive");
-
-        overlays = FindObjectsOfType<TestCards.TestOverlay>();
         AugmentaDebugger.gameObject.SetActive(AugmentaDebug);
         AugmentaDebugger.Transparency = DebugTransparency;
     }
@@ -234,7 +233,7 @@ public class AugmentaArea : MonoBehaviour  {
 		Debug.Log("[Augmenta] Unsubscribing to OSC Message Receiver");
     }
 
-    public void CreateAugmentaOSCListener()
+    public bool CreateAugmentaOSCListener()
     {
         if(OSCMaster.Receivers.ContainsKey("AugmentaInput-" + augmentaAreaId))
         {
@@ -242,7 +241,12 @@ public class AugmentaArea : MonoBehaviour  {
             OSCMaster.RemoveReceiver("AugmentaInput-" + augmentaAreaId);
         }
         if (OSCMaster.CreateReceiver("AugmentaInput-" + augmentaAreaId, InputPort) != null) {
-            OSCMaster.Receivers["AugmentaInput-" + augmentaAreaId].messageReceived += OSCMessageReceived; 
+            OSCMaster.Receivers["AugmentaInput-" + augmentaAreaId].messageReceived += OSCMessageReceived;
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 
@@ -345,14 +349,14 @@ public class AugmentaArea : MonoBehaviour  {
     {
         if (ActualPersonType == AugmentaPersonType.Oldest && type != AugmentaEventType.SceneUpdated)
         {
-            var askedOldest = GetOldestPersons(AskedPersons);
+            var askedOldest = GetOldestPersons(AskedPeople);
             if (!askedOldest.Contains(person))
                 type = AugmentaEventType.PersonWillLeave;
         }
 
         if (ActualPersonType == AugmentaPersonType.Newest && type != AugmentaEventType.SceneUpdated)
         {
-            var askedNewest = GetNewestPersons(AskedPersons);
+            var askedNewest = GetNewestPersons(AskedPeople);
             if (!askedNewest.Contains(person))
                 type = AugmentaEventType.PersonWillLeave;
         }

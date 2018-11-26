@@ -33,6 +33,8 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
     // Use this for initialization
     public virtual void Start () {
 
+        augmentaAreaAnchor = transform.parent.GetComponent<AugmentaAreaAnchor>();
+
         UpdateTargetCamera(updateTransformOnStart, updateCameraOnStart, updatePostProcessOnStart && hasPostProcessLayer);
 
         if (updateAugmentaOnStart)
@@ -99,6 +101,9 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
     
     public override void UpdateTargetCamera(bool updateTransform, bool updateCamera, bool updatePostProcess)
     {
+        if (string.IsNullOrEmpty(TargetCameraName))
+            return;
+
         base.UpdateTargetCamera(updateTransform, updateCamera, updatePostProcess && hasPostProcessLayer);
 
         if(alwaysUpdateAugmenta)

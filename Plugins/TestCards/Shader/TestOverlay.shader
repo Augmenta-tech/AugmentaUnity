@@ -96,7 +96,6 @@
 
 		//rgb = lerp(rgb, 1, saturate((p0.x - (p1.x + 3)) * _MainTex_TexelSize.w + (_MainTex_TexelSize.z*scale - p0.y - (p1.y + 3))*_MainTex_TexelSize.z));
 
-
 		//rgb = lerp(rgb, 1, saturate((p0.x - (p1.x-(0.1_MainTex_TexelSize.z*scale)) * _MainTex_TexelSize.w + (p0.y - (p1.y - 0.1))*_MainTex_TexelSize.z));
 		//rgb = lerp(rgb, 1, saturate(((_MainTex_TexelSize.z*scale - p0.x) - (p1.x - 0.1)) * _MainTex_TexelSize.w +( (p0.y - (_MainTex_TexelSize.w*scale - p1.y) - 0.1))*_MainTex_TexelSize.z));
 
