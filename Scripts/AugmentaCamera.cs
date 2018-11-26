@@ -9,6 +9,7 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
     [Header("Augmenta Area Anchor")]
     public bool useAnchor = false;
     public AugmentaAreaAnchor augmentaAreaAnchor;
+    public AugmentaArea linkedAugmentaArea;
 
     [Header("Augmenta Settings")]
     [Tooltip("Should this camera Augmenta settings be copied to the augmenta camera on start ?")]
@@ -64,7 +65,7 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
             return;
 
         //Don't update camera with a 0 sized AugmentaArea
-        if (!useAnchor && (augmentaAreaAnchor.linkedAugmentaArea.AugmentaScene.Width == 0 || augmentaAreaAnchor.linkedAugmentaArea.AugmentaScene.Height == 0))
+        if (!useAnchor && (linkedAugmentaArea.AugmentaScene.Width == 0 || linkedAugmentaArea.AugmentaScene.Height == 0))
             return;
 
         if (sourceCamera.orthographic)
@@ -88,10 +89,10 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
         }
         else
         {
-            BottomLeftCorner = augmentaAreaAnchor.linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, 0.5f, 0));
-            BottomRightCorner = augmentaAreaAnchor.linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, 0.5f, 0));
-            TopLeftCorner = augmentaAreaAnchor.linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, -0.5f, 0));
-            TopRightCorner = augmentaAreaAnchor.linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, -0.5f, 0));
+            BottomLeftCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, 0.5f, 0));
+            BottomRightCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, 0.5f, 0));
+            TopLeftCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, -0.5f, 0));
+            TopRightCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, -0.5f, 0));
         }
     }
 
@@ -118,8 +119,8 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
             sourceCamera.orthographicSize = augmentaAreaAnchor.transform.localScale.y / 2;
         } else
         {
-            sourceCamera.aspect = augmentaAreaAnchor.linkedAugmentaArea.AspectRatio;
-            sourceCamera.orthographicSize = augmentaAreaAnchor.linkedAugmentaArea.transform.localScale.y / 2;
+            sourceCamera.aspect = linkedAugmentaArea.AspectRatio;
+            sourceCamera.orthographicSize = linkedAugmentaArea.transform.localScale.y / 2;
         }
         sourceCamera.ResetProjectionMatrix();
     }
@@ -136,8 +137,8 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
             sourceCamera.aspect = augmentaAreaAnchor.Width / augmentaAreaAnchor.Height;
         } else
         {
-            sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(augmentaAreaAnchor.linkedAugmentaArea.AugmentaScene.Height * 0.5f * augmentaAreaAnchor.linkedAugmentaArea.MeterPerPixel * Zoom, transform.localPosition.z);
-            sourceCamera.aspect = augmentaAreaAnchor.linkedAugmentaArea.AugmentaScene.Width / augmentaAreaAnchor.linkedAugmentaArea.AugmentaScene.Height;
+            sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(linkedAugmentaArea.AugmentaScene.Height * 0.5f * linkedAugmentaArea.MeterPerPixel * Zoom, transform.localPosition.z);
+            sourceCamera.aspect = linkedAugmentaArea.AugmentaScene.Width / linkedAugmentaArea.AugmentaScene.Height;
         }
     }
 

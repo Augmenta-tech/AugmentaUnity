@@ -17,7 +17,7 @@ namespace Augmenta
 		public float inactiveTime;
 
         public Vector3 Position;
-        public float VelocitySmooth;
+        public int VelocitySmooth;
         public List<Vector3> Velocities;
 
         public void Init()

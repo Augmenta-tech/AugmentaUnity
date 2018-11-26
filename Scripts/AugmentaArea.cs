@@ -98,45 +98,7 @@ public enum AugmentaEventType
 
 public class AugmentaArea : MonoBehaviour  {
 
-    public static Camera AugmentaCam;
-
-    [Header("Debug")]
-    public bool Mute;
-    public bool Mire;
-    public AugmentaDebuggerManager AugmentaDebugger;
-
-    [SerializeField]
-    private bool _augmentaDebug;
-    public bool AugmentaDebug
-    {
-        get
-        {
-            return _augmentaDebug;
-        }
-        set
-        {
-            _augmentaDebug = value;
-            AugmentaDebugger.gameObject.SetActive(_augmentaDebug);
-            AugmentaDebugger.Transparency = _debugTransparency;
-        }
-    }
-    [SerializeField]
-    [Range(0,1)]
-    private float _debugTransparency;
-    public float DebugTransparency
-    {
-        get
-        {
-            return _debugTransparency;
-        }
-        set
-        {
-            _debugTransparency = value;
-            AugmentaDebugger.Transparency = _debugTransparency;
-        }
-    }
-    public bool DrawGizmos;
-
+    [HideInInspector]
     public AugmentaMainCamera mainAugmentaCamera;
 
     [Header("Augmenta settings")]
@@ -164,16 +126,54 @@ public class AugmentaArea : MonoBehaviour  {
     [HideInInspector]
     public float AspectRatio;
 
-    [Header("Augmenta persons settings")]
+    [Header("Augmenta people settings")]
     public bool FlipX;
     public bool FlipY;
     // Number of seconds before a person who hasn't been updated is removed
     public float PersonTimeOut = 1.0f; // seconds
-    public int NbAugmentaPersons;
+    public int NbAugmentaPeople;
     public AugmentaPersonType ActualPersonType;
     public int AskedPersons = 1;
 
     private float _oldPixelMeterCoeff, _oldZoom;
+
+    [Header("Debug")]
+    public bool Mute;
+    public bool Mire;
+    public AugmentaDebuggerManager AugmentaDebugger;
+
+    [SerializeField]
+    private bool _augmentaDebug;
+    public bool AugmentaDebug
+    {
+        get
+        {
+            return _augmentaDebug;
+        }
+        set
+        {
+            _augmentaDebug = value;
+            AugmentaDebugger.gameObject.SetActive(_augmentaDebug);
+            AugmentaDebugger.Transparency = _debugTransparency;
+        }
+    }
+    [SerializeField]
+    [Range(0, 1)]
+    private float _debugTransparency;
+    public float DebugTransparency
+    {
+        get
+        {
+            return _debugTransparency;
+        }
+        set
+        {
+            _debugTransparency = value;
+            AugmentaDebugger.Transparency = _debugTransparency;
+        }
+    }
+    public bool DrawGizmos;
+
 
     /* Events */
     public delegate void PersonEntered(AugmentaPerson p);
@@ -193,7 +193,6 @@ public class AugmentaArea : MonoBehaviour  {
 
     private TestCards.TestOverlay[] overlays;
 
-
     public AugmentaScene AugmentaScene;
 
     void RegisterArea()
@@ -212,7 +211,7 @@ public class AugmentaArea : MonoBehaviour  {
         RegisterArea();
 
         _orderedPids = new List<int>();
-        AugmentaCam = transform.Find("AugmentaCamera").GetComponent<Camera>();
+        mainAugmentaCamera = transform.Find("AugmentaCamera").GetComponent<AugmentaMainCamera>();
         AspectRatio = 1;
 
         Debug.Log("[Augmenta] Subscribing to OSC Message Receiver");
@@ -400,11 +399,8 @@ public class AugmentaArea : MonoBehaviour  {
         return AugmentaPersons;
     }
 
-
     void OnDrawGizmos()
     {
-        
-
         if (!DrawGizmos) return;
 
         Gizmos.color = Color.red;
@@ -475,8 +471,8 @@ public class AugmentaArea : MonoBehaviour  {
 		p.highest.y = highest.y;
 		p.highest.z = (float)args[14];
 
-        NbAugmentaPersons = AugmentaPersons.Count;
-        p.Position = transform.TransformPoint(new Vector3(p.centroid.x - 0.5f, -(p.centroid.y - 0.5f), p.centroid.z));
+        NbAugmentaPeople = AugmentaPersons.Count;
+        p.Position = transform.TransformPoint(new Vector3(-(p.centroid.x - 0.5f), -(p.centroid.y - 0.5f), p.centroid.z));
 
         // Inactive time reset to zero : the Person has just been updated
         p.inactiveTime = 0;

@@ -1,20 +1,37 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Augmenta;
 
 public class AugmentaAreaAnchor : MonoBehaviour {
 
-    /// <summary>
-    /// The AugmentaAreaAnchor will update the AugmentaArea position, rotation and scale according to the AugmentaAreaAnchor parameters at every frame.
-    /// 
-    /// The position and rotation are copied from this object's transform position and rotation in world space.
-    /// The scale is updated according to the Width, Height, MeterPerPixel and Zoom values.
-    /// 
-    /// The AugmentaAreaAnchor is expected to have an AugmentaCamera as children and will use this AugmentaCamera Zoom value to compute its scale.
-    /// </summary>
-    /// 
     public string linkedAugmentaAreaId;
 
+    [Header("Augmenta points settings")]
+    public GameObject PrefabToInstantiate;
+
+    public Dictionary<int, GameObject> InstantiatedObjects;
+
+    [Tooltip("In seconds")]
+    private float _personTimeOut = 1;
+    public float PersonTimeOut
+    {
+        get
+        {
+            return _personTimeOut;
+        }
+        set
+        {
+            _personTimeOut = value;
+            linkedAugmentaArea.PersonTimeOut = _personTimeOut;
+        }
+    }
+
+    [Range(1, 20)]
+    public float PositionFollowTightness = 10;
+
+    [Range(1, 20)]
+    public int VelocityAverageValueCount = 1;
 
     [Header("Augmenta Area Visualization")]
     public float Width;
@@ -23,8 +40,7 @@ public class AugmentaAreaAnchor : MonoBehaviour {
     public bool DrawGizmos;
 
     [Header("Augmenta Camera")]
-    //public AugmentaCamera augmentaCamera;
-
+    [HideInInspector]
     public AugmentaArea linkedAugmentaArea;
     public AugmentaCamera augmentaCamera;
 
@@ -35,13 +51,102 @@ public class AugmentaAreaAnchor : MonoBehaviour {
 
         linkedAugmentaArea = AugmentaArea.augmentaAreas[linkedAugmentaAreaId];
     }
+
     // Update is called once per frame
-    void Update () {
+    public virtual void Update () {
         if (linkedAugmentaArea)
         {
             linkedAugmentaArea.gameObject.transform.position = transform.position;
             linkedAugmentaArea.gameObject.transform.rotation = transform.rotation;
         }
+
+        foreach (var element in InstantiatedObjects)
+        {
+            if (!linkedAugmentaArea.AugmentaPersons.ContainsKey(element.Key)) continue;
+
+            element.Value.transform.position = Vector3.Lerp(element.Value.transform.position, linkedAugmentaArea.AugmentaPersons[element.Key].Position, Time.deltaTime * PositionFollowTightness);
+        }
+    }
+
+    // Use this for initialization
+    public virtual void OnEnable()
+    {
+        InstantiatedObjects = new Dictionary<int, GameObject>();
+
+        linkedAugmentaArea.personEntered += PersonEntered;
+        linkedAugmentaArea.personUpdated += PersonUpdated;
+        linkedAugmentaArea.personLeaving += PersonLeft;
+        linkedAugmentaArea.sceneUpdated += SceneUpdated;
+    }
+
+    // Use this for initialization
+    public virtual void OnDisable()
+    {
+        foreach (var element in InstantiatedObjects.Values)
+            Destroy(element);
+
+        InstantiatedObjects.Clear();
+
+        linkedAugmentaArea.personEntered -= PersonEntered;
+        linkedAugmentaArea.personUpdated -= PersonUpdated;
+        linkedAugmentaArea.personLeaving -= PersonLeft;
+        linkedAugmentaArea.sceneUpdated -= SceneUpdated;
+    }
+
+    public virtual void SceneUpdated(AugmentaScene s)
+    { }
+
+    public virtual void PersonEntered(AugmentaPerson p)
+    {
+        if (!InstantiatedObjects.ContainsKey(p.pid))
+        {
+            var newObject = Instantiate(PrefabToInstantiate, p.Position, Quaternion.identity, this.transform);
+            newObject.transform.localRotation = Quaternion.Euler(Vector3.zero);
+            InstantiatedObjects.Add(p.pid, newObject);
+
+            var augBehaviour = newObject.GetComponent<AugmentaPersonBehaviour>();
+            if (augBehaviour != null)
+            {
+                augBehaviour.augmentaAreaAnchor = this;
+                augBehaviour.pid = p.pid;
+                augBehaviour.disappearAnimationCompleted += HandleDisappearedObject;
+                augBehaviour.Appear();
+            }
+        }
+    }
+
+    public virtual void PersonUpdated(AugmentaPerson p)
+    {
+        if (InstantiatedObjects.ContainsKey(p.pid))
+        {
+            p.VelocitySmooth = VelocityAverageValueCount;
+        }
+        else
+        {
+            PersonEntered(p);
+        }
+    }
+
+    public virtual void PersonLeft(AugmentaPerson p)
+    {
+        if (InstantiatedObjects.ContainsKey(p.pid))
+        {
+            var augBehaviour = InstantiatedObjects[p.pid].GetComponent<AugmentaPersonBehaviour>();
+            if (augBehaviour != null)
+                augBehaviour.Disappear();
+            else
+                HandleDisappearedObject(p.pid);
+        }
+    }
+
+    public virtual void HandleDisappearedObject(int pid)
+    {
+        if (!InstantiatedObjects.ContainsKey(pid)) //To investigate, shouldn't happen
+            return;
+
+        var objectToDestroy = InstantiatedObjects[pid];
+        Destroy(objectToDestroy);
+        InstantiatedObjects.Remove(pid);
     }
 
     private void OnDrawGizmos()

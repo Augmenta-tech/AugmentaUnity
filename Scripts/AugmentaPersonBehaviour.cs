@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AugmentaPersonBehaviour : MonoBehaviour {
 
-    public AugmentaBasicManager augmentaBasicManager;
+    public AugmentaAreaAnchor augmentaAreaAnchor;
 
     public int pid;
 

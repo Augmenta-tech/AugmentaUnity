@@ -27,7 +27,7 @@ public class AugmentaMainCamera : AugmentaCamera
         if (augmentaCamera.gameObject == gameObject)
             return;
 
-        augmentaAreaAnchor.linkedAugmentaArea.Zoom = augmentaCamera.Zoom;
+        linkedAugmentaArea.Zoom = augmentaCamera.Zoom;
 
         sourceCamera.transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, augmentaCamera.transform.localPosition.z);
 

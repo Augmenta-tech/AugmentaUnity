@@ -20,7 +20,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4367033815543688}
   - component: {fileID: 114784919723292498}
-  - component: {fileID: 114183653244636344}
   m_Layer: 0
   m_Name: AugmentaAreaAnchor
   m_TagString: Untagged
@@ -55,7 +54,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1470022884545152}
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -9.95, y: 0, z: 0}
+  m_LocalPosition: {x: -2.3107452, y: 1.6036129, z: 5.8277917}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4824704955623244}
@@ -122,22 +121,6 @@ AudioListener:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1617185360228212}
   m_Enabled: 1
---- !u!114 &114183653244636344
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1470022884545152}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e278c1202c0df244ab1a7c4ac2ad238, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PrefabToInstantiate: {fileID: 1676155804350704, guid: 6e281715cbdc31e439370780f4893989,
-    type: 2}
-  PositionFollowTightness: 10
-  VelocityAverageValueCount: 1
-  linkedAugmentaAreaAnchor: {fileID: 114784919723292498}
 --- !u!114 &114202902021390870
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -152,9 +135,10 @@ MonoBehaviour:
   volumeTrigger: {fileID: 4824704955623244}
   volumeLayer:
     serializedVersion: 2
-    m_Bits: 4096
+    m_Bits: 256
   stopNaNPropagation: 1
-  antialiasingMode: 0
+  finalBlitToCameraTarget: 1
+  antialiasingMode: 2
   temporalAntialiasing:
     jitterSpread: 0.75
     sharpness: 0.25
@@ -217,6 +201,7 @@ MonoBehaviour:
   alwaysUpdatePostProcess: 0
   useAnchor: 1
   augmentaAreaAnchor: {fileID: 114784919723292498}
+  linkedAugmentaArea: {fileID: 0}
   updateAugmentaOnStart: 1
   alwaysUpdateAugmenta: 0
   Zoom: 1
@@ -237,6 +222,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   linkedAugmentaAreaId: Sol
+  PrefabToInstantiate: {fileID: 1676155804350704, guid: 6e281715cbdc31e439370780f4893989,
+    type: 2}
+  PositionFollowTightness: 10
+  VelocityAverageValueCount: 1
   Width: 1280
   Height: 800
   MeterPerPixel: 0.005

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AugmentaPersonDebugger : MonoBehaviour {
 
-    public AugmentaBasicManager augmentaBasicManager;
+    public AugmentaAreaAnchor AugmentaAreaAnchor;
     public Augmenta.AugmentaPerson MyAugmentaPerson;
 
     public Color BorderColor;
@@ -28,7 +28,7 @@ public class AugmentaPersonDebugger : MonoBehaviour {
             transform.localScale = Vector3.one;
 
         //Update bouding box
-        Point.transform.localScale = new Vector3(MyAugmentaPerson.boundingRect.width * augmentaBasicManager.linkedAugmentaAreaAnchor.linkedAugmentaArea.transform.localScale.x, MyAugmentaPerson.boundingRect.height * augmentaBasicManager.linkedAugmentaAreaAnchor.linkedAugmentaArea.transform.localScale.y, 0.01f);
+        Point.transform.localScale = new Vector3(MyAugmentaPerson.boundingRect.width * AugmentaAreaAnchor.linkedAugmentaArea.transform.localScale.x, MyAugmentaPerson.boundingRect.height * AugmentaAreaAnchor.linkedAugmentaArea.transform.localScale.y, 0.01f);
 
         //Update centroid
 
@@ -46,10 +46,10 @@ public class AugmentaPersonDebugger : MonoBehaviour {
         //}
 
         //Update velocity
-        float angle = Mathf.Atan2(MyAugmentaPerson.GetSmoothedVelocity().y *100, MyAugmentaPerson.GetSmoothedVelocity().x * 100 ) *180 / Mathf.PI;
+        float angle = Mathf.Atan2(MyAugmentaPerson.GetSmoothedVelocity().y * 100, MyAugmentaPerson.GetSmoothedVelocity().x * 100 ) * 180 / Mathf.PI;
         if (float.IsNaN(angle))
             return;
-        VelocityVisualizer.localRotation = Quaternion.Euler(new Vector3(0, 0, -angle  +90));
-        VelocityVisualizer.localScale = new Vector3(VelocityThickness * augmentaBasicManager.linkedAugmentaAreaAnchor.linkedAugmentaArea.MeterPerPixel, MyAugmentaPerson.GetSmoothedVelocity().magnitude * 100, VelocityThickness * augmentaBasicManager.linkedAugmentaAreaAnchor.linkedAugmentaArea.MeterPerPixel);
+        VelocityVisualizer.localRotation = Quaternion.Euler(new Vector3(0, 0, -(angle  + 90)));
+        VelocityVisualizer.localScale = new Vector3(VelocityThickness * AugmentaAreaAnchor.linkedAugmentaArea.MeterPerPixel, MyAugmentaPerson.GetSmoothedVelocity().magnitude * 100, VelocityThickness * AugmentaAreaAnchor.linkedAugmentaArea.MeterPerPixel);
     }
 }
