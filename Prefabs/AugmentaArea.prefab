@@ -252,7 +252,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1077286462109982}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 09e531f25570e604d8fb78aee77125a9, type: 3}
   m_Name: 
@@ -275,6 +275,7 @@ MonoBehaviour:
   mainAugmentaCamera: {fileID: 114255069118496728}
   augmentaAreaId: Sol
   defaultInputPort: 12000
+  connected: 0
   MeterPerPixel: 0.005
   Zoom: 1
   AspectRatio: 0
@@ -283,13 +284,14 @@ MonoBehaviour:
   PersonTimeOut: 1
   NbAugmentaPeople: 0
   ActualPersonType: 0
-  AskedPersons: 1
+  AskedPeople: 1
   Mute: 0
   Mire: 0
   AugmentaDebugger: {fileID: 114936487958699388}
   _augmentaDebug: 0
   _debugTransparency: 1
   DrawGizmos: 1
+  overlays: []
 --- !u!114 &114624218286067010
 MonoBehaviour:
   m_ObjectHideFlags: 1
