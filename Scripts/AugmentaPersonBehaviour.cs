@@ -20,6 +20,7 @@ public class AugmentaPersonBehaviour : MonoBehaviour {
 
     public void Disappear()
     {
+        StopAllCoroutines(); //Stop alive animation
         StartCoroutine(DisappearAnimation(DisappearCallBack));
     }
 

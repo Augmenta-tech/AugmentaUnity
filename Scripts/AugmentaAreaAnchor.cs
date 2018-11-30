@@ -44,15 +44,16 @@ public class AugmentaAreaAnchor : MonoBehaviour {
     public AugmentaArea linkedAugmentaArea;
     public AugmentaCamera augmentaCamera;
 
-    private void Awake()
+    public virtual void Awake()
     {
         if (string.IsNullOrEmpty(linkedAugmentaAreaId))
             Debug.LogWarning("linkedAugmentaAreaId is empty !");
 
         linkedAugmentaArea = AugmentaArea.augmentaAreas[linkedAugmentaAreaId];
+        augmentaCamera.linkedAugmentaArea = linkedAugmentaArea;
+        augmentaCamera.Init();
     }
 
-    // Update is called once per frame
     public virtual void Update () {
         if (linkedAugmentaArea)
         {

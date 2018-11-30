@@ -82,7 +82,7 @@ public struct AugmentaScene
 
 public enum AugmentaPersonType
 {
-    AllPersons,
+    AllPeople,
     Oldest,
     Newest
 };
@@ -105,6 +105,19 @@ public class AugmentaArea : MonoBehaviour  {
     public string augmentaAreaId;
     public static Dictionary<string, AugmentaArea> augmentaAreas;
 
+    private bool _enableCameraRendering;
+    public bool cameraRendering
+    {
+        get
+        {
+            return _enableCameraRendering;
+        }
+        set
+        {
+            _enableCameraRendering = value;
+            mainAugmentaCamera.GetComponent<Camera>().enabled = value;
+        }
+    }
     public int defaultInputPort;
     public bool connected;
 
@@ -209,13 +222,15 @@ public class AugmentaArea : MonoBehaviour  {
 
 	void Awake(){
 
+        cameraRendering = false;
+
         RegisterArea();
 
         _orderedPids = new List<int>();
         mainAugmentaCamera = transform.GetComponentInChildren<AugmentaMainCamera>();
         AspectRatio = 1;
 
-        Debug.Log("[Augmenta] Subscribing to OSC Message Receiver");
+        Debug.Log("[Augmenta" + augmentaAreaId + "] Subscribing to OSC Message Receiver");
 
         InputPort = defaultInputPort;
         connected = CreateAugmentaOSCListener();
@@ -230,7 +245,7 @@ public class AugmentaArea : MonoBehaviour  {
     }
 
 	public void OnDestroy(){
-		Debug.Log("[Augmenta] Unsubscribing to OSC Message Receiver");
+		Debug.Log("[Augmenta" + augmentaAreaId + "] Unsubscribing to OSC Message Receiver");
     }
 
     public bool CreateAugmentaOSCListener()

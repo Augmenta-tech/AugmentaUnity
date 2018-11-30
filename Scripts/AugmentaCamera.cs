@@ -7,8 +7,7 @@ using System;
 public class AugmentaCamera : CopyCameraToTargetCamera {
 
     [Header("Augmenta Area Anchor")]
-    public bool useAnchor = false;
-    public AugmentaAreaAnchor augmentaAreaAnchor;
+    [SerializeField]
     public AugmentaArea linkedAugmentaArea;
 
     [Header("Augmenta Settings")]
@@ -32,13 +31,15 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
 
     // Use this for initialization
     public virtual void Start () {
-
-        augmentaAreaAnchor = transform.parent.GetComponent<AugmentaAreaAnchor>();
-
         UpdateTargetCamera(updateTransformOnStart, updateCameraOnStart, updatePostProcessOnStart && hasPostProcessLayer);
 
         if (updateAugmentaOnStart)
             CopyAugmentaSettings();
+    }
+
+    public void Init() {
+        TargetCameraName = linkedAugmentaArea.mainAugmentaCamera.name;
+        base.GetTargetCameraComponents();
     }
 
     public void ForceCoreCameraUpdate()
@@ -62,12 +63,8 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
             sourceCamera.transform.localPosition = new Vector3(sourceCamera.transform.localPosition.x, sourceCamera.transform.localPosition.y, transform.localPosition.z);
         }
 
-        //Don't update camera with a 0 sized anchor
-        if (useAnchor && (augmentaAreaAnchor.Width == 0 || augmentaAreaAnchor.Height == 0))
-            return;
-
         //Don't update camera with a 0 sized AugmentaArea
-        if (!useAnchor && (linkedAugmentaArea.AugmentaScene.Width == 0 || linkedAugmentaArea.AugmentaScene.Height == 0))
+        if ((linkedAugmentaArea.AugmentaScene.Width == 0 || linkedAugmentaArea.AugmentaScene.Height == 0))
             return;
 
         if (sourceCamera.orthographic)
@@ -82,20 +79,10 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
 
     void UpdateAugmentaAreaCorners()
     {
-        if (useAnchor)
-        {
-            BottomLeftCorner = augmentaAreaAnchor.transform.TransformPoint(new Vector3(-0.5f, 0.5f, 0));
-            BottomRightCorner = augmentaAreaAnchor.transform.TransformPoint(new Vector3(0.5f, 0.5f, 0));
-            TopLeftCorner = augmentaAreaAnchor.transform.TransformPoint(new Vector3(-0.5f, -0.5f, 0));
-            TopRightCorner = augmentaAreaAnchor.transform.TransformPoint(new Vector3(0.5f, -0.5f, 0));
-        }
-        else
-        {
-            BottomLeftCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, 0.5f, 0));
-            BottomRightCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, 0.5f, 0));
-            TopLeftCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, -0.5f, 0));
-            TopRightCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, -0.5f, 0));
-        }
+        BottomLeftCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, 0.5f, 0));
+        BottomRightCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, 0.5f, 0));
+        TopLeftCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, -0.5f, 0));
+        TopRightCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, -0.5f, 0));
     }
 
     
@@ -109,24 +96,18 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
         if(alwaysUpdateAugmenta)
             CopyAugmentaSettings();
     }
-
+        
     private void CopyAugmentaSettings()
     {
-        if(augmentaAreaAnchor.linkedAugmentaArea.mainAugmentaCamera)
-            augmentaAreaAnchor.linkedAugmentaArea.mainAugmentaCamera.UpdateCameraSettings(this);
+        if(linkedAugmentaArea.mainAugmentaCamera)
+            linkedAugmentaArea.mainAugmentaCamera.UpdateCameraSettings(this);
     }
 
     void ComputeOrthoCamera()
     {
-        if (useAnchor)
-        {
-            sourceCamera.aspect = augmentaAreaAnchor.Width / augmentaAreaAnchor.Height;
-            sourceCamera.orthographicSize = augmentaAreaAnchor.transform.localScale.y / 2;
-        } else
-        {
             sourceCamera.aspect = linkedAugmentaArea.AspectRatio;
             sourceCamera.orthographicSize = linkedAugmentaArea.transform.localScale.y / 2;
-        }
+        
         sourceCamera.ResetProjectionMatrix();
     }
 
@@ -136,15 +117,10 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
             sourceCamera.transform.localPosition = new Vector3(0.0f, 0.0f, transform.localPosition.z);
         }
         
-        if (useAnchor)
-        {
-            sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(augmentaAreaAnchor.Height * 0.5f * augmentaAreaAnchor.MeterPerPixel * Zoom, transform.localPosition.z);
-            sourceCamera.aspect = augmentaAreaAnchor.Width / augmentaAreaAnchor.Height;
-        } else
-        {
-            sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(linkedAugmentaArea.AugmentaScene.Height * 0.5f * linkedAugmentaArea.MeterPerPixel * Zoom, transform.localPosition.z);
-            sourceCamera.aspect = linkedAugmentaArea.AugmentaScene.Width / linkedAugmentaArea.AugmentaScene.Height;
-        }
+
+        sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(linkedAugmentaArea.AugmentaScene.Height * 0.5f * linkedAugmentaArea.MeterPerPixel * Zoom, transform.localPosition.z);
+        sourceCamera.aspect = linkedAugmentaArea.AugmentaScene.Width / linkedAugmentaArea.AugmentaScene.Height;
+        
     }
 
     void ComputeOffCenterCamera()

@@ -16,6 +16,7 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 	 * ****************************************/
     
     [Header("Target Camera")]
+    [SerializeField]
     public string TargetCameraName;
 
     [Header("Target Camera Update Settings")]
@@ -78,19 +79,20 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 
 	}
 
+    
 	private void Update() {
 
 		UpdateTargetCamera(alwaysUpdateTransform, alwaysUpdateCamera, alwaysUpdatePostProcess && hasPostProcessLayer);
 
 	}
 
-	private void GetTargetCameraComponents() {
+	public void GetTargetCameraComponents() {
 
 		//Look for TargetCamera object
 		targetCameraObject = GameObject.Find(TargetCameraName);
 
 		if (!targetCameraObject) {
-			Debug.LogWarning("Could not find TargetCamera object to copy settings to.");
+			Debug.LogWarning("Could not find TargetCamera " + TargetCameraName + " object to copy settings to.");
 			return;
 		}
 
@@ -98,7 +100,7 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 		targetCamera = targetCameraObject.GetComponent<Camera>();
 
 		if (!targetCamera) {
-			Debug.LogWarning("TargetCamera does not contain a camera component.");
+			Debug.LogWarning("TargetCamera " + TargetCameraName + " does not contain a camera component.");
 			return;
 		}
 
@@ -107,7 +109,7 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 			targetPostProcessLayer = targetCameraObject.GetComponent<PostProcessLayer>();
 
 			if (!targetPostProcessLayer) {
-				Debug.Log("TargetCamera do not have a post process layer, adding one.");
+				Debug.Log("TargetCamera " + TargetCameraName + " do not have a post process layer, adding one.");
 				targetPostProcessLayer = targetCameraObject.AddComponent<PostProcessLayer>();
 			}
 		}

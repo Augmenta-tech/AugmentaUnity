@@ -10,8 +10,6 @@ public class AugmentaMainCamera : AugmentaCamera
 
     void Awake()
     {
-        useAnchor = false;
-
         updateCameraOnStart = false;
         updateTransformOnStart = false;
         updatePostProcessOnStart = false;

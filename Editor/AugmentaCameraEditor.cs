@@ -25,10 +25,6 @@ public class AugmentaCameraEditor : Editor
             CenteredLabelStyle = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter };
 
         EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Target Camera", EditorStyles.boldLabel);
-        augmentaCamera.TargetCameraName = EditorGUILayout.TextField("Target Camera Name", augmentaCamera.TargetCameraName);
-
-        EditorGUILayout.Space();
         EditorGUILayout.LabelField("Update Settings", EditorStyles.boldLabel);
 
         EditorGUILayout.LabelField("On Start", CenteredLabelStyle, GUILayout.ExpandWidth(true));
@@ -51,11 +47,6 @@ public class AugmentaCameraEditor : Editor
         augmentaCamera.disableAfterUpdate = EditorGUILayout.Toggle("Disable After Update", augmentaCamera.disableAfterUpdate);
 
         EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Augmenta Area Anchor Settings", EditorStyles.boldLabel);
-        augmentaCamera.useAnchor = EditorGUILayout.Toggle("Use Anchor", augmentaCamera.useAnchor);
-        augmentaCamera.augmentaAreaAnchor = (AugmentaAreaAnchor)EditorGUILayout.ObjectField("Augmenta Area Anchor", augmentaCamera.augmentaAreaAnchor, typeof(AugmentaAreaAnchor), true);
-
-        EditorGUILayout.Space();
         EditorGUILayout.LabelField("Augmenta Camera Settings", EditorStyles.boldLabel);
 
         augmentaCamera.Zoom = EditorGUILayout.FloatField("Zoom", augmentaCamera.Zoom);
@@ -64,5 +55,7 @@ public class AugmentaCameraEditor : Editor
         augmentaCamera.drawFrustum = EditorGUILayout.Toggle("Draw Frustum", augmentaCamera.drawFrustum);
         augmentaCamera.centerOnAugmentaArea = EditorGUILayout.Toggle("Center On Augmenta Area", augmentaCamera.centerOnAugmentaArea);
         augmentaCamera.lookTarget = (Transform)EditorGUILayout.ObjectField("Look Target", augmentaCamera.lookTarget, typeof(Transform), true);
+
+        Undo.RecordObject(target, "Changed augmentaCamera");
     }
 }
