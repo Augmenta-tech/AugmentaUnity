@@ -44,7 +44,7 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
 
     public void ForceCoreCameraUpdate()
     {
-        UpdateTargetCamera(false, true, true);
+        UpdateTargetCamera(true, true, true);
         CopyAugmentaSettings();
     }
 
@@ -99,7 +99,10 @@ public class AugmentaCamera : CopyCameraToTargetCamera {
         
     private void CopyAugmentaSettings()
     {
-        if(linkedAugmentaArea.mainAugmentaCamera)
+        if (linkedAugmentaArea == null)
+            return;
+
+        if (linkedAugmentaArea.mainAugmentaCamera)
             linkedAugmentaArea.mainAugmentaCamera.UpdateCameraSettings(this);
     }
 

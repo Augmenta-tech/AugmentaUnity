@@ -35,8 +35,11 @@ namespace Augmenta
         public Vector3 GetSmoothedVelocity()
         {
             var meanVelocity = new Vector3();
+            var magnitude = 0.0f;
             foreach (var rawVelocity in Velocities)
+            {
                 meanVelocity += rawVelocity;
+            }
 
             meanVelocity /= Velocities.Count;
 

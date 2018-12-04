@@ -113,8 +113,9 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 				targetPostProcessLayer = targetCameraObject.AddComponent<PostProcessLayer>();
 			}
 		}
+        sourceCamera = GetComponent<Camera>();
 
-        if(disableAfterUpdate)
+        if (disableAfterUpdate)
             sourceCamera.enabled = false;
     }
 

@@ -187,7 +187,22 @@ public class AugmentaArea : MonoBehaviour  {
         }
     }
     public bool DrawGizmos;
+    private bool _connectedToAnchor;
+        public bool connectedToAnchor
+    {
+        get {
+            return _connectedToAnchor;
+        }
+        set
+        {
+            _connectedToAnchor = value;
+            cameraRendering = value;
+            spoutCamera.enabled = value;
+            
+        }
+    }
 
+    public Camera spoutCamera;
 
     /* Events */
     public delegate void PersonEntered(AugmentaPerson p);
@@ -220,7 +235,17 @@ public class AugmentaArea : MonoBehaviour  {
         augmentaAreas.Add(augmentaAreaId, this);
     }
 
-	void Awake(){
+    public void ConnectToAnchor()
+    {
+        connectedToAnchor = true;        
+    }
+
+    public void DisconnectFromAnchor()
+    {
+        connectedToAnchor = false;
+    }
+
+    void Awake(){
 
         cameraRendering = false;
 
@@ -269,9 +294,6 @@ public class AugmentaArea : MonoBehaviour  {
 
         if (Mute) return;
 
-        if (message == null)
-            return;
-
         string address = message.Address;
 		ArrayList args = new ArrayList(message.Data); //message.Data.ToArray();
 
@@ -311,7 +333,7 @@ public class AugmentaArea : MonoBehaviour  {
             }
         }
         else if (address == "/au/personWillLeave/" || address == "/au/personWillLeave")
-        {
+        { 
             int pid = (int)args[0];
             if (AugmentaPersons.ContainsKey(pid))
             {
@@ -341,7 +363,9 @@ public class AugmentaArea : MonoBehaviour  {
         {
             print(address + " ");
         }
-	}
+
+        NbAugmentaPeople = AugmentaPersons.Count;
+    }
 
     private void Update()
     {
@@ -490,7 +514,6 @@ public class AugmentaArea : MonoBehaviour  {
 		p.highest.y = highest.y;
 		p.highest.z = (float)args[14];
 
-        NbAugmentaPeople = AugmentaPersons.Count;
         p.Position = transform.TransformPoint(new Vector3(-(p.centroid.x - 0.5f), -(p.centroid.y - 0.5f), p.centroid.z));
 
         // Inactive time reset to zero : the Person has just been updated

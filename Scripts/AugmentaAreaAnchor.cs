@@ -40,6 +40,19 @@ public class AugmentaAreaAnchor : MonoBehaviour {
     public bool DrawGizmos;
 
     [Header("Augmenta Camera")]
+    private float _distanceToArea = 5.0f;
+    public float distanceToArea {
+        get {
+            return _distanceToArea;
+        }
+        set
+        {
+            _distanceToArea = value;
+            augmentaCamera.transform.localPosition = new Vector3(augmentaCamera.transform.localPosition.x, augmentaCamera.transform.localPosition.y, _distanceToArea);
+            augmentaCamera.GetComponent<AugmentaCamera>().ForceCoreCameraUpdate();
+        }
+    }
+
     [HideInInspector]
     public AugmentaArea linkedAugmentaArea;
     public AugmentaCamera augmentaCamera;
@@ -50,6 +63,8 @@ public class AugmentaAreaAnchor : MonoBehaviour {
             Debug.LogWarning("linkedAugmentaAreaId is empty !");
 
         linkedAugmentaArea = AugmentaArea.augmentaAreas[linkedAugmentaAreaId];
+        linkedAugmentaArea.ConnectToAnchor();
+
         augmentaCamera.linkedAugmentaArea = linkedAugmentaArea;
         augmentaCamera.Init();
     }
@@ -57,8 +72,8 @@ public class AugmentaAreaAnchor : MonoBehaviour {
     public virtual void Update () {
         if (linkedAugmentaArea)
         {
-            linkedAugmentaArea.gameObject.transform.position = transform.position;
-            linkedAugmentaArea.gameObject.transform.rotation = transform.rotation;
+            linkedAugmentaArea.transform.position = transform.position;
+            linkedAugmentaArea.transform.rotation = transform.rotation;
         }
 
         foreach (var element in InstantiatedObjects)
@@ -150,7 +165,7 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         InstantiatedObjects.Remove(pid);
     }
 
-    private void OnDrawGizmos()
+    public virtual void OnDrawGizmos()
     {
         if (!DrawGizmos) return;
 
@@ -160,7 +175,7 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         DrawGizmoCube(transform.position, transform.rotation, new Vector3(Width * MeterPerPixel * augmentaCamera.Zoom, Height * MeterPerPixel * augmentaCamera.Zoom, 1.0f));
     }
 
-    public void DrawGizmoCube(Vector3 position, Quaternion rotation, Vector3 scale)
+    public virtual void DrawGizmoCube(Vector3 position, Quaternion rotation, Vector3 scale)
     {
         Matrix4x4 cubeTransform = Matrix4x4.TRS(position, rotation, scale);
         Matrix4x4 oldGizmosMatrix = Gizmos.matrix;
@@ -170,5 +185,10 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
 
         Gizmos.matrix = oldGizmosMatrix;
+    }
+
+    public virtual void OnDestroy()
+    {
+        linkedAugmentaArea.DisconnectFromAnchor();
     }
 }
