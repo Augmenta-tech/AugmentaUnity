@@ -211,7 +211,7 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 		destination.subpixelMorphologicalAntialiasing = source.subpixelMorphologicalAntialiasing;
 		destination.temporalAntialiasing = source.temporalAntialiasing;
 		destination.fog = source.fog;
-		destination.dithering = source.dithering;
+		//destination.dithering = source.dithering;
 		destination.stopNaNPropagation = source.stopNaNPropagation;
 
 	}
