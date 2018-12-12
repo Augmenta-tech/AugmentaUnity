@@ -49,13 +49,13 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         {
             _distanceToArea = value;
             augmentaCamera.transform.localPosition = new Vector3(augmentaCamera.transform.localPosition.x, augmentaCamera.transform.localPosition.y, _distanceToArea);
-            augmentaCamera.GetComponent<AugmentaCamera>().ForceCoreCameraUpdate();
+            augmentaCamera.GetComponent<AugmentaCameraAnchor>().ForceCoreCameraUpdate();
         }
     }
 
     [HideInInspector]
     public AugmentaArea linkedAugmentaArea;
-    public AugmentaCamera augmentaCamera;
+    public AugmentaCameraAnchor augmentaCamera;
 
     public virtual void Awake()
     {

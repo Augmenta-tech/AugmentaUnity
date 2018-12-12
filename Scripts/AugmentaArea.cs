@@ -99,7 +99,7 @@ public enum AugmentaEventType
 public class AugmentaArea : MonoBehaviour  {
 
     [HideInInspector]
-    public AugmentaMainCamera mainAugmentaCamera;
+    public AugmentaCamera mainAugmentaCamera;
 
     [Header("Augmenta settings")]
     public string augmentaAreaId;
@@ -197,7 +197,8 @@ public class AugmentaArea : MonoBehaviour  {
         {
             _connectedToAnchor = value;
             cameraRendering = value;
-            spoutCamera.enabled = value;
+			if(spoutCamera != null)
+				spoutCamera.enabled = value;
             
         }
     }
@@ -252,10 +253,8 @@ public class AugmentaArea : MonoBehaviour  {
         RegisterArea();
 
         _orderedPids = new List<int>();
-        mainAugmentaCamera = transform.GetComponentInChildren<AugmentaMainCamera>();
+        mainAugmentaCamera = transform.GetComponentInChildren<AugmentaCamera>();
         AspectRatio = 1;
-
-        Debug.Log("[Augmenta" + augmentaAreaId + "] Subscribing to OSC Message Receiver");
 
         InputPort = defaultInputPort;
         connected = CreateAugmentaOSCListener();
@@ -270,16 +269,21 @@ public class AugmentaArea : MonoBehaviour  {
     }
 
 	public void OnDestroy(){
-		Debug.Log("[Augmenta" + augmentaAreaId + "] Unsubscribing to OSC Message Receiver");
-    }
+		Debug.Log("[Augmenta" + augmentaAreaId + "] Unsubscribing to OSC Message on " + InputPort);
+
+		if (OSCMaster.Receivers.ContainsKey("AugmentaInput-" + augmentaAreaId)) {
+			OSCMaster.Receivers["AugmentaInput-" + augmentaAreaId].messageReceived -= OSCMessageReceived;
+			OSCMaster.RemoveReceiver("AugmentaInput-" + augmentaAreaId);
+		}
+	}
 
     public bool CreateAugmentaOSCListener()
     {
-        if(OSCMaster.Receivers.ContainsKey("AugmentaInput-" + augmentaAreaId))
-        {
-            OSCMaster.Receivers["AugmentaInput-" + augmentaAreaId].messageReceived -= OSCMessageReceived;
-            OSCMaster.RemoveReceiver("AugmentaInput-" + augmentaAreaId);
-        }
+		Debug.Log("[Augmenta" + augmentaAreaId + "] Subscribing to OSC Message on " + InputPort);
+		if (OSCMaster.Receivers.ContainsKey("AugmentaInput-" + augmentaAreaId)) {
+			OSCMaster.Receivers["AugmentaInput-" + augmentaAreaId].messageReceived -= OSCMessageReceived;
+			OSCMaster.RemoveReceiver("AugmentaInput-" + augmentaAreaId);
+		}
         if (OSCMaster.CreateReceiver("AugmentaInput-" + augmentaAreaId, InputPort) != null) {
             OSCMaster.Receivers["AugmentaInput-" + augmentaAreaId].messageReceived += OSCMessageReceived;
             return true;
