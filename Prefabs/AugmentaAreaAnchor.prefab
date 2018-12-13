@@ -1,21 +1,11 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &100100000
-Prefab:
-  m_ObjectHideFlags: 1
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications: []
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1470022884545152}
-  m_IsPrefabAsset: 1
 --- !u!1 &1470022884545152
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4367033815543688}
@@ -27,30 +17,12 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1 &1617185360228212
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4824704955623244}
-  - component: {fileID: 20939401851365138}
-  - component: {fileID: 124320720137961218}
-  - component: {fileID: 114442291894484512}
-  - component: {fileID: 114202902021390870}
-  m_Layer: 12
-  m_Name: AugmentaSceneCamera
-  m_TagString: MainCamera
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!4 &4367033815543688
 Transform:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1470022884545152}
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: -2.3107452, y: 1.6036129, z: 5.8277917}
@@ -60,11 +32,54 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+--- !u!114 &114784919723292498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1470022884545152}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 362e7420a46399f47968d1dc0e41a483, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  linkedAugmentaAreaId: Sol
+  PrefabToInstantiate: {fileID: 0}
+  PositionFollowTightness: 10
+  VelocityAverageValueCount: 1
+  Width: 1280
+  Height: 800
+  MeterPerPixel: 0.005
+  DrawGizmos: 1
+  linkedAugmentaArea: {fileID: 0}
+  augmentaCameraAnchor: {fileID: 114442291894484512}
+--- !u!1 &1617185360228212
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4824704955623244}
+  - component: {fileID: 20939401851365138}
+  - component: {fileID: 124320720137961218}
+  - component: {fileID: 114442291894484512}
+  - component: {fileID: 114202902021390870}
+  m_Layer: 12
+  m_Name: AugmentaCameraAnchor
+  m_TagString: MainCamera
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!4 &4824704955623244
 Transform:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1617185360228212}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: -0, z: 3.37}
@@ -75,9 +90,10 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!20 &20939401851365138
 Camera:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1617185360228212}
   m_Enabled: 1
   serializedVersion: 2
@@ -86,6 +102,7 @@ Camera:
   m_projectionMatrixMode: 1
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
+  m_GateFitMode: 2
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
@@ -113,11 +130,49 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!124 &124320720137961218
+Behaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617185360228212}
+  m_Enabled: 1
+--- !u!114 &114442291894484512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617185360228212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2542569b7fca17349b74ead99bf3f3a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TargetCameraName: AugmentaCamera
+  updateTransformOnStart: 0
+  updateCameraOnStart: 1
+  updatePostProcessOnStart: 1
+  disableAfterUpdate: 1
+  alwaysUpdateTransform: 0
+  alwaysUpdateCamera: 0
+  alwaysUpdatePostProcess: 0
+  linkedAugmentaArea: {fileID: 0}
+  updateAugmentaOnStart: 1
+  alwaysUpdateAugmenta: 0
+  Zoom: 1
+  NearFrustrum: 0.01
+  drawNearCone: 1
+  drawFrustum: 1
+  centerOnAugmentaArea: 1
+  lookTarget: {fileID: 4367033815543688}
 --- !u!114 &114202902021390870
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1617185360228212}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -125,11 +180,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volumeTrigger: {fileID: 4322944844106208, guid: b3f2d699d79866a4bb88ddb58e67d193,
-    type: 2}
+    type: 3}
   volumeLayer:
     serializedVersion: 2
     m_Bits: 4096
   stopNaNPropagation: 1
+  finalBlitToCameraTarget: 1
   antialiasingMode: 2
   temporalAntialiasing:
     jitterSpread: 0.75
@@ -172,60 +228,3 @@ MonoBehaviour:
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
   m_AfterStackBundles: []
---- !u!114 &114442291894484512
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1617185360228212}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2542569b7fca17349b74ead99bf3f3a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TargetCameraName: AugmentaCamera
-  updateTransformOnStart: 0
-  updateCameraOnStart: 1
-  updatePostProcessOnStart: 1
-  disableAfterUpdate: 1
-  alwaysUpdateTransform: 0
-  alwaysUpdateCamera: 0
-  alwaysUpdatePostProcess: 0
-  linkedAugmentaArea: {fileID: 0}
-  updateAugmentaOnStart: 1
-  alwaysUpdateAugmenta: 0
-  Zoom: 1
-  NearFrustrum: 0.01
-  drawNearCone: 1
-  drawFrustum: 1
-  centerOnAugmentaArea: 1
-  lookTarget: {fileID: 4367033815543688}
---- !u!114 &114784919723292498
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1470022884545152}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 362e7420a46399f47968d1dc0e41a483, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  linkedAugmentaAreaId: Sol
-  PrefabToInstantiate: {fileID: 1676155804350704, guid: 6e281715cbdc31e439370780f4893989,
-    type: 2}
-  PositionFollowTightness: 10
-  VelocityAverageValueCount: 1
-  Width: 1280
-  Height: 800
-  MeterPerPixel: 0.005
-  DrawGizmos: 1
-  linkedAugmentaArea: {fileID: 0}
-  augmentaCamera: {fileID: 114442291894484512}
---- !u!124 &124320720137961218
-Behaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1617185360228212}
-  m_Enabled: 1

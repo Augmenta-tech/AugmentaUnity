@@ -48,14 +48,14 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         set
         {
             _distanceToArea = value;
-            augmentaCamera.transform.localPosition = new Vector3(augmentaCamera.transform.localPosition.x, augmentaCamera.transform.localPosition.y, _distanceToArea);
-            augmentaCamera.GetComponent<AugmentaCameraAnchor>().ForceCoreCameraUpdate();
+			augmentaCameraAnchor.transform.localPosition = new Vector3(augmentaCameraAnchor.transform.localPosition.x, augmentaCameraAnchor.transform.localPosition.y, _distanceToArea);
+			augmentaCameraAnchor.GetComponent<AugmentaCameraAnchor>().ForceCoreCameraUpdate();
         }
     }
 
     [HideInInspector]
     public AugmentaArea linkedAugmentaArea;
-    public AugmentaCameraAnchor augmentaCamera;
+    public AugmentaCameraAnchor augmentaCameraAnchor;
 
     public virtual void Awake()
     {
@@ -65,8 +65,8 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         linkedAugmentaArea = AugmentaArea.augmentaAreas[linkedAugmentaAreaId];
         linkedAugmentaArea.ConnectToAnchor();
 
-        augmentaCamera.linkedAugmentaArea = linkedAugmentaArea;
-        augmentaCamera.Init();
+		augmentaCameraAnchor.linkedAugmentaArea = linkedAugmentaArea;
+		augmentaCameraAnchor.Init();
     }
 
     public virtual void Update () {
@@ -172,7 +172,7 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         Gizmos.color = Color.blue;
 
         //Draw area 
-        DrawGizmoCube(transform.position, transform.rotation, new Vector3(Width * MeterPerPixel * augmentaCamera.Zoom, Height * MeterPerPixel * augmentaCamera.Zoom, 1.0f));
+        DrawGizmoCube(transform.position, transform.rotation, new Vector3(Width * MeterPerPixel * augmentaCameraAnchor.Zoom, Height * MeterPerPixel * augmentaCameraAnchor.Zoom, 1.0f));
     }
 
     public virtual void DrawGizmoCube(Vector3 position, Quaternion rotation, Vector3 scale)
