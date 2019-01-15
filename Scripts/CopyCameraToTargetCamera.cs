@@ -143,8 +143,8 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 		}
 
 		if (updateTransform) {
-			//Copy transform to TargetCamera
-			CopyTransformComponent(transform, targetCameraObject.transform);
+            //Copy transform to TargetCamera
+            CopyTransformComponent(transform, targetCameraObject.transform);
 		}
 
 		if (updatePostProcess) {

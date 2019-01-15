@@ -30,7 +30,7 @@ public class AugmentaCamera : AugmentaCameraAnchor
 
         linkedAugmentaArea.Zoom = augmentaCamera.Zoom;
 
-        sourceCamera.transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, augmentaCamera.transform.localPosition.z);
+        //sourceCamera.transform.localPosition = new Vector3(transform.localPosition.x, transform.localPosition.y, augmentaCamera.transform.localPosition.z);
 
         augmentaCamera.gameObject.GetComponent<Camera>().enabled = false;
 

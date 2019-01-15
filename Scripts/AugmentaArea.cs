@@ -187,8 +187,8 @@ public class AugmentaArea : MonoBehaviour  {
         }
     }
     public bool DrawGizmos;
-    private bool _connectedToAnchor;
-        public bool connectedToAnchor
+    private bool _connectedToAnchor = false;
+    public bool connectedToAnchor
     {
         get {
             return _connectedToAnchor;

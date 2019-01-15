@@ -49,7 +49,7 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         {
             _distanceToArea = value;
 			augmentaCameraAnchor.transform.localPosition = new Vector3(augmentaCameraAnchor.transform.localPosition.x, augmentaCameraAnchor.transform.localPosition.y, _distanceToArea);
-			augmentaCameraAnchor.GetComponent<AugmentaCameraAnchor>().ForceCoreCameraUpdate();
+//			augmentaCameraAnchor.UpdateTargetCamera(true, false, false);
         }
     }
 
@@ -61,6 +61,9 @@ public class AugmentaAreaAnchor : MonoBehaviour {
     {
         if (string.IsNullOrEmpty(linkedAugmentaAreaId))
             Debug.LogWarning("linkedAugmentaAreaId is empty !");
+
+        if (augmentaCameraAnchor == null)
+            augmentaCameraAnchor = transform.GetChild(0).GetComponent<AugmentaCameraAnchor>();
 
         linkedAugmentaArea = AugmentaArea.augmentaAreas[linkedAugmentaAreaId];
         linkedAugmentaArea.ConnectToAnchor();

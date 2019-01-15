@@ -94,7 +94,7 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
         base.UpdateTargetCamera(updateTransform, updateCamera, updatePostProcess && hasPostProcessLayer);
 
         if(alwaysUpdateAugmenta)
-            CopyAugmentaSettings();
+           CopyAugmentaSettings();
     }
         
     private void CopyAugmentaSettings()
