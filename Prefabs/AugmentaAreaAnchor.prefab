@@ -24,14 +24,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1470022884545152}
-  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -2.3107452, y: 1.6036129, z: 5.8277917}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.3107452, y: 1.6036129, z: -4.6722083}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4824704955623244}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &114784919723292498
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45,7 +45,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   linkedAugmentaAreaId: Sol
-  PrefabToInstantiate: {fileID: 0}
+  PrefabToInstantiate: {fileID: 1676155804350704, guid: c76354004b9135f4ea9c7dddb1c3632e,
+    type: 3}
   PositionFollowTightness: 10
   VelocityAverageValueCount: 1
   Width: 1280
@@ -53,7 +54,7 @@ MonoBehaviour:
   MeterPerPixel: 0.005
   DrawGizmos: 1
   linkedAugmentaArea: {fileID: 0}
-  augmentaCameraAnchor: {fileID: 114442291894484512}
+  augmentaCameraAnchor: {fileID: 289279835}
 --- !u!1 &1617185360228212
 GameObject:
   m_ObjectHideFlags: 0
@@ -65,8 +66,9 @@ GameObject:
   - component: {fileID: 4824704955623244}
   - component: {fileID: 20939401851365138}
   - component: {fileID: 124320720137961218}
-  - component: {fileID: 114442291894484512}
+  - component: {fileID: 289279831}
   - component: {fileID: 114202902021390870}
+  - component: {fileID: 289279835}
   m_Layer: 12
   m_Name: AugmentaCameraAnchor
   m_TagString: MainCamera
@@ -138,35 +140,14 @@ Behaviour:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1617185360228212}
   m_Enabled: 1
---- !u!114 &114442291894484512
-MonoBehaviour:
+--- !u!81 &289279831
+AudioListener:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1617185360228212}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2542569b7fca17349b74ead99bf3f3a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  TargetCameraName: AugmentaCamera
-  updateTransformOnStart: 0
-  updateCameraOnStart: 1
-  updatePostProcessOnStart: 1
-  disableAfterUpdate: 1
-  alwaysUpdateTransform: 0
-  alwaysUpdateCamera: 0
-  alwaysUpdatePostProcess: 0
-  linkedAugmentaArea: {fileID: 0}
-  updateAugmentaOnStart: 1
-  alwaysUpdateAugmenta: 0
-  Zoom: 1
-  NearFrustrum: 0.01
-  drawNearCone: 1
-  drawFrustum: 1
-  centerOnAugmentaArea: 1
-  lookTarget: {fileID: 4367033815543688}
 --- !u!114 &114202902021390870
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,11 +160,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  volumeTrigger: {fileID: 4322944844106208, guid: b3f2d699d79866a4bb88ddb58e67d193,
-    type: 3}
+  volumeTrigger: {fileID: 4824704955623244}
   volumeLayer:
     serializedVersion: 2
-    m_Bits: 4096
+    m_Bits: 256
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 1
   antialiasingMode: 2
@@ -228,3 +208,32 @@ MonoBehaviour:
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []
   m_AfterStackBundles: []
+--- !u!114 &289279835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617185360228212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 696a309ed41234e4593715990b53a35f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TargetCameraName: 
+  updateTransformOnStart: 1
+  updateCameraOnStart: 1
+  updatePostProcessOnStart: 1
+  disableAfterUpdate: 1
+  alwaysUpdateTransform: 1
+  alwaysUpdateCamera: 0
+  alwaysUpdatePostProcess: 0
+  linkedAugmentaArea: {fileID: 0}
+  updateAugmentaOnStart: 1
+  alwaysUpdateAugmenta: 0
+  Zoom: 1
+  NearFrustrum: 0.01
+  drawNearCone: 0
+  drawFrustum: 0
+  centerOnAugmentaArea: 0
+  lookTarget: {fileID: 4367033815543688}

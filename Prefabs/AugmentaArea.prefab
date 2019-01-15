@@ -101,25 +101,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 1077286462109982}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d5d01c9980312b4690a30eeb7a5e2a2, type: 3}
+  m_Script: {fileID: 11500000, guid: 2542569b7fca17349b74ead99bf3f3a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetCameraName: AugmentaCamera
-  updateTransformOnStart: 0
-  updateCameraOnStart: 0
-  updatePostProcessOnStart: 0
+  TargetCameraName: 
+  updateTransformOnStart: 1
+  updateCameraOnStart: 1
+  updatePostProcessOnStart: 1
   disableAfterUpdate: 0
   alwaysUpdateTransform: 0
   alwaysUpdateCamera: 0
   alwaysUpdatePostProcess: 0
   linkedAugmentaArea: {fileID: 114562361110998660}
-  updateAugmentaOnStart: 0
+  updateAugmentaOnStart: 1
   alwaysUpdateAugmenta: 0
   Zoom: 1
   NearFrustrum: 0.01
-  drawNearCone: 1
-  drawFrustum: 1
-  centerOnAugmentaArea: 1
+  drawNearCone: 0
+  drawFrustum: 0
+  centerOnAugmentaArea: 0
   lookTarget: {fileID: 4733989382475658}
 --- !u!114 &114624218286067010
 MonoBehaviour:
@@ -139,7 +139,7 @@ MonoBehaviour:
     m_Bits: 4096
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 1
-  antialiasingMode: 0
+  antialiasingMode: 2
   temporalAntialiasing:
     jitterSpread: 0.75
     sharpness: 0.25
@@ -235,7 +235,7 @@ MonoBehaviour:
   MeterPerPixel: 0
   DrawGizmos: 0
   linkedAugmentaArea: {fileID: 0}
-  augmentaCamera: {fileID: 0}
+  augmentaCameraAnchor: {fileID: 114255069118496728}
   Background: {fileID: 1774977100704186}
 --- !u!1 &1641406523596634
 GameObject:
@@ -261,15 +261,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1641406523596634}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -2.8607454, y: 1.6036129, z: -10.672209}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4322944844106208}
   - {fileID: 4267375383826080}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!114 &114562361110998660
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -284,7 +284,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainAugmentaCamera: {fileID: 114255069118496728}
   augmentaAreaId: Sol
-  defaultInputPort: 12000
+  defaultInputPort: 12002
   connected: 0
   MeterPerPixel: 0.005
   Zoom: 1
