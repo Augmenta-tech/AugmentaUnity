@@ -81,9 +81,9 @@ public class AugmentaAreaAnchor : MonoBehaviour {
 
         foreach (var element in InstantiatedObjects)
         {
-            if (!linkedAugmentaArea.AugmentaPersons.ContainsKey(element.Key)) continue;
+            if (!linkedAugmentaArea.AugmentaPeople.ContainsKey(element.Key)) continue;
 
-            element.Value.transform.position = Vector3.Lerp(element.Value.transform.position, linkedAugmentaArea.AugmentaPersons[element.Key].Position, Time.deltaTime * PositionFollowTightness);
+            element.Value.transform.position = Vector3.Lerp(element.Value.transform.position, linkedAugmentaArea.AugmentaPeople[element.Key].Position, Time.smoothDeltaTime * PositionFollowTightness);
         }
     }
 
@@ -136,6 +136,7 @@ public class AugmentaAreaAnchor : MonoBehaviour {
 
     public virtual void PersonUpdated(AugmentaPerson p)
     {
+        //Debug.Log("Person updated : " + p.pid);
         if (InstantiatedObjects.ContainsKey(p.pid))
         {
             p.VelocitySmooth = VelocityAverageValueCount;

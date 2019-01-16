@@ -56,6 +56,6 @@ public class AugmentaCameraAnchorEditor : Editor
         augmentaCamera.centerOnAugmentaArea = EditorGUILayout.Toggle("Center On Augmenta Area", augmentaCamera.centerOnAugmentaArea);
         augmentaCamera.lookTarget = (Transform)EditorGUILayout.ObjectField("Look Target", augmentaCamera.lookTarget, typeof(Transform), true);
 
-        Undo.RecordObject(target, "Changed augmentaCamera");
+        Undo.RecordObject(target, "Changed augmentaCameraAnchor");
     }
 }

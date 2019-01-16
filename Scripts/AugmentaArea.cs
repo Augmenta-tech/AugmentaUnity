@@ -5,7 +5,7 @@ using Augmenta;
 using UnityOSC;
 
 /// <summary>
-/// The AugmentaArea handles the incoming Augmenta OSC messages and updates the AugmentaPersons list and AugmentaScene accordingly.
+/// The AugmentaArea handles the incoming Augmenta OSC messages and updates the AugmentaPeople list and AugmentaScene accordingly.
 ///  
 /// It also sends the events personEntered, personUpdated, personLeaving and sceneUpdated when the corresponding events are happening in Augmenta.
 ///  
@@ -218,7 +218,7 @@ public class AugmentaArea : MonoBehaviour  {
     public delegate void SceneUpdated(AugmentaScene s);
     public event SceneUpdated sceneUpdated;
 
-	public Dictionary<int, AugmentaPerson> AugmentaPersons = new Dictionary<int, AugmentaPerson>(); // Containing all current persons
+	public Dictionary<int, AugmentaPerson> AugmentaPeople = new Dictionary<int, AugmentaPerson>(); // Containing all current persons
     private List<int> _orderedPids = new List<int>(); //Used to find oldest and newest
 
     public List<TestCards.TestOverlay> overlays;
@@ -307,14 +307,14 @@ public class AugmentaArea : MonoBehaviour  {
         {
             int pid = (int)args[0];
             AugmentaPerson currentPerson = null;
-            if (!AugmentaPersons.ContainsKey(pid))
+            if (!AugmentaPeople.ContainsKey(pid))
             {
                 currentPerson = addPerson(args);
                 SendAugmentaEvent(AugmentaEventType.PersonEntered, currentPerson);
             }
             else
             {
-                currentPerson = AugmentaPersons[pid];
+                currentPerson = AugmentaPeople[pid];
                 updatePerson(currentPerson, args);
                 SendAugmentaEvent(AugmentaEventType.PersonUpdated, currentPerson);
             }
@@ -324,14 +324,14 @@ public class AugmentaArea : MonoBehaviour  {
         {
             int pid = (int)args[0];
             AugmentaPerson currentPerson = null;
-            if (!AugmentaPersons.ContainsKey(pid))
+            if (!AugmentaPeople.ContainsKey(pid))
             {
                 currentPerson = addPerson(args);
                 SendAugmentaEvent(AugmentaEventType.PersonEntered, currentPerson);
             }
             else
             {
-                currentPerson = AugmentaPersons[pid];
+                currentPerson = AugmentaPeople[pid];
                 updatePerson(currentPerson, args);
                 SendAugmentaEvent(AugmentaEventType.PersonUpdated, currentPerson);
             }
@@ -339,18 +339,18 @@ public class AugmentaArea : MonoBehaviour  {
         else if (address == "/au/personWillLeave/" || address == "/au/personWillLeave")
         { 
             int pid = (int)args[0];
-            if (AugmentaPersons.ContainsKey(pid))
+            if (AugmentaPeople.ContainsKey(pid))
             {
-                AugmentaPerson personToRemove = AugmentaPersons[pid];
+                AugmentaPerson personToRemove = AugmentaPeople[pid];
                 SendAugmentaEvent(AugmentaEventType.PersonWillLeave, personToRemove);
                 _orderedPids.Remove(personToRemove.pid);
-                _orderedPids.Sort(delegate (int x, int y)
-                {
-                    if (x == y) return 0;
-                    else if (x < y) return -1;
-                    else return 1;
-                });
-                AugmentaPersons.Remove(pid);
+                //_orderedPids.Sort(delegate (int x, int y)
+                //{
+                //    if (x == y) return 0;
+                //    else if (x < y) return -1;
+                //    else return 1;
+                //});
+                AugmentaPeople.Remove(pid);
             }
         }
         else if (address == "/au/scene/" || address == "/au/scene")
@@ -368,7 +368,7 @@ public class AugmentaArea : MonoBehaviour  {
             print(address + " ");
         }
 
-        NbAugmentaPeople = AugmentaPersons.Count;
+        NbAugmentaPeople = AugmentaPeople.Count;
     }
 
     private void Update()
@@ -430,7 +430,7 @@ public class AugmentaArea : MonoBehaviour  {
 
     public bool HasObjects()
     {
-        if (AugmentaPersons.Count >= 1)
+        if (AugmentaPeople.Count >= 1)
             return true;
         else
             return false;
@@ -438,12 +438,12 @@ public class AugmentaArea : MonoBehaviour  {
 
     public int arrayPersonCount()
     {
-        return AugmentaPersons.Count;
+        return AugmentaPeople.Count;
     }
 
     public Dictionary<int, AugmentaPerson> getPeopleArray()
     {
-        return AugmentaPersons;
+        return AugmentaPeople;
     }
 
     void OnDrawGizmos()
@@ -455,7 +455,7 @@ public class AugmentaArea : MonoBehaviour  {
 
         //Draw persons
         Gizmos.color = Color.green;
-        foreach (var person in AugmentaPersons)
+        foreach (var person in AugmentaPeople)
         {
             // Gizmos.DrawWireCube(person.Value.Position, new Vector3(person.Value.boundingRect.width * MeterPerPixel, person.Value.boundingRect.height * MeterPerPixel, person.Value.boundingRect.height * MeterPerPixel));
             DrawGizmoCube(person.Value.Position, Quaternion.identity, new Vector3(person.Value.boundingRect.width, person.Value.boundingRect.height, person.Value.boundingRect.height));
@@ -478,8 +478,8 @@ public class AugmentaArea : MonoBehaviour  {
 		AugmentaPerson newPerson = new AugmentaPerson();
         newPerson.Init();
 		updatePerson(newPerson, args);
-        AugmentaPersons.Add(newPerson.pid, newPerson);
-        _orderedPids.Add(newPerson.pid);
+        AugmentaPeople.Add(newPerson.pid, newPerson);
+
 		return newPerson;
 	}
 
@@ -523,16 +523,20 @@ public class AugmentaArea : MonoBehaviour  {
         // Inactive time reset to zero : the Person has just been updated
         p.inactiveTime = 0;
 
-        _orderedPids.Sort(delegate (int x, int y)
+        if(!_orderedPids.Contains(p.pid) && p.oid <= _orderedPids.Count)
         {
-            if (x == y) return 0;
-            else if (x < y) return -1;
-            else return 1;
-        });
+            _orderedPids.Insert(p.oid, p.pid);
+        }
+        //_orderedPids.Sort(delegate (int x, int y)
+        //{
+        //    if (x == y) return 0;
+        //    else if (x < y) return -1;
+        //    else return 1;
+        //});
     }
 
     public void clearAllPersons() {
-        AugmentaPersons.Clear();
+        AugmentaPeople.Clear();
     }
 
     public List<AugmentaPerson> GetOldestPersons(int count)
@@ -546,11 +550,11 @@ public class AugmentaArea : MonoBehaviour  {
             count = 0;
 
         var oidRange = _orderedPids.GetRange(0, count);
-       // Debug.Log("Orderedoid size : " + _orderedPids.Count + "augmentaPersons size " + AugmentaPersons.Count + "oidRange size : " + oidRange.Count);
+       // Debug.Log("Orderedoid size : " + _orderedPids.Count + "augmentaPersons size " + AugmentaPeople.Count + "oidRange size : " + oidRange.Count);
         for (var i=0; i < oidRange.Count; i++)
         {
-            if (AugmentaPersons.ContainsKey(oidRange[i]))
-                oldestPersons.Add(AugmentaPersons[oidRange[i]]);
+           // if (AugmentaPeople.ContainsKey(oidRange[i]))
+                oldestPersons.Add(AugmentaPeople[oidRange[i]]);
         }
         
         //Debug.Log("Oldest count : " + oldestPersons.Count);
@@ -561,21 +565,21 @@ public class AugmentaArea : MonoBehaviour  {
     {
         var newestPersons = new List<AugmentaPerson>();
 
-        if (count > _orderedPids.Count)
+        if (count > AugmentaPeople.Count)
             count = _orderedPids.Count;
 
         if (count < 0)
             count = 0;
 
         var oidRange = _orderedPids.GetRange(_orderedPids.Count - count, count);
-        // Debug.Log("Orderedoid size : " + _orderedPids.Count + "augmentaPersons size " + AugmentaPersons.Count + "oidRange size : " + oidRange.Count);
+        // Debug.Log("Orderedoid size : " + _orderedPids.Count + "augmentaPersons size " + AugmentaPeople.Count + "oidRange size : " + oidRange.Count);
         for (var i = 0; i < oidRange.Count; i++)
         {
-            if(AugmentaPersons.ContainsKey(oidRange[i]))
-                newestPersons.Add(AugmentaPersons[oidRange[i]]);
+            //if(AugmentaPeople.ContainsKey(oidRange[i]))
+                newestPersons.Add(AugmentaPeople[oidRange[i]]);
         }
 
-        //Debug.Log("Oldest count : " + oldestPersons.Count);
+        //Debug.Log("newestPersons count : " + newestPersons.Count);
         return newestPersons;
     }
 
@@ -583,13 +587,13 @@ public class AugmentaArea : MonoBehaviour  {
     IEnumerator checkAlive() {
 		while(true) {
 			ArrayList ids = new ArrayList();
-			foreach(KeyValuePair<int, AugmentaPerson> p in AugmentaPersons) {
+			foreach(KeyValuePair<int, AugmentaPerson> p in AugmentaPeople) {
 				ids.Add(p.Key);
 			}
 			foreach(int id in ids) {
-				if(AugmentaPersons.ContainsKey(id)){
+				if(AugmentaPeople.ContainsKey(id)){
 
-					AugmentaPerson p = AugmentaPersons[id];
+					AugmentaPerson p = AugmentaPeople[id];
 
 					if(p.inactiveTime < PersonTimeOut) {
 						//Debug.Log("***: IS ALIVE");
@@ -599,7 +603,7 @@ public class AugmentaArea : MonoBehaviour  {
                         //Debug.Log("***: DESTROY");
                         // The Person hasn't been updated for a certain number of frames : remove
                         SendAugmentaEvent(AugmentaEventType.PersonWillLeave, p);
-                        AugmentaPersons.Remove(id);
+                        AugmentaPeople.Remove(id);
                     }
 				}
 			}
