@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using Augmenta;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 public class AugmentaDebuggerManager : AugmentaAreaAnchor {
 
@@ -30,7 +31,21 @@ public class AugmentaDebuggerManager : AugmentaAreaAnchor {
         }
     }
 
-    public override void Update()
+	public override void OnEnable() {
+		base.OnEnable();
+
+		//Disable the post process of the camera
+		augmentaCameraAnchor.GetComponent<PostProcessLayer>().enabled = false;
+	}
+
+	public override void OnDisable() {
+		base.OnDisable();
+
+		//Enable the post process of the camera
+		augmentaCameraAnchor.GetComponent<PostProcessLayer>().enabled = true;
+	}
+
+	public override void Update()
     {
         PositionFollowTightness = 20; //To prevent people from touching it
 
