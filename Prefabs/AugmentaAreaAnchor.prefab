@@ -47,7 +47,7 @@ MonoBehaviour:
   linkedAugmentaAreaId: Sol
   PrefabToInstantiate: {fileID: 1676155804350704, guid: c76354004b9135f4ea9c7dddb1c3632e,
     type: 3}
-  PositionFollowTightness: 10
+  PositionFollowTightness: 0.8
   VelocityAverageValueCount: 1
   Width: 1280
   Height: 800

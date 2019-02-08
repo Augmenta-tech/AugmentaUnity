@@ -27,10 +27,10 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         }
     }
 
-    [Range(1, 20)]
-    public float PositionFollowTightness = 10;
+    [Range(0.0f, 1.0f)]
+    public float PositionFollowTightness = 0.8f;
 
-    [Range(1, 20)]
+    [Range(1, 40)]
     public int VelocityAverageValueCount = 1;
 
     [Header("Augmenta Area Visualization")]
@@ -40,7 +40,7 @@ public class AugmentaAreaAnchor : MonoBehaviour {
     public bool DrawGizmos;
 
     [Header("Augmenta Camera")]
-    private float _distanceToArea = 5.0f;
+    private float _distanceToArea = 10.0f;
     public float distanceToArea {
         get {
             return _distanceToArea;
@@ -48,8 +48,25 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         set
         {
             _distanceToArea = value;
+            if (augmentaCameraAnchor == null)
+                return;
+
 			augmentaCameraAnchor.transform.localPosition = new Vector3(augmentaCameraAnchor.transform.localPosition.x, augmentaCameraAnchor.transform.localPosition.y, _distanceToArea);
 //			augmentaCameraAnchor.UpdateTargetCamera(true, false, false);
+        }
+    }
+
+    private float _zoom = 1.0f;
+    public float Zoom
+    {
+        get
+        {
+            return _zoom;
+        }
+        set
+        {
+            _zoom = value;
+            augmentaCameraAnchor.Zoom = _zoom;
         }
     }
 
@@ -83,7 +100,7 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         {
             if (!linkedAugmentaArea.AugmentaPeople.ContainsKey(element.Key)) continue;
 
-            element.Value.transform.position = Vector3.Lerp(element.Value.transform.position, linkedAugmentaArea.AugmentaPeople[element.Key].Position, Time.smoothDeltaTime * PositionFollowTightness);
+            element.Value.transform.position = Vector3.Lerp(element.Value.transform.position, linkedAugmentaArea.AugmentaPeople[element.Key].Position, PositionFollowTightness);
         }
     }
 
