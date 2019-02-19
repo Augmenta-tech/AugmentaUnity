@@ -122,6 +122,7 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 			sourceCamera.transform.localPosition = new Vector3(0.0f, 0.0f, transform.localPosition.z);
 		}
 
+		sourceCamera.ResetProjectionMatrix();
 
 		sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(linkedAugmentaArea.AugmentaScene.Height * 0.5f * linkedAugmentaArea.MeterPerPixel * Zoom, transform.localPosition.z);
 		sourceCamera.aspect = linkedAugmentaArea.AugmentaScene.Width / linkedAugmentaArea.AugmentaScene.Height;
