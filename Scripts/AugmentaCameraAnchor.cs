@@ -23,7 +23,7 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 	public bool centerOnAugmentaArea;
 
 	public enum CameraType {Orthographic, Perspective, OffCenter };
-	public CameraType cameraType;
+	public CameraType cameraType = CameraType.Perspective;
 
     private Vector3 BottomLeftCorner;
     private Vector3 BottomRightCorner;
@@ -53,16 +53,11 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 
     void Update()
     {
-        base.UpdateTargetCamera(alwaysUpdateTransform, alwaysUpdateCamera, alwaysUpdatePostProcess && hasPostProcessLayer);
-
         UpdateAugmentaAreaCorners();
 
-        if (centerOnAugmentaArea)
-        {
+        if (centerOnAugmentaArea) {
             sourceCamera.transform.localPosition = new Vector3(0, 0, transform.localPosition.z);
-        }
-        else
-        {
+        } else {
             sourceCamera.transform.localPosition = new Vector3(sourceCamera.transform.localPosition.x, sourceCamera.transform.localPosition.y, transform.localPosition.z);
         }
 
@@ -85,14 +80,16 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 				break;
 
 		}
-    }
 
-    void UpdateAugmentaAreaCorners()
+		base.UpdateTargetCamera(alwaysUpdateTransform, alwaysUpdateCamera, alwaysUpdatePostProcess && hasPostProcessLayer);
+	}
+
+	void UpdateAugmentaAreaCorners()
     {
-        BottomLeftCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, 0.5f, 0));
-        BottomRightCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, 0.5f, 0));
-        TopLeftCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, -0.5f, 0));
-        TopRightCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, -0.5f, 0));
+        BottomLeftCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, -0.5f, 0));
+        BottomRightCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, -0.5f, 0));
+        TopLeftCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, 0.5f, 0));
+        TopRightCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, 0.5f, 0));
     }
 
     
@@ -158,7 +155,12 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
         Vector3 vc = pc - pe; // from pe to pc
         Vector3 vd = pd - pe; // from pe to pd
 
-        float n = lookTarget.InverseTransformPoint(sourceCamera.transform.position).z; // distance to the near clip plane (screen)
+		// rotate camera to align it with the projection surface normal
+		//Quaternion camRotation = new Quaternion();
+		//camRotation.SetLookRotation(vn, vu);
+		//sourceCamera.transform.rotation = camRotation;
+
+		float n = sourceCamera.nearClipPlane; // distance to the near clip plane (screen)
         float f = sourceCamera.farClipPlane; // distance of far clipping plane
         float d = Vector3.Dot(va, vn); // distance from eye to screen
         float l = Vector3.Dot(vr, va) * n / d; // distance to left screen edge from the 'center'
