@@ -19,7 +19,6 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 
 	public float Zoom = 1;
 
-	public float NearFrustrum = 0.01f;
 	public bool drawNearCone, drawFrustum;
 	public bool centerOnAugmentaArea;
 
@@ -172,7 +171,7 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
         p[1, 1] = 2.0f * n / (t - b);
         p[1, 2] = (t + b) / (t - b);
         p[2, 2] = (f + n) / (n - f);
-        p[2, 3] = 2.0f * f * n / (n - f) * NearFrustrum;
+		p[2, 3] = 2.0f * f * n / (n - f);
         p[3, 2] = -1.0f;
 
         if (centerOnAugmentaArea)

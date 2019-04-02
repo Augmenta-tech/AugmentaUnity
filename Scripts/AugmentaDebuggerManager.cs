@@ -34,16 +34,18 @@ public class AugmentaDebuggerManager : AugmentaAreaAnchor {
 	public override void OnEnable() {
 		base.OnEnable();
 
-		//Disable the post process of the camera
+		//Disable the post process of the cameras
 		augmentaCameraAnchor.GetComponent<PostProcessLayer>().enabled = false;
-	}
+        augmentaCameraAnchor.linkedAugmentaArea.spoutCamera.GetComponent<PostProcessLayer>().enabled = false;
+    }
 
 	public override void OnDisable() {
 		base.OnDisable();
 
-		//Enable the post process of the camera
+		//Enable the post process of the cameras
 		augmentaCameraAnchor.GetComponent<PostProcessLayer>().enabled = true;
-	}
+        augmentaCameraAnchor.linkedAugmentaArea.spoutCamera.GetComponent<PostProcessLayer>().enabled = true;
+    }
 
 	public override void Update()
     {
