@@ -187,6 +187,7 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
         tmpRotation = targetCamera.transform.rotation;
 
         targetCamera.CopyFrom(sourceCamera);
+		//targetCamera.projectionMatrix = sourceCamera.projectionMatrix;
 
         targetCamera.transform.position = tmpPosition;
         targetCamera.transform.rotation = tmpRotation;

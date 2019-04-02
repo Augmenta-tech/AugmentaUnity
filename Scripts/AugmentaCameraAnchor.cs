@@ -6,22 +6,25 @@ using System;
 
 public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 
-    [Header("Augmenta Area Anchor")]
-    [SerializeField]
-    public AugmentaArea linkedAugmentaArea;
+	[Header("Augmenta Area Anchor")]
+	[SerializeField]
+	public AugmentaArea linkedAugmentaArea;
 
-    [Header("Augmenta Settings")]
-    [Tooltip("Should this camera Augmenta settings be copied to the augmenta camera on start ?")]
-    public bool updateAugmentaOnStart = true;
+	[Header("Augmenta Settings")]
+	[Tooltip("Should this camera Augmenta settings be copied to the augmenta camera on start ?")]
+	public bool updateAugmentaOnStart = true;
 
-    [Tooltip("Should this camera Augmenta settings be copied to the augmenta camera at each frame ?")]
-    public bool alwaysUpdateAugmenta = false;
+	[Tooltip("Should this camera Augmenta settings be copied to the augmenta camera at each frame ?")]
+	public bool alwaysUpdateAugmenta = false;
 
-    public float Zoom = 1;
+	public float Zoom = 1;
 
-    public float NearFrustrum = 0.01f;
-    public bool drawNearCone, drawFrustum;
-    public bool centerOnAugmentaArea;
+	public float NearFrustrum = 0.01f;
+	public bool drawNearCone, drawFrustum;
+	public bool centerOnAugmentaArea;
+
+	public enum CameraType {Orthographic, Perspective, OffCenter };
+	public CameraType cameraType;
 
     private Vector3 BottomLeftCorner;
     private Vector3 BottomRightCorner;
@@ -31,6 +34,7 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 
     // Use this for initialization
     public virtual void Start () {
+
         UpdateTargetCamera(updateTransformOnStart, updateCameraOnStart, updatePostProcessOnStart && hasPostProcessLayer);
 
         if (updateAugmentaOnStart)
@@ -67,14 +71,21 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
         if ((linkedAugmentaArea.AugmentaScene.Width == 0 || linkedAugmentaArea.AugmentaScene.Height == 0))
             return;
 
-        if (sourceCamera.orthographic)
-        {
-            ComputeOrthoCamera();
-        }
-        else
-        {
-            ComputePerspectiveCamera();
-        }
+		switch (cameraType) {
+
+			case CameraType.Orthographic:
+				ComputeOrthoCamera();
+				break;
+
+			case CameraType.Perspective:
+				ComputePerspectiveCamera();
+				break;
+
+			case CameraType.OffCenter:
+				ComputeOffCenterCamera();
+				break;
+
+		}
     }
 
     void UpdateAugmentaAreaCorners()

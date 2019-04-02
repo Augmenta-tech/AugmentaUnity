@@ -27,8 +27,8 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         }
     }
 
-    [Range(1, 20)]
-    public float PositionFollowTightness = 10;
+    [Range(0f, 1)]
+    public float PositionFollowTightness = 0.9f;
 
     [Range(1, 20)]
     public int VelocityAverageValueCount = 1;
@@ -48,6 +48,10 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         set
         {
             _distanceToArea = value;
+
+			if (!augmentaCameraAnchor)
+				return;
+
 			augmentaCameraAnchor.transform.localPosition = new Vector3(augmentaCameraAnchor.transform.localPosition.x, augmentaCameraAnchor.transform.localPosition.y, _distanceToArea);
 //			augmentaCameraAnchor.UpdateTargetCamera(true, false, false);
         }
@@ -83,7 +87,7 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         {
             if (!linkedAugmentaArea.AugmentaPeople.ContainsKey(element.Key)) continue;
 
-            element.Value.transform.position = Vector3.Lerp(element.Value.transform.position, linkedAugmentaArea.AugmentaPeople[element.Key].Position, Time.smoothDeltaTime * PositionFollowTightness);
+            element.Value.transform.position = Vector3.Lerp(element.Value.transform.position, linkedAugmentaArea.AugmentaPeople[element.Key].Position, PositionFollowTightness);
         }
     }
 

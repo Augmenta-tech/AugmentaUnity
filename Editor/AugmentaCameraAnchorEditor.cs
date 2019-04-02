@@ -6,7 +6,7 @@ using UnityEditor;
 [CustomEditor(typeof(AugmentaCameraAnchor))]
 public class AugmentaCameraAnchorEditor : Editor
 {
-    private static GUIStyle ToggleButtonStyleNormal = null;
+	private static GUIStyle ToggleButtonStyleNormal = null;
     private static GUIStyle ToggleButtonStyleToggled = null;
     private static GUIStyle CenteredLabelStyle = null;
 
@@ -49,6 +49,7 @@ public class AugmentaCameraAnchorEditor : Editor
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Augmenta Camera Settings", EditorStyles.boldLabel);
 
+		augmentaCamera.cameraType = (AugmentaCameraAnchor.CameraType)EditorGUILayout.EnumPopup("Camera Type", augmentaCamera.cameraType);
         augmentaCamera.Zoom = EditorGUILayout.FloatField("Zoom", augmentaCamera.Zoom);
         augmentaCamera.NearFrustrum = EditorGUILayout.FloatField("Near Frustrum", augmentaCamera.NearFrustrum);
         augmentaCamera.drawNearCone = EditorGUILayout.Toggle("Draw Near Cone", augmentaCamera.drawNearCone);
