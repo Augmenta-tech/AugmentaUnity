@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1470022884545152}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.3107452, y: 1.6036129, z: -4.6722083}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4824704955623244}
@@ -53,8 +53,9 @@ MonoBehaviour:
   Height: 800
   MeterPerPixel: 0.005
   DrawGizmos: 1
-  linkedAugmentaArea: {fileID: 0}
   augmentaCameraAnchor: {fileID: 289279835}
+  updateCameraOnSceneChange: 1
+  linkedAugmentaArea: {fileID: 0}
 --- !u!1 &1617185360228212
 GameObject:
   m_ObjectHideFlags: 0
@@ -66,7 +67,6 @@ GameObject:
   - component: {fileID: 4824704955623244}
   - component: {fileID: 20939401851365138}
   - component: {fileID: 124320720137961218}
-  - component: {fileID: 289279831}
   - component: {fileID: 114202902021390870}
   - component: {fileID: 289279835}
   m_Layer: 12
@@ -102,9 +102,10 @@ Camera:
   m_ClearFlags: 2
   m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
+  m_GateFitMode: 2
+  m_FOVAxisMode: 0
   m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
-  m_GateFitMode: 2
   m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
@@ -134,14 +135,6 @@ Camera:
   m_StereoSeparation: 0.022
 --- !u!124 &124320720137961218
 Behaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1617185360228212}
-  m_Enabled: 1
---- !u!81 &289279831
-AudioListener:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -220,19 +213,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 696a309ed41234e4593715990b53a35f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetCameraName: 
+  targetCameraObject: {fileID: 0}
   updateTransformOnStart: 1
   updateCameraOnStart: 1
   updatePostProcessOnStart: 1
   disableAfterUpdate: 1
-  alwaysUpdateTransform: 1
+  alwaysUpdateTransform: 0
   alwaysUpdateCamera: 0
   alwaysUpdatePostProcess: 0
   linkedAugmentaArea: {fileID: 0}
   updateAugmentaOnStart: 1
   alwaysUpdateAugmenta: 0
-  Zoom: 1
-  NearFrustrum: 0.01
+  zoom: 1
   drawNearCone: 0
   drawFrustum: 0
   centerOnAugmentaArea: 0

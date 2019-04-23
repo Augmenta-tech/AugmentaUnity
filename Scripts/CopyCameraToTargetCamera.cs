@@ -15,38 +15,37 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 	 * 
 	 * ****************************************/
     
-    [Header("Target Camera")]
-    [SerializeField]
-    public string TargetCameraName;
+    //[Header("Target Camera Object")]
+    [SerializeField] public GameObject targetCameraObject;
 
-    [Header("Target Camera Update Settings")]
-    //Whether the camera properties should be updated at each frame or not
+	//Whether the camera properties should be updated at each frame or not
+	//[Header("Target Camera Update Settings")]
+
     [Tooltip("Should the transform be copied to the target camera on start ?")]
-    public bool updateTransformOnStart = true;
+	[SerializeField] public bool updateTransformOnStart = true;
 
     [Tooltip("Should the camera settings be copied to the target camera on start ?")]
-    public bool updateCameraOnStart = true;
+	[SerializeField] public bool updateCameraOnStart = true;
 
     [Tooltip("Should the postprocess be copied to the target camera on start ?")]
-    public bool updatePostProcessOnStart = true;
+	[SerializeField] public bool updatePostProcessOnStart = true;
 
     [Tooltip("Should the camera be disabled once the target camera is updated ?")]
-    public bool disableAfterUpdate = false;
+	[SerializeField] public bool disableAfterUpdate = false;
 
     //Whether the camera properties should be updated at each frame or not
     [Tooltip("Should the transform be copied to the target camera at each frame ?")]
-	public bool alwaysUpdateTransform = false;
+	[SerializeField] public bool alwaysUpdateTransform = false;
 
 	[Tooltip("Should the camera settings be copied to the target camera at each frame ?")]
-	public bool alwaysUpdateCamera = false;
+	[SerializeField] public bool alwaysUpdateCamera = false;
 
 	[Tooltip("Should the postprocess be copied to the target camera at each frame ?")]
-	public bool alwaysUpdatePostProcess = false;
+	[SerializeField] public bool alwaysUpdatePostProcess = false;
 
     protected Camera sourceCamera;
 
     //Target camera attributes
-    protected GameObject targetCameraObject;
     protected Camera targetCamera;
 
     protected PostProcessLayer targetPostProcessLayer;
@@ -58,12 +57,43 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 	protected PostProcessLayer postProcessLayer;
     protected bool hasPostProcessLayer;
 
-    private void OnEnable()
-    {
-        sourceCamera = GetComponent<Camera>();
+	protected bool targetInitialized = false;
+	protected bool sourceInitialized = false;
 
-        //Check if this camera has post process
-        postProcessLayer = GetComponent<PostProcessLayer>();
+	#region MonoBehaviour Functions
+
+	public virtual void Awake()
+    {
+		Debug.Log("Awake " + gameObject.name + " : " + transform.position);
+		if (!sourceInitialized) {
+			GetSourceCameraComponents();
+		}
+
+		if (!targetInitialized) {
+			GetTargetCameraComponents();
+		}
+
+	}
+
+	private void Start() {
+		//Update target camera
+		UpdateTargetCamera(updateTransformOnStart, updateCameraOnStart, updatePostProcessOnStart && hasPostProcessLayer);
+	}
+
+
+	private void Update() {
+
+		UpdateTargetCamera(alwaysUpdateTransform, alwaysUpdateCamera, alwaysUpdatePostProcess && hasPostProcessLayer);
+
+	}
+
+	#endregion
+
+	public void GetSourceCameraComponents() {
+		sourceCamera = GetComponent<Camera>();
+
+		//Check if this camera has post process
+		postProcessLayer = GetComponent<PostProcessLayer>();
 
 		if (postProcessLayer) {
 			hasPostProcessLayer = true;
@@ -71,36 +101,16 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 			hasPostProcessLayer = false;
 		}
 
-		//Get target camera components
-		GetTargetCameraComponents();
-
-        //Update target camera
-        UpdateTargetCamera(updateTransformOnStart, updateCameraOnStart, updatePostProcessOnStart && hasPostProcessLayer);
-
-	}
-
-    
-	private void Update() {
-
-		UpdateTargetCamera(alwaysUpdateTransform, alwaysUpdateCamera, alwaysUpdatePostProcess && hasPostProcessLayer);
-
+		sourceInitialized = true;
 	}
 
 	public void GetTargetCameraComponents() {
-
-		//Look for TargetCamera object
-		targetCameraObject = GameObject.Find(TargetCameraName);
-
-		if (!targetCameraObject) {
-			Debug.LogWarning("Could not find TargetCamera " + TargetCameraName + " object to copy settings to.");
-			return;
-		}
 
 		//Look for Camera Component
 		targetCamera = targetCameraObject.GetComponent<Camera>();
 
 		if (!targetCamera) {
-			Debug.LogWarning("TargetCamera " + TargetCameraName + " does not contain a camera component.");
+			Debug.LogWarning("The target camera object " + targetCameraObject + " does not contain a camera component.");
 			return;
 		}
 
@@ -109,14 +119,15 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 			targetPostProcessLayer = targetCameraObject.GetComponent<PostProcessLayer>();
 
 			if (!targetPostProcessLayer) {
-				Debug.Log("TargetCamera " + TargetCameraName + " do not have a post process layer, adding one.");
+				Debug.Log("TargetCamera " + targetCameraObject + " does not have a post process layer, adding one.");
 				targetPostProcessLayer = targetCameraObject.AddComponent<PostProcessLayer>();
 			}
 		}
-        sourceCamera = GetComponent<Camera>();
 
         if (disableAfterUpdate)
             sourceCamera.enabled = false;
+
+		targetInitialized = true;
     }
 
 	public virtual void UpdateTargetCamera(bool updateTransform, bool updateCamera, bool updatePostProcess) {
@@ -128,14 +139,24 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
             return;
         }
 
-        //Don't update self
-        if (targetCameraObject == gameObject)
+		//Ensure the source camera components are initialized
+		if (!sourceInitialized) {
+			GetTargetCameraComponents();
+		}
+
+		//Ensure the target camera components are initialized
+		if (!targetInitialized) {
+			GetTargetCameraComponents();
+		}
+
+		//Don't update self
+		if (targetCameraObject == gameObject)
         {
             return;
         }
 
-        //Copy layer to TargetCamera (for postprocess mainly)
-        targetCameraObject.layer = gameObject.layer;
+		//Copy layer to TargetCamera (for postprocess mainly)
+		targetCameraObject.layer = gameObject.layer;
 
         if (updateCamera) {
 			//Copy camera settings to TargetCamera
@@ -143,7 +164,7 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 		}
 
 		if (updateTransform) {
-            //Copy transform to TargetCamera
+			//Copy transform to TargetCamera
             CopyTransformComponent(transform, targetCameraObject.transform);
 		}
 

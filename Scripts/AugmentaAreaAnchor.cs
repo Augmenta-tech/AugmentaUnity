@@ -40,7 +40,9 @@ public class AugmentaAreaAnchor : MonoBehaviour {
     public bool DrawGizmos;
 
     [Header("Augmenta Camera")]
-    private float _distanceToArea = 5.0f;
+	public AugmentaCameraAnchor augmentaCameraAnchor;
+
+	private float _distanceToArea = 5.0f;
     public float distanceToArea {
         get {
             return _distanceToArea;
@@ -56,12 +58,15 @@ public class AugmentaAreaAnchor : MonoBehaviour {
 //			augmentaCameraAnchor.UpdateTargetCamera(true, false, false);
         }
     }
+    
+	public bool updateCameraOnSceneChange = true;
 
-    [HideInInspector]
-    public AugmentaArea linkedAugmentaArea;
-    public AugmentaCameraAnchor augmentaCameraAnchor;
+	[HideInInspector]
+	public AugmentaArea linkedAugmentaArea;
 
-    public virtual void Awake()
+	#region MonoBehaviour Functions
+
+	public virtual void Awake()
     {
         if (string.IsNullOrEmpty(linkedAugmentaAreaId))
             Debug.LogWarning("linkedAugmentaAreaId is empty !");
@@ -73,15 +78,24 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         linkedAugmentaArea.ConnectToAnchor();
 
 		augmentaCameraAnchor.linkedAugmentaArea = linkedAugmentaArea;
-		augmentaCameraAnchor.Init();
+		augmentaCameraAnchor.InitializeTargetCamera();
     }
 
-    public virtual void Update () {
+	// Use this for initialization
+	public virtual void OnEnable() {
+		InstantiatedObjects = new Dictionary<int, GameObject>();
+
+		linkedAugmentaArea.personEntered += PersonEntered;
+		linkedAugmentaArea.personUpdated += PersonUpdated;
+		linkedAugmentaArea.personLeaving += PersonLeft;
+		linkedAugmentaArea.sceneUpdated += SceneUpdated;
+	}
+
+	public virtual void Update () {
         if (linkedAugmentaArea)
         {
-            linkedAugmentaArea.transform.position = transform.position;
-            linkedAugmentaArea.transform.rotation = transform.rotation;
-        }
+			UpdateAugmentaArea();
+		}
 
         foreach (var element in InstantiatedObjects)
         {
@@ -89,17 +103,6 @@ public class AugmentaAreaAnchor : MonoBehaviour {
 
             element.Value.transform.position = Vector3.Lerp(element.Value.transform.position, linkedAugmentaArea.AugmentaPeople[element.Key].Position, PositionFollowTightness);
         }
-    }
-
-    // Use this for initialization
-    public virtual void OnEnable()
-    {
-        InstantiatedObjects = new Dictionary<int, GameObject>();
-
-        linkedAugmentaArea.personEntered += PersonEntered;
-        linkedAugmentaArea.personUpdated += PersonUpdated;
-        linkedAugmentaArea.personLeaving += PersonLeft;
-        linkedAugmentaArea.sceneUpdated += SceneUpdated;
     }
 
     // Use this for initialization
@@ -116,8 +119,36 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         linkedAugmentaArea.sceneUpdated -= SceneUpdated;
     }
 
-    public virtual void SceneUpdated(AugmentaScene s)
-    { }
+	public virtual void OnDestroy() {
+		linkedAugmentaArea.DisconnectFromAnchor();
+	}
+
+	public virtual void OnDrawGizmos() {
+		if (!DrawGizmos) return;
+
+		Gizmos.color = Color.blue;
+
+		//Draw area 
+		DrawGizmoCube(transform.position, transform.rotation, new Vector3(Width * MeterPerPixel * augmentaCameraAnchor.zoom, Height * MeterPerPixel * augmentaCameraAnchor.zoom, 1.0f));
+	}
+
+
+	#endregion
+
+	#region Augmenta Functions
+
+	public void UpdateAugmentaArea() {
+		linkedAugmentaArea.transform.position = transform.position;
+		linkedAugmentaArea.transform.rotation = transform.rotation;
+	}
+
+	public virtual void SceneUpdated(AugmentaScene s)
+    {
+		if (updateCameraOnSceneChange) {
+			//Update the position of the augmentaCamera when the scene change as it may have moved the augmenta camera
+			augmentaCameraAnchor.UpdateTargetCamera(true, false, false);
+		}
+	}
 
     public virtual void PersonEntered(AugmentaPerson p)
     {
@@ -173,17 +204,11 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         InstantiatedObjects.Remove(pid);
     }
 
-    public virtual void OnDrawGizmos()
-    {
-        if (!DrawGizmos) return;
+	#endregion
 
-        Gizmos.color = Color.blue;
+	#region Gizmos Functions
 
-        //Draw area 
-        DrawGizmoCube(transform.position, transform.rotation, new Vector3(Width * MeterPerPixel * augmentaCameraAnchor.Zoom, Height * MeterPerPixel * augmentaCameraAnchor.Zoom, 1.0f));
-    }
-
-    public virtual void DrawGizmoCube(Vector3 position, Quaternion rotation, Vector3 scale)
+	public virtual void DrawGizmoCube(Vector3 position, Quaternion rotation, Vector3 scale)
     {
         Matrix4x4 cubeTransform = Matrix4x4.TRS(position, rotation, scale);
         Matrix4x4 oldGizmosMatrix = Gizmos.matrix;
@@ -195,8 +220,5 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         Gizmos.matrix = oldGizmosMatrix;
     }
 
-    public virtual void OnDestroy()
-    {
-        linkedAugmentaArea.DisconnectFromAnchor();
-    }
+	#endregion
 }

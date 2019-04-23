@@ -6,18 +6,18 @@ using System;
 
 public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 
-	[Header("Augmenta Area Anchor")]
+	//[Header("Augmenta Area Anchor")]
 	[SerializeField]
 	public AugmentaArea linkedAugmentaArea;
 
-	[Header("Augmenta Settings")]
+	//[Header("Augmenta Settings")]
 	[Tooltip("Should this camera Augmenta settings be copied to the augmenta camera on start ?")]
 	public bool updateAugmentaOnStart = true;
 
 	[Tooltip("Should this camera Augmenta settings be copied to the augmenta camera at each frame ?")]
 	public bool alwaysUpdateAugmenta = false;
 
-	public float Zoom = 1;
+	public float zoom = 1;
 
 	public bool drawNearCone, drawFrustum;
 	public bool centerOnAugmentaArea;
@@ -31,39 +31,34 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
     private Vector3 TopRightCorner;
     public Transform lookTarget;
 
-    // Use this for initialization
-    public virtual void Start () {
+	#region MonoBehaviour Functions
 
-        UpdateTargetCamera(updateTransformOnStart, updateCameraOnStart, updatePostProcessOnStart && hasPostProcessLayer);
+	public override void Awake() {
+		base.Awake();
+	}
+
+	// Use this for initialization
+	public virtual void Start () {
+
+		UpdateTargetCamera(updateTransformOnStart, updateCameraOnStart, updatePostProcessOnStart && hasPostProcessLayer);
 
         if (updateAugmentaOnStart)
             CopyAugmentaSettings();
     }
 
-    public void Init() {
-        TargetCameraName = linkedAugmentaArea.mainAugmentaCamera.name;
-        base.GetTargetCameraComponents();
-    }
+	void Update() {
 
-    public void ForceCoreCameraUpdate()
-    {
-        UpdateTargetCamera(true, true, true);
-        CopyAugmentaSettings();
-    }
+		UpdateAugmentaAreaCorners();
 
-    void Update()
-    {
-        UpdateAugmentaAreaCorners();
+		if (centerOnAugmentaArea) {
+			sourceCamera.transform.localPosition = new Vector3(0, 0, transform.localPosition.z);
+		} else {
+			sourceCamera.transform.localPosition = new Vector3(sourceCamera.transform.localPosition.x, sourceCamera.transform.localPosition.y, transform.localPosition.z);
+		}
 
-        if (centerOnAugmentaArea) {
-            sourceCamera.transform.localPosition = new Vector3(0, 0, transform.localPosition.z);
-        } else {
-            sourceCamera.transform.localPosition = new Vector3(sourceCamera.transform.localPosition.x, sourceCamera.transform.localPosition.y, transform.localPosition.z);
-        }
-
-        //Don't update camera with a 0 sized AugmentaArea
-        if ((linkedAugmentaArea.AugmentaScene.Width == 0 || linkedAugmentaArea.AugmentaScene.Height == 0))
-            return;
+		//Don't update camera with a 0 sized AugmentaArea
+		if ((linkedAugmentaArea.AugmentaScene.Width == 0 || linkedAugmentaArea.AugmentaScene.Height == 0))
+			return;
 
 		switch (cameraType) {
 
@@ -81,36 +76,59 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 
 		}
 
-		base.UpdateTargetCamera(alwaysUpdateTransform, alwaysUpdateCamera, alwaysUpdatePostProcess && hasPostProcessLayer);
+		UpdateTargetCamera(alwaysUpdateTransform, alwaysUpdateCamera, alwaysUpdatePostProcess && hasPostProcessLayer);
 	}
 
-	void UpdateAugmentaAreaCorners()
-    {
-        BottomLeftCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, -0.5f, 0));
-        BottomRightCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, -0.5f, 0));
-        TopLeftCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, 0.5f, 0));
-        TopRightCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, 0.5f, 0));
+	#endregion
+
+	#region Augmenta Functions
+
+	public void InitializeTargetCamera() {
+        targetCameraObject = linkedAugmentaArea.augmentaCamera.gameObject;
     }
 
+	void UpdateAugmentaAreaCorners() {
+		BottomLeftCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, -0.5f, 0));
+		BottomRightCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, -0.5f, 0));
+		TopLeftCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, 0.5f, 0));
+		TopRightCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, 0.5f, 0));
+	}
+
+	private void CopyAugmentaSettings() {
+		if (linkedAugmentaArea == null)
+			return;
+
+		linkedAugmentaArea.Zoom = zoom;
+
+		if (!linkedAugmentaArea.augmentaCamera)
+			return;
+
+		linkedAugmentaArea.augmentaCamera.zoom = zoom;
+		linkedAugmentaArea.augmentaCamera.drawFrustum = drawFrustum;
+		linkedAugmentaArea.augmentaCamera.drawNearCone = drawNearCone;
+		linkedAugmentaArea.augmentaCamera.centerOnAugmentaArea = centerOnAugmentaArea;
+	}
+
+	#endregion
+
+	#region Camera Update Functions
+
+	public void ForceCoreCameraUpdate()
+    {
+        UpdateTargetCamera(true, true, true);
+        CopyAugmentaSettings();
+    }
     
     public override void UpdateTargetCamera(bool updateTransform, bool updateCamera, bool updatePostProcess)
     {
-        if (string.IsNullOrEmpty(TargetCameraName))
-            return;
 
         base.UpdateTargetCamera(updateTransform, updateCamera, updatePostProcess && hasPostProcessLayer);
 
+		if (alwaysUpdateCamera)
+			linkedAugmentaArea.augmentaCamera.cameraType = cameraType;
+
         if(alwaysUpdateAugmenta)
            CopyAugmentaSettings();
-    }
-        
-    private void CopyAugmentaSettings()
-    {
-        if (linkedAugmentaArea == null)
-            return;
-
-        if (linkedAugmentaArea.mainAugmentaCamera)
-            linkedAugmentaArea.mainAugmentaCamera.UpdateCameraSettings(this);
     }
 
     void ComputeOrthoCamera()
@@ -129,7 +147,7 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 
 		sourceCamera.ResetProjectionMatrix();
 
-		sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(linkedAugmentaArea.AugmentaScene.Height * 0.5f * linkedAugmentaArea.MeterPerPixel * Zoom, transform.localPosition.z);
+		sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(linkedAugmentaArea.AugmentaScene.Height * 0.5f * linkedAugmentaArea.MeterPerPixel * zoom, transform.localPosition.z);
         sourceCamera.aspect = linkedAugmentaArea.AugmentaScene.Width / linkedAugmentaArea.AugmentaScene.Height;
         
     }
@@ -203,7 +221,11 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
         if (drawFrustum) DrawFrustum(sourceCamera); //Draw actual camera frustum
     }
 
-    Vector3 ThreePlaneIntersection(Plane p1, Plane p2, Plane p3)
+	#endregion
+
+	#region Drawing Functions
+
+	Vector3 ThreePlaneIntersection(Plane p1, Plane p2, Plane p3)
     { //get the intersection point of 3 planes
         return ((-p1.distance * Vector3.Cross(p2.normal, p3.normal)) +
                 (-p2.distance * Vector3.Cross(p3.normal, p1.normal)) +
@@ -231,4 +253,6 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
             Debug.DrawLine(nearCorners[i], farCorners[i], Color.red, Time.deltaTime, false); //sides of the created projection matrix
         }
     }
+
+	#endregion
 }

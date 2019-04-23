@@ -6,56 +6,80 @@ using UnityEditor;
 [CustomEditor(typeof(AugmentaCameraAnchor))]
 public class AugmentaCameraAnchorEditor : Editor
 {
-	private static GUIStyle ToggleButtonStyleNormal = null;
-    private static GUIStyle ToggleButtonStyleToggled = null;
-    private static GUIStyle CenteredLabelStyle = null;
+	SerializedProperty _updateCameraOnStart;
+	SerializedProperty _updateTransformOnStart;
+	SerializedProperty _updatePostProcessOnStart;
+	SerializedProperty _updateAugmentaOnStart;
 
-    public override void OnInspectorGUI()
+	SerializedProperty _alwaysUpdateCamera;
+	SerializedProperty _alwaysUpdateTransform;
+	SerializedProperty _alwaysUpdatePostProcess;
+	SerializedProperty _alwaysUpdateAugmenta;
+
+	SerializedProperty _disableAfterUpdate;
+
+	SerializedProperty _cameraType;
+	SerializedProperty _zoom;
+	SerializedProperty _drawNearCone;
+	SerializedProperty _drawFrustum;
+	SerializedProperty _centerOnAugmentaArea;
+	SerializedProperty _lookTarget;
+
+	private void OnEnable() {
+
+		_updateCameraOnStart = serializedObject.FindProperty("updateCameraOnStart");
+		_updateTransformOnStart = serializedObject.FindProperty("updateTransformOnStart");
+		_updatePostProcessOnStart = serializedObject.FindProperty("updatePostProcessOnStart");
+		_updateAugmentaOnStart = serializedObject.FindProperty("updateAugmentaOnStart");
+
+		_alwaysUpdateCamera = serializedObject.FindProperty("alwaysUpdateCamera");
+		_alwaysUpdateTransform = serializedObject.FindProperty("alwaysUpdateTransform");
+		_alwaysUpdatePostProcess = serializedObject.FindProperty("alwaysUpdatePostProcess");
+		_alwaysUpdateAugmenta = serializedObject.FindProperty("alwaysUpdateAugmenta");
+
+		_disableAfterUpdate = serializedObject.FindProperty("disableAfterUpdate");
+
+		_cameraType = serializedObject.FindProperty("cameraType");
+		_zoom = serializedObject.FindProperty("zoom");
+		_drawNearCone = serializedObject.FindProperty("drawNearCone");
+		_drawFrustum = serializedObject.FindProperty("drawFrustum");
+		_centerOnAugmentaArea = serializedObject.FindProperty("centerOnAugmentaArea");
+		_lookTarget = serializedObject.FindProperty("lookTarget");
+	}
+
+	public override void OnInspectorGUI()
     {
-		AugmentaCameraAnchor augmentaCamera = (AugmentaCameraAnchor)target;
+		serializedObject.Update();
 
-        if (ToggleButtonStyleNormal == null)
-        {
-            ToggleButtonStyleNormal = "Button";
-            ToggleButtonStyleToggled = new GUIStyle(ToggleButtonStyleNormal);
-            ToggleButtonStyleToggled.normal.background = ToggleButtonStyleToggled.active.background;
-        }
+		EditorGUILayout.Space();
+        EditorGUILayout.LabelField("What to update on start ?", EditorStyles.boldLabel);
 
-        if(CenteredLabelStyle == null)
-            CenteredLabelStyle = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter };
+		EditorGUILayout.PropertyField(_updateCameraOnStart, new GUIContent("Camera", "Copy the camera parameters on start."));
+		EditorGUILayout.PropertyField(_updateTransformOnStart, new GUIContent("Transform", "Copy the transform parameters on start."));
+		EditorGUILayout.PropertyField(_updatePostProcessOnStart, new GUIContent("PostProcess", "Copy the post process layer parameters on start."));
+		EditorGUILayout.PropertyField(_updateAugmentaOnStart, new GUIContent("Augmenta", "Copy the zoom parameter and disable the anchor camera on start."));
 
         EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Update Settings", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("What to update every frame ?", EditorStyles.boldLabel);
 
-        EditorGUILayout.LabelField("On Start", CenteredLabelStyle, GUILayout.ExpandWidth(true));
-        GUILayout.BeginHorizontal();
-        augmentaCamera.updateCameraOnStart = GUILayout.Toggle(augmentaCamera.updateCameraOnStart, "Camera", augmentaCamera.updateCameraOnStart ? ToggleButtonStyleToggled : ToggleButtonStyleNormal);
-        augmentaCamera.updateTransformOnStart = GUILayout.Toggle(augmentaCamera.updateTransformOnStart, "Transform", augmentaCamera.updateTransformOnStart ? ToggleButtonStyleToggled : ToggleButtonStyleNormal);
-        augmentaCamera.updatePostProcessOnStart = GUILayout.Toggle(augmentaCamera.updatePostProcessOnStart, "PostProcess", augmentaCamera.updatePostProcessOnStart ? ToggleButtonStyleToggled : ToggleButtonStyleNormal);
-        augmentaCamera.updateAugmentaOnStart = GUILayout.Toggle(augmentaCamera.updateAugmentaOnStart, "Augmenta", augmentaCamera.updateAugmentaOnStart ? ToggleButtonStyleToggled : ToggleButtonStyleNormal);
-        GUILayout.EndHorizontal();
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Every Frame", CenteredLabelStyle, GUILayout.ExpandWidth(true));
-        GUILayout.BeginHorizontal();
-        augmentaCamera.alwaysUpdateCamera = GUILayout.Toggle(augmentaCamera.alwaysUpdateCamera, "Camera", augmentaCamera.alwaysUpdateCamera ? ToggleButtonStyleToggled : ToggleButtonStyleNormal);
-        augmentaCamera.alwaysUpdateTransform = GUILayout.Toggle(augmentaCamera.alwaysUpdateTransform, "Transform", augmentaCamera.alwaysUpdateTransform ? ToggleButtonStyleToggled : ToggleButtonStyleNormal);
-        augmentaCamera.alwaysUpdatePostProcess = GUILayout.Toggle(augmentaCamera.alwaysUpdatePostProcess, "PostProcess", augmentaCamera.alwaysUpdatePostProcess ? ToggleButtonStyleToggled : ToggleButtonStyleNormal);
-        augmentaCamera.alwaysUpdateAugmenta = GUILayout.Toggle(augmentaCamera.alwaysUpdateAugmenta, "Augmenta", augmentaCamera.alwaysUpdateAugmenta ? ToggleButtonStyleToggled : ToggleButtonStyleNormal);
-        GUILayout.EndHorizontal();
+		EditorGUILayout.PropertyField(_alwaysUpdateCamera, new GUIContent("Camera", "Copy the camera parameters every frame."));
+		EditorGUILayout.PropertyField(_alwaysUpdateTransform, new GUIContent("Transform", "Copy the transform parameters every frame."));
+		EditorGUILayout.PropertyField(_alwaysUpdatePostProcess, new GUIContent("PostProcess", "Copy the post process layers parameters every frame."));
+		EditorGUILayout.PropertyField(_alwaysUpdateAugmenta, new GUIContent("Augmenta", "Copy the zoom parameter and disable the anchor camera every frame."));
 
         EditorGUILayout.Space();
-        augmentaCamera.disableAfterUpdate = EditorGUILayout.Toggle("Disable After Update", augmentaCamera.disableAfterUpdate);
+		EditorGUILayout.PropertyField(_disableAfterUpdate, new GUIContent("Disable After Update", "Disable the anchor camera after every update."));
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Augmenta Camera Settings", EditorStyles.boldLabel);
 
-		augmentaCamera.cameraType = (AugmentaCameraAnchor.CameraType)EditorGUILayout.EnumPopup("Camera Type", augmentaCamera.cameraType);
-        augmentaCamera.Zoom = EditorGUILayout.FloatField("Zoom", augmentaCamera.Zoom);
-        augmentaCamera.drawNearCone = EditorGUILayout.Toggle("Draw Near Cone", augmentaCamera.drawNearCone);
-        augmentaCamera.drawFrustum = EditorGUILayout.Toggle("Draw Frustum", augmentaCamera.drawFrustum);
-        augmentaCamera.centerOnAugmentaArea = EditorGUILayout.Toggle("Center On Augmenta Area", augmentaCamera.centerOnAugmentaArea);
-        augmentaCamera.lookTarget = (Transform)EditorGUILayout.ObjectField("Look Target", augmentaCamera.lookTarget, typeof(Transform), true);
+		EditorGUILayout.PropertyField(_cameraType, new GUIContent("Camera Type"));
+		EditorGUILayout.PropertyField(_zoom, new GUIContent("Zoom"));
+		EditorGUILayout.PropertyField(_drawNearCone, new GUIContent("Draw Near Cone"));
+		EditorGUILayout.PropertyField(_drawFrustum, new GUIContent("Draw Frustum"));
+		EditorGUILayout.PropertyField(_centerOnAugmentaArea, new GUIContent("Center On Augmenta Area"));
+		EditorGUILayout.PropertyField(_lookTarget, new GUIContent("Look Target"));
 
-        Undo.RecordObject(target, "Changed augmentaCameraAnchor");
-    }
+		serializedObject.ApplyModifiedProperties();
+	}
 }
