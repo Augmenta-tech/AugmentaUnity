@@ -34,10 +34,11 @@ public class AugmentaAreaAnchor : MonoBehaviour {
     public int VelocityAverageValueCount = 1;
 
     [Header("Augmenta Area Visualization")]
-    public float Width;
-    public float Height;
-    public float MeterPerPixel;
-    public bool DrawGizmos;
+    public float Width = 1280;
+    public float Height = 800;
+    public float meterPerPixel = 0.005f;
+	public float scaling = 1.0f;
+	public bool DrawGizmos;
 
     [Header("Augmenta Camera")]
 	public AugmentaCameraAnchor augmentaCameraAnchor;
@@ -59,7 +60,8 @@ public class AugmentaAreaAnchor : MonoBehaviour {
         }
     }
     
-	public bool updateCameraOnSceneChange = true;
+	[Tooltip("Copy the AugmentaCameraAnchor transform to the AugmentaCamera on scene change to correct potentiel camera movement introduced by the scene scaling.")]
+	public bool preserveCameraTransformOnSceneChange = true;
 
 	[HideInInspector]
 	public AugmentaArea linkedAugmentaArea;
@@ -129,7 +131,7 @@ public class AugmentaAreaAnchor : MonoBehaviour {
 		Gizmos.color = Color.blue;
 
 		//Draw area 
-		DrawGizmoCube(transform.position, transform.rotation, new Vector3(Width * MeterPerPixel * augmentaCameraAnchor.zoom, Height * MeterPerPixel * augmentaCameraAnchor.zoom, 1.0f));
+		DrawGizmoCube(transform.position, transform.rotation, new Vector3(Width * meterPerPixel * scaling, Height * meterPerPixel * scaling, 1.0f));
 	}
 
 
@@ -144,7 +146,7 @@ public class AugmentaAreaAnchor : MonoBehaviour {
 
 	public virtual void SceneUpdated(AugmentaScene s)
     {
-		if (updateCameraOnSceneChange) {
+		if (preserveCameraTransformOnSceneChange) {
 			//Update the position of the augmentaCamera when the scene change as it may have moved the augmenta camera
 			augmentaCameraAnchor.UpdateTargetCamera(true, false, false);
 		}

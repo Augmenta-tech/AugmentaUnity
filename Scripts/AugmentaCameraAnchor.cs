@@ -10,16 +10,6 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 	[SerializeField]
 	public AugmentaArea linkedAugmentaArea;
 
-	//[Header("Augmenta Settings")]
-	[Tooltip("Should this camera Augmenta settings be copied to the augmenta camera on start ?")]
-	public bool updateAugmentaOnStart = true;
-
-	[Tooltip("Should this camera Augmenta settings be copied to the augmenta camera at each frame ?")]
-	public bool alwaysUpdateAugmenta = false;
-
-	public float zoom = 1;
-
-	public bool drawNearCone, drawFrustum;
 	public bool centerOnAugmentaArea;
 
 	public enum CameraType {Orthographic, Perspective, OffCenter };
@@ -42,8 +32,6 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 
 		UpdateTargetCamera(updateTransformOnStart, updateCameraOnStart, updatePostProcessOnStart && hasPostProcessLayer);
 
-        if (updateAugmentaOnStart)
-            CopyAugmentaSettings();
     }
 
 	void Update() {
@@ -94,41 +82,28 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 		TopRightCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, 0.5f, 0));
 	}
 
-	private void CopyAugmentaSettings() {
+	private void CopyAugmentaCameraSettings() {
 		if (linkedAugmentaArea == null)
 			return;
-
-		linkedAugmentaArea.Zoom = zoom;
 
 		if (!linkedAugmentaArea.augmentaCamera)
 			return;
 
-		linkedAugmentaArea.augmentaCamera.zoom = zoom;
-		linkedAugmentaArea.augmentaCamera.drawFrustum = drawFrustum;
-		linkedAugmentaArea.augmentaCamera.drawNearCone = drawNearCone;
+		linkedAugmentaArea.augmentaCamera.cameraType = cameraType;
 		linkedAugmentaArea.augmentaCamera.centerOnAugmentaArea = centerOnAugmentaArea;
 	}
 
 	#endregion
 
 	#region Camera Update Functions
-
-	public void ForceCoreCameraUpdate()
-    {
-        UpdateTargetCamera(true, true, true);
-        CopyAugmentaSettings();
-    }
     
     public override void UpdateTargetCamera(bool updateTransform, bool updateCamera, bool updatePostProcess)
     {
 
         base.UpdateTargetCamera(updateTransform, updateCamera, updatePostProcess && hasPostProcessLayer);
 
-		if (alwaysUpdateCamera)
-			linkedAugmentaArea.augmentaCamera.cameraType = cameraType;
-
-        if(alwaysUpdateAugmenta)
-           CopyAugmentaSettings();
+		if (updateCamera)
+			CopyAugmentaCameraSettings();
     }
 
     void ComputeOrthoCamera()
@@ -147,7 +122,7 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 
 		sourceCamera.ResetProjectionMatrix();
 
-		sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(linkedAugmentaArea.AugmentaScene.Height * 0.5f * linkedAugmentaArea.MeterPerPixel * zoom, transform.localPosition.z);
+		sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(linkedAugmentaArea.AugmentaScene.Height * 0.5f * linkedAugmentaArea.meterPerPixel * linkedAugmentaArea.scaling, transform.localPosition.z);
         sourceCamera.aspect = linkedAugmentaArea.AugmentaScene.Width / linkedAugmentaArea.AugmentaScene.Height;
         
     }
@@ -210,15 +185,15 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
             Debug.LogWarning("Frustrum error, matrix invalid : " + e.Message);
         }
 
-        if (drawNearCone)
-        { //Draw lines from the camera to the corners f the screen
-            Debug.DrawRay(sourceCamera.transform.position, va, Color.blue);
-            Debug.DrawRay(sourceCamera.transform.position, vb, Color.blue);
-            Debug.DrawRay(sourceCamera.transform.position, vc, Color.blue);
-            Debug.DrawRay(sourceCamera.transform.position, vd, Color.blue);
-        }
+        //if (drawNearCone)
+        //{ //Draw lines from the camera to the corners f the screen
+        //    Debug.DrawRay(sourceCamera.transform.position, va, Color.blue);
+        //    Debug.DrawRay(sourceCamera.transform.position, vb, Color.blue);
+        //    Debug.DrawRay(sourceCamera.transform.position, vc, Color.blue);
+        //    Debug.DrawRay(sourceCamera.transform.position, vd, Color.blue);
+        //}
 
-        if (drawFrustum) DrawFrustum(sourceCamera); //Draw actual camera frustum
+        //if (drawFrustum) DrawFrustum(sourceCamera); //Draw actual camera frustum
     }
 
 	#endregion

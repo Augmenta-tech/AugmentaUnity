@@ -116,7 +116,6 @@ MonoBehaviour:
   linkedAugmentaArea: {fileID: 114562361110998660}
   updateAugmentaOnStart: 1
   alwaysUpdateAugmenta: 0
-  zoom: 1
   drawNearCone: 0
   drawFrustum: 0
   centerOnAugmentaArea: 0
@@ -233,7 +232,8 @@ MonoBehaviour:
   VelocityAverageValueCount: 1
   Width: 0
   Height: 0
-  MeterPerPixel: 0
+  meterPerPixel: 0.005
+  scaling: 1
   DrawGizmos: 0
   augmentaCameraAnchor: {fileID: 114255069118496728}
   updateCameraOnSceneChange: 1
@@ -288,8 +288,8 @@ MonoBehaviour:
   augmentaAreaId: Sol
   defaultInputPort: 12002
   connected: 0
-  MeterPerPixel: 0.005
-  Zoom: 1
+  meterPerPixel: 0.005
+  scaling: 1
   AspectRatio: 0
   FlipX: 0
   FlipY: 0

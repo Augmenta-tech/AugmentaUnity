@@ -21,7 +21,7 @@ using UnityOSC;
 /// 
 /// AUGMENTA CAMERA:
 /// MeterPerPixel: Size of a pixel in meter. In order to have a coherent scale between Unity and reality, this value should be the size of a pixel on the projection surface.
-/// Zoom: Coefficient applied on the MeterPerPixel value in order to roughly correct miscalibrations. If the value of MeterPerPixel is accurate, the Zoom value should be 1.
+/// Scaling: Coefficient applied on the MeterPerPixel value in order to roughly correct miscalibrations. If the value of MeterPerPixel is accurate, the scaling value should be 1.
 /// 
 /// AUGMENTA PERSONS SETTINGS:
 /// FlipX: Flip the Augmenta persons positions and movements horizontally.
@@ -134,8 +134,8 @@ public class AugmentaArea : MonoBehaviour  {
             connected = CreateAugmentaOSCListener();
         }
     }
-    public float MeterPerPixel= 0.01f;
-    public float Zoom;
+    public float meterPerPixel= 0.005f;
+    public float scaling = 1.0f;
 
     [HideInInspector]
     public float AspectRatio;
@@ -149,7 +149,7 @@ public class AugmentaArea : MonoBehaviour  {
     public AugmentaPersonType ActualPersonType;
     public int AskedPeople = 1;
 
-    private float _oldPixelMeterCoeff, _oldZoom;
+    private float _oldMeterPerPixelCoeff, _oldScaling;
 
     [Header("Debug")]
     public bool Mute;
@@ -257,9 +257,9 @@ public class AugmentaArea : MonoBehaviour  {
 		AugmentaDebugger.gameObject.SetActive(_augmentaDebug); //Because Unity doesn't support Properties in Inspector
 		AugmentaDebugger.Transparency = _debugTransparency;//Because Unity doesn't support Properties in Inspector
 
-		if (_oldPixelMeterCoeff != MeterPerPixel || _oldZoom != Zoom) {
-			_oldZoom = Zoom;
-			_oldPixelMeterCoeff = MeterPerPixel;
+		if (_oldMeterPerPixelCoeff != meterPerPixel || _oldScaling != scaling) {
+			_oldScaling = scaling;
+			_oldMeterPerPixelCoeff = meterPerPixel;
 			SendAugmentaEvent(AugmentaEventType.SceneUpdated);
 		}
 
@@ -564,7 +564,7 @@ public class AugmentaArea : MonoBehaviour  {
 
 			AspectRatio = (AugmentaScene.Width / AugmentaScene.Height);
 
-			transform.localScale = new Vector3(AugmentaScene.Width * (MeterPerPixel) * Zoom, AugmentaScene.Height * (MeterPerPixel) * Zoom, 1.0f);
+			transform.localScale = new Vector3(AugmentaScene.Width * meterPerPixel * scaling, AugmentaScene.Height * meterPerPixel * scaling, 1.0f);
 
 			SendAugmentaEvent(AugmentaEventType.SceneUpdated);
 		} else {

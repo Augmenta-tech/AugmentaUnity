@@ -64,7 +64,6 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 
 	public virtual void Awake()
     {
-		Debug.Log("Awake " + gameObject.name + " : " + transform.position);
 		if (!sourceInitialized) {
 			GetSourceCameraComponents();
 		}
@@ -227,7 +226,7 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 	private void CopyPostProcessLayerComponent(PostProcessLayer source, PostProcessLayer destination) {
 
 		destination.volumeLayer = source.volumeLayer;
-		//destination.volumeTrigger = source.volumeTrigger;
+		destination.volumeTrigger = destination.transform;
 		destination.antialiasingMode = source.antialiasingMode;
 		destination.fastApproximateAntialiasing = source.fastApproximateAntialiasing;
 		destination.subpixelMorphologicalAntialiasing = source.subpixelMorphologicalAntialiasing;

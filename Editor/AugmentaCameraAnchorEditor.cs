@@ -9,19 +9,14 @@ public class AugmentaCameraAnchorEditor : Editor
 	SerializedProperty _updateCameraOnStart;
 	SerializedProperty _updateTransformOnStart;
 	SerializedProperty _updatePostProcessOnStart;
-	SerializedProperty _updateAugmentaOnStart;
 
 	SerializedProperty _alwaysUpdateCamera;
 	SerializedProperty _alwaysUpdateTransform;
 	SerializedProperty _alwaysUpdatePostProcess;
-	SerializedProperty _alwaysUpdateAugmenta;
 
 	SerializedProperty _disableAfterUpdate;
 
 	SerializedProperty _cameraType;
-	SerializedProperty _zoom;
-	SerializedProperty _drawNearCone;
-	SerializedProperty _drawFrustum;
 	SerializedProperty _centerOnAugmentaArea;
 	SerializedProperty _lookTarget;
 
@@ -30,19 +25,14 @@ public class AugmentaCameraAnchorEditor : Editor
 		_updateCameraOnStart = serializedObject.FindProperty("updateCameraOnStart");
 		_updateTransformOnStart = serializedObject.FindProperty("updateTransformOnStart");
 		_updatePostProcessOnStart = serializedObject.FindProperty("updatePostProcessOnStart");
-		_updateAugmentaOnStart = serializedObject.FindProperty("updateAugmentaOnStart");
 
 		_alwaysUpdateCamera = serializedObject.FindProperty("alwaysUpdateCamera");
 		_alwaysUpdateTransform = serializedObject.FindProperty("alwaysUpdateTransform");
 		_alwaysUpdatePostProcess = serializedObject.FindProperty("alwaysUpdatePostProcess");
-		_alwaysUpdateAugmenta = serializedObject.FindProperty("alwaysUpdateAugmenta");
 
 		_disableAfterUpdate = serializedObject.FindProperty("disableAfterUpdate");
 
 		_cameraType = serializedObject.FindProperty("cameraType");
-		_zoom = serializedObject.FindProperty("zoom");
-		_drawNearCone = serializedObject.FindProperty("drawNearCone");
-		_drawFrustum = serializedObject.FindProperty("drawFrustum");
 		_centerOnAugmentaArea = serializedObject.FindProperty("centerOnAugmentaArea");
 		_lookTarget = serializedObject.FindProperty("lookTarget");
 	}
@@ -57,7 +47,6 @@ public class AugmentaCameraAnchorEditor : Editor
 		EditorGUILayout.PropertyField(_updateCameraOnStart, new GUIContent("Camera", "Copy the camera parameters on start."));
 		EditorGUILayout.PropertyField(_updateTransformOnStart, new GUIContent("Transform", "Copy the transform parameters on start."));
 		EditorGUILayout.PropertyField(_updatePostProcessOnStart, new GUIContent("PostProcess", "Copy the post process layer parameters on start."));
-		EditorGUILayout.PropertyField(_updateAugmentaOnStart, new GUIContent("Augmenta", "Copy the zoom parameter and disable the anchor camera on start."));
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("What to update every frame ?", EditorStyles.boldLabel);
@@ -65,7 +54,6 @@ public class AugmentaCameraAnchorEditor : Editor
 		EditorGUILayout.PropertyField(_alwaysUpdateCamera, new GUIContent("Camera", "Copy the camera parameters every frame."));
 		EditorGUILayout.PropertyField(_alwaysUpdateTransform, new GUIContent("Transform", "Copy the transform parameters every frame."));
 		EditorGUILayout.PropertyField(_alwaysUpdatePostProcess, new GUIContent("PostProcess", "Copy the post process layers parameters every frame."));
-		EditorGUILayout.PropertyField(_alwaysUpdateAugmenta, new GUIContent("Augmenta", "Copy the zoom parameter and disable the anchor camera every frame."));
 
         EditorGUILayout.Space();
 		EditorGUILayout.PropertyField(_disableAfterUpdate, new GUIContent("Disable After Update", "Disable the anchor camera after every update."));
@@ -74,9 +62,6 @@ public class AugmentaCameraAnchorEditor : Editor
         EditorGUILayout.LabelField("Augmenta Camera Settings", EditorStyles.boldLabel);
 
 		EditorGUILayout.PropertyField(_cameraType, new GUIContent("Camera Type"));
-		EditorGUILayout.PropertyField(_zoom, new GUIContent("Zoom"));
-		EditorGUILayout.PropertyField(_drawNearCone, new GUIContent("Draw Near Cone"));
-		EditorGUILayout.PropertyField(_drawFrustum, new GUIContent("Draw Frustum"));
 		EditorGUILayout.PropertyField(_centerOnAugmentaArea, new GUIContent("Center On Augmenta Area"));
 		EditorGUILayout.PropertyField(_lookTarget, new GUIContent("Look Target"));
 
