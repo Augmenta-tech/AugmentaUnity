@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+/// <summary>
+/// The AugmentaCameraAnchor is to the AugmentaCamera what the AugmentaAreaAnchor is to the AugmentaArea. 
+/// It is linked to an AugmentaAreaAnchor and allow to render it using various ways. It can also update the corresponding AugmentaCamera (i.e. the AugmentaCamera belonging to the AugmentaArea that the AugmentaAreaAnchor is linked to) with its camera, position, rotation, post-process and Augmenta parameters.
+/// </summary>
 
 public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 

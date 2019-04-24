@@ -4,32 +4,32 @@ using UnityEngine;
 
 public class AugmentaBasicPersonBehaviour : AugmentaPersonBehaviour {
 
-    public float AnimatedValue;
+    public float animatedValue;
 
     [Header("Appeareance animation")]
-    public float AppearAnimDuration;
-    public AnimationCurve AppearAnimCurve;
+    public float appearAnimDuration;
+    public AnimationCurve appearAnimCurve;
 
     [Header("Alive animation")]
-    public float AliveAnimDuration;
-    public AnimationCurve AliveAnimCurve;
+    public float aliveAnimDuration;
+    public AnimationCurve aliveAnimCurve;
 
     [Header("Disappeareance animation")]
-    public float DisappearAnimDuration;
-    public bool StartWithActualValue;
-    public AnimationCurve DisappearAnimCurve;
+    public float disappearAnimDuration;
+    public bool startWithActualValue;
+    public AnimationCurve disappearAnimCurve;
 
     protected override IEnumerator AppearAnimation(System.Action callBack = null)
     {
         var currentTime = 0.0f;
-        while (currentTime < AppearAnimDuration)
+        while (currentTime < appearAnimDuration)
         {
             currentTime += Time.deltaTime;
 
-            if (AppearAnimCurve != null)
-                AnimatedValue = AppearAnimCurve.Evaluate(Mathf.Clamp01(currentTime / AppearAnimDuration));
+            if (appearAnimCurve != null)
+                animatedValue = appearAnimCurve.Evaluate(Mathf.Clamp01(currentTime / appearAnimDuration));
             else
-                AnimatedValue = Mathf.Clamp01(currentTime / AppearAnimDuration);
+                animatedValue = Mathf.Clamp01(currentTime / appearAnimDuration);
 
             yield return new WaitForFixedUpdate();
         }
@@ -41,14 +41,14 @@ public class AugmentaBasicPersonBehaviour : AugmentaPersonBehaviour {
     protected override IEnumerator AliveAnimation(System.Action callBack = null)
     {
         var currentTime = 0.0f;
-        while (currentTime < AliveAnimDuration)
+        while (currentTime < aliveAnimDuration)
         {
             currentTime += Time.deltaTime;
 
-            if (AliveAnimCurve != null)
-                AnimatedValue = AliveAnimCurve.Evaluate(Mathf.Clamp01(currentTime / AliveAnimDuration));
+            if (aliveAnimCurve != null)
+                animatedValue = aliveAnimCurve.Evaluate(Mathf.Clamp01(currentTime / aliveAnimDuration));
             else
-                AnimatedValue = Mathf.Clamp01(currentTime / AliveAnimDuration);
+                animatedValue = Mathf.Clamp01(currentTime / aliveAnimDuration);
 
             yield return new WaitForFixedUpdate();
         }
@@ -59,14 +59,14 @@ public class AugmentaBasicPersonBehaviour : AugmentaPersonBehaviour {
 
     protected override IEnumerator DisappearAnimation(System.Action callBack = null)
     {
-        if (StartWithActualValue)
-            DisappearAnimCurve.MoveKey(0, new Keyframe(0.0f, AnimatedValue));
+        if (startWithActualValue)
+            disappearAnimCurve.MoveKey(0, new Keyframe(0.0f, animatedValue));
 
         var currentTime = 0.0f;
-        while (currentTime < DisappearAnimDuration)
+        while (currentTime < disappearAnimDuration)
         {
             currentTime += Time.deltaTime;
-            AnimatedValue = DisappearAnimCurve.Evaluate(currentTime / DisappearAnimDuration);
+            animatedValue = disappearAnimCurve.Evaluate(currentTime / disappearAnimDuration);
 
             yield return new WaitForFixedUpdate();
         }

@@ -3,6 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Augmenta;
 
+/// <summary>
+/// The AugmentaAreaAnchor is an object used to pre-visualize an AugmentaArea in your scene. 
+/// You can set its size to the future size of the AugmentaArea (if you know it in advance) to better prepare the rest of your environment. 
+/// You should place the AugmentaAreaAnchor where you want the AugmentaArea to be in your scene as it will always update the AugmentaArea position and rotation to match its own position and rotation. 
+/// The link between an AugmentaAreaAnchor and an AugmentaArea is done via the AugmentaAreaID and LinkedAugmentaAreaID strings (for the AugmentaArea and AugmentaAreaAnchor respectively). 
+/// Each AugmentaAreaAnchor should have an ID matching the ID of an AugmentaArea, and different from every other AugmentaAreaAnchor IDs.
+/// </summary>
+
 public class AugmentaAreaAnchor : MonoBehaviour {
 
     public string linkedAugmentaAreaId;
