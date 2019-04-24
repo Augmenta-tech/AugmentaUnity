@@ -17,7 +17,7 @@ namespace Augmenta
 		public float inactiveTime;
 
         public Vector3 Position;
-        public float VelocitySmooth;
+        public int VelocitySmooth;
         public List<Vector3> Velocities;
 
         public void Init()
@@ -35,8 +35,11 @@ namespace Augmenta
         public Vector3 GetSmoothedVelocity()
         {
             var meanVelocity = new Vector3();
+            var magnitude = 0.0f;
             foreach (var rawVelocity in Velocities)
+            {
                 meanVelocity += rawVelocity;
+            }
 
             meanVelocity /= Velocities.Count;
 

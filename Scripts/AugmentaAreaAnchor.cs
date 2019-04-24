@@ -1,53 +1,216 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Augmenta;
 
 public class AugmentaAreaAnchor : MonoBehaviour {
 
-    /// <summary>
-    /// The AugmentaAreaAnchor will update the AugmentaArea position, rotation and scale according to the AugmentaAreaAnchor parameters at every frame.
-    /// 
-    /// The position and rotation are copied from this object's transform position and rotation in world space.
-    /// The scale is updated according to the Width, Height, MeterPerPixel and Zoom values.
-    /// 
-    /// The AugmentaAreaAnchor is expected to have an AugmentaCamera as children and will use this AugmentaCamera Zoom value to compute its scale.
-    /// </summary>
+    public string linkedAugmentaAreaId;
+
+    [Header("Augmenta points settings")]
+    public GameObject PrefabToInstantiate;
+
+    public Dictionary<int, GameObject> InstantiatedObjects;
+
+    [Tooltip("In seconds")]
+    private float _personTimeOut = 1;
+    public float PersonTimeOut
+    {
+        get
+        {
+            return _personTimeOut;
+        }
+        set
+        {
+            _personTimeOut = value;
+            linkedAugmentaArea.PersonTimeOut = _personTimeOut;
+        }
+    }
+
+    [Range(0f, 1)]
+    public float PositionFollowTightness = 0.9f;
+
+    [Range(1, 20)]
+    public int VelocityAverageValueCount = 1;
+
     [Header("Augmenta Area Visualization")]
-    public float Width;
-    public float Height;
-    public float MeterPerPixel;
-    public bool DrawGizmos;
+    public float Width = 1280;
+    public float Height = 800;
+    public float meterPerPixel = 0.005f;
+	public float scaling = 1.0f;
+	public bool DrawGizmos;
 
     [Header("Augmenta Camera")]
-    public AugmentaCamera augmentaCamera;
+	public AugmentaCameraAnchor augmentaCameraAnchor;
 
-    // Update is called once per frame
-    void Update () {
-        if (AugmentaArea.Instance)
-        {
-            AugmentaArea.Instance.gameObject.transform.position = transform.position;
-            AugmentaArea.Instance.gameObject.transform.rotation = transform.rotation;
+	private float _distanceToArea = 5.0f;
+    public float distanceToArea {
+        get {
+            return _distanceToArea;
         }
-        UpdateScale();
+        set
+        {
+            _distanceToArea = value;
+
+			if (!augmentaCameraAnchor)
+				return;
+
+			augmentaCameraAnchor.transform.localPosition = new Vector3(augmentaCameraAnchor.transform.localPosition.x, augmentaCameraAnchor.transform.localPosition.y, _distanceToArea);
+//			augmentaCameraAnchor.UpdateTargetCamera(true, false, false);
+        }
+    }
+    
+	[Tooltip("Copy the AugmentaCameraAnchor transform to the AugmentaCamera on scene change to correct potentiel camera movement introduced by the scene scaling.")]
+	public bool preserveCameraTransformOnSceneChange = true;
+
+	[HideInInspector]
+	public AugmentaArea linkedAugmentaArea;
+
+	#region MonoBehaviour Functions
+
+	public virtual void Awake()
+    {
+        if (string.IsNullOrEmpty(linkedAugmentaAreaId))
+            Debug.LogWarning("linkedAugmentaAreaId is empty !");
+
+        if (augmentaCameraAnchor == null)
+            augmentaCameraAnchor = transform.GetChild(0).GetComponent<AugmentaCameraAnchor>();
+
+        linkedAugmentaArea = AugmentaArea.augmentaAreas[linkedAugmentaAreaId];
+        linkedAugmentaArea.ConnectToAnchor();
+
+		augmentaCameraAnchor.linkedAugmentaArea = linkedAugmentaArea;
+		augmentaCameraAnchor.InitializeTargetCamera();
     }
 
-    void UpdateScale()
-    {
-        transform.localScale = new Vector3(Width * MeterPerPixel * augmentaCamera.Zoom, Height * MeterPerPixel * augmentaCamera.Zoom, 1.0f);
-    }   
+	// Use this for initialization
+	public virtual void OnEnable() {
+		InstantiatedObjects = new Dictionary<int, GameObject>();
 
-    private void OnDrawGizmos()
-    {
-        if (!DrawGizmos) return;
+		linkedAugmentaArea.personEntered += PersonEntered;
+		linkedAugmentaArea.personUpdated += PersonUpdated;
+		linkedAugmentaArea.personLeaving += PersonLeft;
+		linkedAugmentaArea.sceneUpdated += SceneUpdated;
+	}
 
-        Gizmos.color = Color.blue;
+	public virtual void Update () {
+        if (linkedAugmentaArea)
+        {
+			UpdateAugmentaArea();
+		}
 
-        //Draw area 
-        UpdateScale();
-        DrawGizmoCube(transform.position, transform.rotation, transform.localScale);
+        foreach (var element in InstantiatedObjects)
+        {
+            if (!linkedAugmentaArea.AugmentaPeople.ContainsKey(element.Key)) continue;
+
+            element.Value.transform.position = Vector3.Lerp(element.Value.transform.position, linkedAugmentaArea.AugmentaPeople[element.Key].Position, PositionFollowTightness);
+        }
     }
 
-    public void DrawGizmoCube(Vector3 position, Quaternion rotation, Vector3 scale)
+    // Use this for initialization
+    public virtual void OnDisable()
+    {
+        foreach (var element in InstantiatedObjects.Values)
+            Destroy(element);
+
+        InstantiatedObjects.Clear();
+
+        linkedAugmentaArea.personEntered -= PersonEntered;
+        linkedAugmentaArea.personUpdated -= PersonUpdated;
+        linkedAugmentaArea.personLeaving -= PersonLeft;
+        linkedAugmentaArea.sceneUpdated -= SceneUpdated;
+    }
+
+	public virtual void OnDestroy() {
+		linkedAugmentaArea.DisconnectFromAnchor();
+	}
+
+	public virtual void OnDrawGizmos() {
+		if (!DrawGizmos) return;
+
+		Gizmos.color = Color.blue;
+
+		//Draw area 
+		DrawGizmoCube(transform.position, transform.rotation, new Vector3(Width * meterPerPixel * scaling, Height * meterPerPixel * scaling, 1.0f));
+	}
+
+
+	#endregion
+
+	#region Augmenta Functions
+
+	public void UpdateAugmentaArea() {
+		linkedAugmentaArea.transform.position = transform.position;
+		linkedAugmentaArea.transform.rotation = transform.rotation;
+	}
+
+	public virtual void SceneUpdated(AugmentaScene s)
+    {
+		if (preserveCameraTransformOnSceneChange) {
+			//Update the position of the augmentaCamera when the scene change as it may have moved the augmenta camera
+			augmentaCameraAnchor.UpdateTargetCamera(true, false, false);
+		}
+	}
+
+    public virtual void PersonEntered(AugmentaPerson p)
+    {
+        if (!InstantiatedObjects.ContainsKey(p.pid))
+        {
+            var newObject = Instantiate(PrefabToInstantiate, p.Position, Quaternion.identity, this.transform);
+            newObject.transform.localRotation = Quaternion.Euler(Vector3.zero);
+            InstantiatedObjects.Add(p.pid, newObject);
+
+            var augBehaviour = newObject.GetComponent<AugmentaPersonBehaviour>();
+            if (augBehaviour != null)
+            {
+                augBehaviour.augmentaAreaAnchor = this;
+                augBehaviour.pid = p.pid;
+                augBehaviour.disappearAnimationCompleted += HandleDisappearedObject;
+                augBehaviour.Appear();
+            }
+        }
+    }
+
+    public virtual void PersonUpdated(AugmentaPerson p)
+    {
+        //Debug.Log("Person updated : " + p.pid);
+        if (InstantiatedObjects.ContainsKey(p.pid))
+        {
+            p.VelocitySmooth = VelocityAverageValueCount;
+        }
+        else
+        {
+            PersonEntered(p);
+        }
+    }
+
+    public virtual void PersonLeft(AugmentaPerson p)
+    {
+        if (InstantiatedObjects.ContainsKey(p.pid))
+        {
+            var augBehaviour = InstantiatedObjects[p.pid].GetComponent<AugmentaPersonBehaviour>();
+            if (augBehaviour != null)
+                augBehaviour.Disappear();
+            else
+                HandleDisappearedObject(p.pid);
+        }
+    }
+
+    public virtual void HandleDisappearedObject(int pid)
+    {
+        if (!InstantiatedObjects.ContainsKey(pid)) //To investigate, shouldn't happen
+            return;
+
+        var objectToDestroy = InstantiatedObjects[pid];
+        Destroy(objectToDestroy);
+        InstantiatedObjects.Remove(pid);
+    }
+
+	#endregion
+
+	#region Gizmos Functions
+
+	public virtual void DrawGizmoCube(Vector3 position, Quaternion rotation, Vector3 scale)
     {
         Matrix4x4 cubeTransform = Matrix4x4.TRS(position, rotation, scale);
         Matrix4x4 oldGizmosMatrix = Gizmos.matrix;
@@ -58,4 +221,6 @@ public class AugmentaAreaAnchor : MonoBehaviour {
 
         Gizmos.matrix = oldGizmosMatrix;
     }
+
+	#endregion
 }

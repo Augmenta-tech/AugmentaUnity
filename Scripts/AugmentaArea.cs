@@ -5,7 +5,7 @@ using Augmenta;
 using UnityOSC;
 
 /// <summary>
-/// The AugmentaArea handles the incoming Augmenta OSC messages and updates the AugmentaPersons list and AugmentaScene accordingly.
+/// The AugmentaArea handles the incoming Augmenta OSC messages and updates the AugmentaPeople list and AugmentaScene accordingly.
 ///  
 /// It also sends the events personEntered, personUpdated, personLeaving and sceneUpdated when the corresponding events are happening in Augmenta.
 ///  
@@ -21,7 +21,7 @@ using UnityOSC;
 /// 
 /// AUGMENTA CAMERA:
 /// MeterPerPixel: Size of a pixel in meter. In order to have a coherent scale between Unity and reality, this value should be the size of a pixel on the projection surface.
-/// Zoom: Coefficient applied on the MeterPerPixel value in order to roughly correct miscalibrations. If the value of MeterPerPixel is accurate, the Zoom value should be 1.
+/// Scaling: Coefficient applied on the MeterPerPixel value in order to roughly correct miscalibrations. If the value of MeterPerPixel is accurate, the scaling value should be 1.
 /// 
 /// AUGMENTA PERSONS SETTINGS:
 /// FlipX: Flip the Augmenta persons positions and movements horizontally.
@@ -82,7 +82,7 @@ public struct AugmentaScene
 
 public enum AugmentaPersonType
 {
-    AllPersons,
+    AllPeople,
     Oldest,
     Newest
 };
@@ -98,8 +98,58 @@ public enum AugmentaEventType
 
 public class AugmentaArea : MonoBehaviour  {
 
-    public static AugmentaArea Instance;
-    public static Camera AugmentaCam;
+    [HideInInspector]
+    public AugmentaCamera augmentaCamera;
+
+    [Header("Augmenta settings")]
+    public string augmentaAreaId;
+    public static Dictionary<string, AugmentaArea> augmentaAreas;
+
+    private bool _enableCameraRendering;
+    public bool cameraRendering
+    {
+        get
+        {
+            return _enableCameraRendering;
+        }
+        set
+        {
+            _enableCameraRendering = value;
+            augmentaCamera.GetComponent<Camera>().enabled = value;
+        }
+    }
+    public int defaultInputPort;
+    public bool connected;
+
+    private int _inputPort = 12000;
+    public int InputPort
+    {
+        get
+        {
+            return _inputPort;
+        }
+        set
+        {
+            _inputPort = value;
+            connected = CreateAugmentaOSCListener();
+        }
+    }
+    public float meterPerPixel= 0.005f;
+    public float scaling = 1.0f;
+
+    [HideInInspector]
+    public float AspectRatio;
+
+    [Header("Augmenta people settings")]
+    public bool FlipX;
+    public bool FlipY;
+    // Number of seconds before a person who hasn't been updated is removed
+    public float PersonTimeOut = 1.0f; // seconds
+    public int NbAugmentaPeople;
+    public AugmentaPersonType ActualPersonType;
+    public int AskedPeople = 1;
+
+    private float _oldMeterPerPixelCoeff, _oldScaling;
 
     [Header("Debug")]
     public bool Mute;
@@ -122,7 +172,7 @@ public class AugmentaArea : MonoBehaviour  {
         }
     }
     [SerializeField]
-    [Range(0,1)]
+    [Range(0, 1)]
     private float _debugTransparency;
     public float DebugTransparency
     {
@@ -137,285 +187,188 @@ public class AugmentaArea : MonoBehaviour  {
         }
     }
     public bool DrawGizmos;
-
-    [Header("Augmenta settings")]
-    private int _inputPort = 12000;
-    public int InputPort
+    private bool _connectedToAnchor = false;
+    public bool connectedToAnchor
     {
-        get
-        {
-            return _inputPort;
+        get {
+            return _connectedToAnchor;
         }
         set
         {
-            _inputPort = value;
-            CreateAugmentaOSCListener();
+            _connectedToAnchor = value;
+            cameraRendering = value;
+			if(spoutCamera != null)
+				spoutCamera.enabled = value;
+            
         }
     }
-    public float MeterPerPixel= 0.01f;
-    public float Zoom;
 
-    [HideInInspector]
-    public float AspectRatio;
-
-    [Header("Augmenta persons settings")]
-    public bool FlipX;
-    public bool FlipY;
-    // Number of seconds before a person who hasn't been updated is removed
-    public float PersonTimeOut = 1.0f; // seconds
-    public int NbAugmentaPersons;
-    public AugmentaPersonType ActualPersonType;
-    public int AskedPersons = 1;
-
-    private float _oldPixelMeterCoeff, _oldZoom;
+    public Camera spoutCamera;
 
     /* Events */
     public delegate void PersonEntered(AugmentaPerson p);
-    public static event PersonEntered personEntered;
+    public event PersonEntered personEntered;
 
     public delegate void PersonUpdated(AugmentaPerson p);
-    public static event PersonUpdated personUpdated;
+    public event PersonUpdated personUpdated;
 
     public delegate void PersonLeaving(AugmentaPerson p);
-    public static event PersonLeaving personLeaving;
+    public event PersonLeaving personLeaving;
 
     public delegate void SceneUpdated(AugmentaScene s);
-    public static event SceneUpdated sceneUpdated;
+    public event SceneUpdated sceneUpdated;
 
-	public static Dictionary<int, AugmentaPerson> AugmentaPersons = new Dictionary<int, AugmentaPerson>(); // Containing all current persons
-    private static List<int> _orderedPids = new List<int>(); //Used to find oldest and newest
+	public Dictionary<int, AugmentaPerson> AugmentaPeople = new Dictionary<int, AugmentaPerson>(); // Containing all current persons
+    private List<int> _orderedPids = new List<int>(); //Used to find oldest and newest
 
-    private TestCards.TestOverlay[] overlays;
+    public List<TestCards.TestOverlay> overlays;
 
+    public AugmentaScene AugmentaScene;
 
-    public static AugmentaScene AugmentaScene;
+	#region MonoBehaviour Functions
 
-	void Awake(){
-        Instance = this;
-        _orderedPids = new List<int>();
-        AugmentaCam = transform.Find("AugmentaCamera").GetComponent<Camera>();
-        AspectRatio = 1;
+	void Awake() {
 
-        Debug.Log("[Augmenta] Subscribing to OSC Message Receiver");
+		//Get the AugmentaCamera
+		augmentaCamera = transform.GetComponentInChildren<AugmentaCamera>();
 
-        CreateAugmentaOSCListener();
+		cameraRendering = false;
 
-        AugmentaScene = new AugmentaScene();
-        
-        StopAllCoroutines();
+		RegisterArea();
+
+		_orderedPids = new List<int>();
+		
+
+		AspectRatio = 1;
+
+		InputPort = defaultInputPort;
+		connected = CreateAugmentaOSCListener();
+
+		AugmentaScene = new AugmentaScene();
+
+		StopAllCoroutines();
 		// Start the coroutine that check if everyone is alive
 		StartCoroutine("checkAlive");
-
-        overlays = FindObjectsOfType<TestCards.TestOverlay>();
-        AugmentaDebugger.gameObject.SetActive(AugmentaDebug);
-        AugmentaDebugger.Transparency = DebugTransparency;
-    }
-
-	public void OnDestroy(){
-		Debug.Log("[Augmenta] Unsubscribing to OSC Message Receiver");
-
-    }
-
-    public void CreateAugmentaOSCListener()
-    {
-        if(OSCMaster.Receivers.ContainsKey("AugmentaInput"))
-        {
-            OSCMaster.Receivers["AugmentaInput"].messageReceived -= OSCMessageReceived;
-            OSCMaster.RemoveReceiver("AugmentaInput");
-        }
-        OSCMaster.CreateReceiver("AugmentaInput", InputPort).messageReceived += OSCMessageReceived; // TODO : Remove link to OCF
-    }
-
-	public void OSCMessageReceived(OSCMessage message){
-
-        if (Mute) return;
-
-        if (message == null)
-            return;
-
-        string address = message.Address;
-		ArrayList args = new ArrayList(message.Data); //message.Data.ToArray();
-
-        //Debug.Log("OSC received with address : "+address);
-
-        if (address == "/au/personEntered/" || address == "/au/personEntered")
-        {
-            int pid = (int)args[0];
-            AugmentaPerson currentPerson = null;
-            if (!AugmentaPersons.ContainsKey(pid))
-            {
-                currentPerson = addPerson(args);
-                SendAugmentaEvent(AugmentaEventType.PersonEntered, currentPerson);
-            }
-            else
-            {
-                currentPerson = AugmentaPersons[pid];
-                updatePerson(currentPerson, args);
-                SendAugmentaEvent(AugmentaEventType.PersonUpdated, currentPerson);
-            }
-
-        }
-        else if (address == "/au/personUpdated/" || address == "/au/personUpdated")
-        {
-            int pid = (int)args[0];
-            AugmentaPerson currentPerson = null;
-            if (!AugmentaPersons.ContainsKey(pid))
-            {
-                currentPerson = addPerson(args);
-                SendAugmentaEvent(AugmentaEventType.PersonEntered, currentPerson);
-            }
-            else
-            {
-                currentPerson = AugmentaPersons[pid];
-                updatePerson(currentPerson, args);
-                SendAugmentaEvent(AugmentaEventType.PersonUpdated, currentPerson);
-            }
-        }
-        else if (address == "/au/personWillLeave/" || address == "/au/personWillLeave")
-        {
-            int pid = (int)args[0];
-            if (AugmentaPersons.ContainsKey(pid))
-            {
-                AugmentaPerson personToRemove = AugmentaPersons[pid];
-                SendAugmentaEvent(AugmentaEventType.PersonWillLeave, personToRemove);
-                _orderedPids.Remove(personToRemove.pid);
-                _orderedPids.Sort(delegate (int x, int y)
-                {
-                    if (x == y) return 0;
-                    else if (x < y) return -1;
-                    else return 1;
-                });
-                AugmentaPersons.Remove(pid);
-            }
-        }
-        else if (address == "/au/scene/" || address == "/au/scene")
-        {
-            AugmentaScene.Width = (int)args[5];
-            AugmentaScene.Height = (int)args[6];
-
-            AspectRatio = (AugmentaScene.Width / AugmentaScene.Height);
-            transform.localScale = new Vector3(AugmentaScene.Width * (MeterPerPixel) * Zoom, AugmentaScene.Height *(MeterPerPixel) * Zoom, 1.0f);
-
-            SendAugmentaEvent(AugmentaEventType.SceneUpdated);
-        }
-        else
-        {
-            print(address + " ");
-        }
+		AugmentaDebugger.gameObject.SetActive(AugmentaDebug);
+		AugmentaDebugger.Transparency = DebugTransparency;
 	}
 
-    private void Update()
-    {
-        AugmentaDebugger.gameObject.SetActive(_augmentaDebug); //Because Unity doesn't support Properties in Inspector
-        AugmentaDebugger.Transparency = _debugTransparency;//Because Unity doesn't support Properties in Inspector
+	private void Update() {
+		AugmentaDebugger.gameObject.SetActive(_augmentaDebug); //Because Unity doesn't support Properties in Inspector
+		AugmentaDebugger.Transparency = _debugTransparency;//Because Unity doesn't support Properties in Inspector
 
-        if (_oldPixelMeterCoeff != MeterPerPixel || _oldZoom != Zoom)
-        {
-            _oldZoom = Zoom;
-            _oldPixelMeterCoeff = MeterPerPixel;
-            SendAugmentaEvent(AugmentaEventType.SceneUpdated);
-        }
+		if (_oldMeterPerPixelCoeff != meterPerPixel || _oldScaling != scaling) {
+			_oldScaling = scaling;
+			_oldMeterPerPixelCoeff = meterPerPixel;
+			SendAugmentaEvent(AugmentaEventType.SceneUpdated);
+		}
 
-        foreach(var overlay in overlays)
-            overlay.enabled = Mire;
-    }
+		foreach (var overlay in overlays)
+			overlay.enabled = Mire;
+	}
 
+	public void OnDestroy() {
+		Debug.Log("[Augmenta" + augmentaAreaId + "] Unsubscribing to OSC Message on " + InputPort);
 
-    public void SendAugmentaEvent(AugmentaEventType type, AugmentaPerson person = null)
-    {
-        if (ActualPersonType == AugmentaPersonType.Oldest && type != AugmentaEventType.SceneUpdated)
-        {
-            var askedOldest = GetOldestPersons(AskedPersons);
-            if (!askedOldest.Contains(person))
-                type = AugmentaEventType.PersonWillLeave;
-        }
+		if (OSCMaster.Receivers.ContainsKey("AugmentaInput-" + augmentaAreaId)) {
+			OSCMaster.Receivers["AugmentaInput-" + augmentaAreaId].messageReceived -= OSCMessageReceived;
+			OSCMaster.RemoveReceiver("AugmentaInput-" + augmentaAreaId);
+		}
+	}
 
-        if (ActualPersonType == AugmentaPersonType.Newest && type != AugmentaEventType.SceneUpdated)
-        {
-            var askedNewest = GetNewestPersons(AskedPersons);
-            if (!askedNewest.Contains(person))
-                type = AugmentaEventType.PersonWillLeave;
-        }
+	void OnDrawGizmos() {
+		if (!DrawGizmos) return;
 
-        switch (type)
-        {
-            case AugmentaEventType.PersonEntered:
-                if (personEntered != null)
-                    personEntered(person);
-                break;
+		Gizmos.color = Color.red;
+		DrawGizmoCube(transform.position, transform.rotation, transform.localScale);
 
-            case AugmentaEventType.PersonUpdated:
-                if (personUpdated != null)
-                    personUpdated(person);
-                break;
+		//Draw persons
+		Gizmos.color = Color.green;
+		foreach (var person in AugmentaPeople) {
+			// Gizmos.DrawWireCube(person.Value.Position, new Vector3(person.Value.boundingRect.width * MeterPerPixel, person.Value.boundingRect.height * MeterPerPixel, person.Value.boundingRect.height * MeterPerPixel));
+			DrawGizmoCube(person.Value.Position, Quaternion.identity, new Vector3(person.Value.boundingRect.width, person.Value.boundingRect.height, person.Value.boundingRect.height));
+		}
+	}
 
-            case AugmentaEventType.PersonWillLeave:
-                if (personLeaving != null)
-                    personLeaving(person);
-                break;
+	#endregion
 
-            case AugmentaEventType.SceneUpdated:
-                if (sceneUpdated != null)
-                    sceneUpdated(AugmentaScene);
-                break;
-        }
-    }
+	#region Augmenta Functions
 
-    public static bool HasObjects()
-    {
-        if (AugmentaPersons.Count >= 1)
-            return true;
-        else
-            return false;
-    }
+	void RegisterArea() {
+		if (augmentaAreas == null)
+			augmentaAreas = new Dictionary<string, AugmentaArea>();
 
-    public int arrayPersonCount()
-    {
-        return AugmentaPersons.Count;
-    }
+		if (string.IsNullOrEmpty(augmentaAreaId))
+			Debug.LogWarning("Augmenta area doesn't have an ID !");
 
-    public static Dictionary<int, AugmentaPerson> getPeopleArray()
-    {
-        return AugmentaPersons;
-    }
+		augmentaAreas.Add(augmentaAreaId, this);
+	}
 
+	public void ConnectToAnchor() {
+		connectedToAnchor = true;
+	}
 
-    void OnDrawGizmos()
-    {
-        
+	public void DisconnectFromAnchor() {
+		connectedToAnchor = false;
+	}
 
-        if (!DrawGizmos) return;
+	public void SendAugmentaEvent(AugmentaEventType type, AugmentaPerson person = null) {
+		if (ActualPersonType == AugmentaPersonType.Oldest && type != AugmentaEventType.SceneUpdated) {
+			var askedOldest = GetOldestPersons(AskedPeople);
+			if (!askedOldest.Contains(person))
+				type = AugmentaEventType.PersonWillLeave;
+		}
 
-        Gizmos.color = Color.red;
-        DrawGizmoCube(transform.position, transform.rotation, transform.localScale);
+		if (ActualPersonType == AugmentaPersonType.Newest && type != AugmentaEventType.SceneUpdated) {
+			var askedNewest = GetNewestPersons(AskedPeople);
+			if (!askedNewest.Contains(person))
+				type = AugmentaEventType.PersonWillLeave;
+		}
 
-        //Draw persons
-        Gizmos.color = Color.green;
-        foreach (var person in AugmentaPersons)
-        {
-            // Gizmos.DrawWireCube(person.Value.Position, new Vector3(person.Value.boundingRect.width * MeterPerPixel, person.Value.boundingRect.height * MeterPerPixel, person.Value.boundingRect.height * MeterPerPixel));
-            DrawGizmoCube(person.Value.Position, Quaternion.identity, new Vector3(person.Value.boundingRect.width, person.Value.boundingRect.height, person.Value.boundingRect.height));
-        }
-    }
+		switch (type) {
+			case AugmentaEventType.PersonEntered:
+				if (personEntered != null)
+					personEntered(person);
+				break;
 
-    public void DrawGizmoCube(Vector3 position, Quaternion rotation, Vector3 scale)
-    {
-        Matrix4x4 cubeTransform = Matrix4x4.TRS(position, rotation, scale);
-        Matrix4x4 oldGizmosMatrix = Gizmos.matrix;
+			case AugmentaEventType.PersonUpdated:
+				if (personUpdated != null)
+					personUpdated(person);
+				break;
 
-        Gizmos.matrix *= cubeTransform;
+			case AugmentaEventType.PersonWillLeave:
+				if (personLeaving != null)
+					personLeaving(person);
+				break;
 
-        Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
+			case AugmentaEventType.SceneUpdated:
+				if (sceneUpdated != null)
+					sceneUpdated(AugmentaScene);
+				break;
+		}
+	}
 
-        Gizmos.matrix = oldGizmosMatrix;
-    }
+	public bool HasObjects() {
+		if (AugmentaPeople.Count >= 1)
+			return true;
+		else
+			return false;
+	}
 
-    private AugmentaPerson addPerson(ArrayList args) {
+	public int arrayPersonCount() {
+		return AugmentaPeople.Count;
+	}
+
+	public Dictionary<int, AugmentaPerson> getPeopleArray() {
+		return AugmentaPeople;
+	}
+
+	private AugmentaPerson addPerson(ArrayList args) {
 		AugmentaPerson newPerson = new AugmentaPerson();
-        newPerson.Init();
+		newPerson.Init();
 		updatePerson(newPerson, args);
-        AugmentaPersons.Add(newPerson.pid, newPerson);
-        _orderedPids.Add(newPerson.pid);
+		AugmentaPeople.Add(newPerson.pid, newPerson);
+
 		return newPerson;
 	}
 
@@ -423,27 +376,25 @@ public class AugmentaArea : MonoBehaviour  {
 		p.pid = (int)args[0];
 		p.oid = (int)args[1];
 		p.age = (int)args[2];
-        var centroid = new Vector3((float)args[3], (float)args[4]);
-        var velocity = new Vector3((float)args[5], (float)args[6]);
-        var boudingRect = new Vector3((float)args[8], (float)args[9]);
-        var highest = new Vector3((float)args[12], (float)args[13]);
-        if (FlipX)
-        {
-            centroid.x = 1 - centroid.x;
-            velocity.x = -velocity.x;
-            boudingRect.x = 1 - boudingRect.x;
-            highest.x = 1 - highest.x;
-        }
-        if (FlipY)
-        {
-            centroid.y = 1 - centroid.y;
-            velocity.y = -velocity.y;
-            boudingRect.y = 1 - boudingRect.y;
-            highest.y = 1 - highest.y;
-        }
+		var centroid = new Vector3((float)args[3], (float)args[4]);
+		var velocity = new Vector3((float)args[5], (float)args[6]);
+		var boudingRect = new Vector3((float)args[8], (float)args[9]);
+		var highest = new Vector3((float)args[12], (float)args[13]);
+		if (FlipX) {
+			centroid.x = 1 - centroid.x;
+			velocity.x = -velocity.x;
+			boudingRect.x = 1 - boudingRect.x;
+			highest.x = 1 - highest.x;
+		}
+		if (FlipY) {
+			centroid.y = 1 - centroid.y;
+			velocity.y = -velocity.y;
+			boudingRect.y = 1 - boudingRect.y;
+			highest.y = 1 - highest.y;
+		}
 
-        p.centroid = centroid;
-        p.AddVelocity(velocity);
+		p.centroid = centroid;
+		p.AddVelocity(velocity);
 
 		p.depth = (float)args[7];
 		p.boundingRect.x = boudingRect.x;
@@ -454,94 +405,190 @@ public class AugmentaArea : MonoBehaviour  {
 		p.highest.y = highest.y;
 		p.highest.z = (float)args[14];
 
-        NbAugmentaPersons = AugmentaPersons.Count;
-        p.Position = transform.TransformPoint(new Vector3(p.centroid.x - 0.5f, -(p.centroid.y - 0.5f), p.centroid.z));
+		p.Position = transform.TransformPoint(new Vector3(-(p.centroid.x - 0.5f), -(p.centroid.y - 0.5f), p.centroid.z));
 
-        // Inactive time reset to zero : the Person has just been updated
-        p.inactiveTime = 0;
+		// Inactive time reset to zero : the Person has just been updated
+		p.inactiveTime = 0;
 
-        _orderedPids.Sort(delegate (int x, int y)
-        {
-            if (x == y) return 0;
-            else if (x < y) return -1;
-            else return 1;
-        });
-    }
+		if (!_orderedPids.Contains(p.pid) && p.oid <= _orderedPids.Count) {
+			_orderedPids.Insert(p.oid, p.pid);
+		}
+		//_orderedPids.Sort(delegate (int x, int y)
+		//{
+		//    if (x == y) return 0;
+		//    else if (x < y) return -1;
+		//    else return 1;
+		//});
+	}
 
-    public void clearAllPersons() {
-        AugmentaPersons.Clear();
-    }
+	public void clearAllPersons() {
+		AugmentaPeople.Clear();
+	}
 
-    public static List<AugmentaPerson> GetOldestPersons(int count)
-    {
-        var oldestPersons = new List<AugmentaPerson>();
+	public List<AugmentaPerson> GetOldestPersons(int count) {
+		var oldestPersons = new List<AugmentaPerson>();
 
-        if (count > _orderedPids.Count)
-            count = _orderedPids.Count;
+		if (count > _orderedPids.Count)
+			count = _orderedPids.Count;
 
-        if (count < 0)
-            count = 0;
+		if (count < 0)
+			count = 0;
 
-        var oidRange = _orderedPids.GetRange(0, count);
-       // Debug.Log("Orderedoid size : " + _orderedPids.Count + "augmentaPersons size " + AugmentaPersons.Count + "oidRange size : " + oidRange.Count);
-        for (var i=0; i < oidRange.Count; i++)
-        {
-            if (AugmentaPersons.ContainsKey(oidRange[i]))
-                oldestPersons.Add(AugmentaPersons[oidRange[i]]);
-        }
-        
-        //Debug.Log("Oldest count : " + oldestPersons.Count);
-        return oldestPersons;
-    }
+		var oidRange = _orderedPids.GetRange(0, count);
+		// Debug.Log("Orderedoid size : " + _orderedPids.Count + "augmentaPersons size " + AugmentaPeople.Count + "oidRange size : " + oidRange.Count);
+		for (var i = 0; i < oidRange.Count; i++) {
+			// if (AugmentaPeople.ContainsKey(oidRange[i]))
+			oldestPersons.Add(AugmentaPeople[oidRange[i]]);
+		}
 
-    public static List<AugmentaPerson> GetNewestPersons(int count)
-    {
-        var newestPersons = new List<AugmentaPerson>();
+		//Debug.Log("Oldest count : " + oldestPersons.Count);
+		return oldestPersons;
+	}
 
-        if (count > _orderedPids.Count)
-            count = _orderedPids.Count;
+	public List<AugmentaPerson> GetNewestPersons(int count) {
+		var newestPersons = new List<AugmentaPerson>();
 
-        if (count < 0)
-            count = 0;
+		if (count > AugmentaPeople.Count)
+			count = _orderedPids.Count;
 
-        var oidRange = _orderedPids.GetRange(_orderedPids.Count - count, count);
-        // Debug.Log("Orderedoid size : " + _orderedPids.Count + "augmentaPersons size " + AugmentaPersons.Count + "oidRange size : " + oidRange.Count);
-        for (var i = 0; i < oidRange.Count; i++)
-        {
-            if(AugmentaPersons.ContainsKey(oidRange[i]))
-                newestPersons.Add(AugmentaPersons[oidRange[i]]);
-        }
+		if (count < 0)
+			count = 0;
 
-        //Debug.Log("Oldest count : " + oldestPersons.Count);
-        return newestPersons;
-    }
+		var oidRange = _orderedPids.GetRange(_orderedPids.Count - count, count);
+		// Debug.Log("Orderedoid size : " + _orderedPids.Count + "augmentaPersons size " + AugmentaPeople.Count + "oidRange size : " + oidRange.Count);
+		for (var i = 0; i < oidRange.Count; i++) {
+			//if(AugmentaPeople.ContainsKey(oidRange[i]))
+			newestPersons.Add(AugmentaPeople[oidRange[i]]);
+		}
 
-    // Co-routine to check if person is alive or not
-    IEnumerator checkAlive() {
-		while(true) {
+		//Debug.Log("newestPersons count : " + newestPersons.Count);
+		return newestPersons;
+	}
+
+	// Co-routine to check if person is alive or not
+	IEnumerator checkAlive() {
+		while (true) {
 			ArrayList ids = new ArrayList();
-			foreach(KeyValuePair<int, AugmentaPerson> p in AugmentaPersons) {
+			foreach (KeyValuePair<int, AugmentaPerson> p in AugmentaPeople) {
 				ids.Add(p.Key);
 			}
-			foreach(int id in ids) {
-				if(AugmentaPersons.ContainsKey(id)){
+			foreach (int id in ids) {
+				if (AugmentaPeople.ContainsKey(id)) {
 
-					AugmentaPerson p = AugmentaPersons[id];
+					AugmentaPerson p = AugmentaPeople[id];
 
-					if(p.inactiveTime < PersonTimeOut) {
+					if (p.inactiveTime < PersonTimeOut) {
 						//Debug.Log("***: IS ALIVE");
 						// We add a frame to the inactiveTime count
 						p.inactiveTime += Time.deltaTime;
 					} else {
-                        //Debug.Log("***: DESTROY");
-                        // The Person hasn't been updated for a certain number of frames : remove
-                        SendAugmentaEvent(AugmentaEventType.PersonWillLeave, p);
-                        AugmentaPersons.Remove(id);
-                    }
+						//Debug.Log("***: DESTROY");
+						// The Person hasn't been updated for a certain number of frames : remove
+						SendAugmentaEvent(AugmentaEventType.PersonWillLeave, p);
+						AugmentaPeople.Remove(id);
+					}
 				}
 			}
 			ids.Clear();
 			yield return 0;
 		}
 	}
+
+	#endregion
+
+	#region OSC Functions 
+
+	public bool CreateAugmentaOSCListener() {
+		Debug.Log("[Augmenta" + augmentaAreaId + "] Subscribing to OSC Message on " + InputPort);
+		if (OSCMaster.Receivers.ContainsKey("AugmentaInput-" + augmentaAreaId)) {
+			OSCMaster.Receivers["AugmentaInput-" + augmentaAreaId].messageReceived -= OSCMessageReceived;
+			OSCMaster.RemoveReceiver("AugmentaInput-" + augmentaAreaId);
+		}
+		if (OSCMaster.CreateReceiver("AugmentaInput-" + augmentaAreaId, InputPort) != null) {
+			OSCMaster.Receivers["AugmentaInput-" + augmentaAreaId].messageReceived += OSCMessageReceived;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public void OSCMessageReceived(OSCMessage message) {
+
+		if (Mute) return;
+
+		string address = message.Address;
+		ArrayList args = new ArrayList(message.Data); //message.Data.ToArray();
+
+		//Debug.Log("OSC received with address : "+address);
+
+		if (address == "/au/personEntered/" || address == "/au/personEntered") {
+			int pid = (int)args[0];
+			AugmentaPerson currentPerson = null;
+			if (!AugmentaPeople.ContainsKey(pid)) {
+				currentPerson = addPerson(args);
+				SendAugmentaEvent(AugmentaEventType.PersonEntered, currentPerson);
+			} else {
+				currentPerson = AugmentaPeople[pid];
+				updatePerson(currentPerson, args);
+				SendAugmentaEvent(AugmentaEventType.PersonUpdated, currentPerson);
+			}
+
+		} else if (address == "/au/personUpdated/" || address == "/au/personUpdated") {
+			int pid = (int)args[0];
+			AugmentaPerson currentPerson = null;
+			if (!AugmentaPeople.ContainsKey(pid)) {
+				currentPerson = addPerson(args);
+				SendAugmentaEvent(AugmentaEventType.PersonEntered, currentPerson);
+			} else {
+				currentPerson = AugmentaPeople[pid];
+				updatePerson(currentPerson, args);
+				SendAugmentaEvent(AugmentaEventType.PersonUpdated, currentPerson);
+			}
+		} else if (address == "/au/personWillLeave/" || address == "/au/personWillLeave") {
+			int pid = (int)args[0];
+			if (AugmentaPeople.ContainsKey(pid)) {
+				AugmentaPerson personToRemove = AugmentaPeople[pid];
+				SendAugmentaEvent(AugmentaEventType.PersonWillLeave, personToRemove);
+				_orderedPids.Remove(personToRemove.pid);
+				//_orderedPids.Sort(delegate (int x, int y)
+				//{
+				//    if (x == y) return 0;
+				//    else if (x < y) return -1;
+				//    else return 1;
+				//});
+				AugmentaPeople.Remove(pid);
+			}
+		} else if (address == "/au/scene/" || address == "/au/scene") {
+			AugmentaScene.Width = (int)args[5];
+			AugmentaScene.Height = (int)args[6];
+
+			AspectRatio = (AugmentaScene.Width / AugmentaScene.Height);
+
+			transform.localScale = new Vector3(AugmentaScene.Width * meterPerPixel * scaling, AugmentaScene.Height * meterPerPixel * scaling, 1.0f);
+
+			SendAugmentaEvent(AugmentaEventType.SceneUpdated);
+		} else {
+			print(address + " ");
+		}
+
+		NbAugmentaPeople = AugmentaPeople.Count;
+	}
+
+	#endregion
+
+	#region Gizmos Functions
+
+	public void DrawGizmoCube(Vector3 position, Quaternion rotation, Vector3 scale) {
+		Matrix4x4 cubeTransform = Matrix4x4.TRS(position, rotation, scale);
+		Matrix4x4 oldGizmosMatrix = Gizmos.matrix;
+
+		Gizmos.matrix *= cubeTransform;
+
+		Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
+
+		Gizmos.matrix = oldGizmosMatrix;
+	}
+
+	#endregion
+
 }

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class AugmentaPersonBehaviour : MonoBehaviour {
 
+    public AugmentaAreaAnchor augmentaAreaAnchor;
+
     public int pid;
 
     public bool LoopAliveAnimation;
@@ -18,6 +20,7 @@ public class AugmentaPersonBehaviour : MonoBehaviour {
 
     public void Disappear()
     {
+        StopAllCoroutines(); //Stop alive animation
         StartCoroutine(DisappearAnimation(DisappearCallBack));
     }
 
