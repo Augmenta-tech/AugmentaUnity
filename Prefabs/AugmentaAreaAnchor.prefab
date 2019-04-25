@@ -51,10 +51,11 @@ MonoBehaviour:
   VelocityAverageValueCount: 1
   Width: 1280
   Height: 800
-  MeterPerPixel: 0.005
+  meterPerPixel: 0.005
+  scaling: 1
   DrawGizmos: 1
   augmentaCameraAnchor: {fileID: 289279835}
-  updateCameraOnSceneChange: 1
+  preserveCameraTransformOnSceneChange: 1
   linkedAugmentaArea: {fileID: 0}
 --- !u!1 &1617185360228212
 GameObject:
@@ -158,7 +159,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4096
   stopNaNPropagation: 1
-  finalBlitToCameraTarget: 1
+  finalBlitToCameraTarget: 0
   antialiasingMode: 2
   temporalAntialiasing:
     jitterSpread: 0.75
@@ -222,11 +223,6 @@ MonoBehaviour:
   alwaysUpdateCamera: 0
   alwaysUpdatePostProcess: 0
   linkedAugmentaArea: {fileID: 0}
-  updateAugmentaOnStart: 1
-  alwaysUpdateAugmenta: 0
-  zoom: 1
-  drawNearCone: 0
-  drawFrustum: 0
   centerOnAugmentaArea: 0
   cameraType: 1
   lookTarget: {fileID: 4367033815543688}

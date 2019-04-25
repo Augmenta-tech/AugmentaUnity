@@ -64,13 +64,6 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 
 	public virtual void Awake()
     {
-		if (!sourceInitialized) {
-			GetSourceCameraComponents();
-		}
-
-		if (!targetInitialized) {
-			GetTargetCameraComponents();
-		}
 
 	}
 
@@ -140,7 +133,7 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 
 		//Ensure the source camera components are initialized
 		if (!sourceInitialized) {
-			GetTargetCameraComponents();
+			GetSourceCameraComponents();
 		}
 
 		//Ensure the target camera components are initialized
@@ -207,7 +200,6 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
         tmpRotation = targetCamera.transform.rotation;
 
         targetCamera.CopyFrom(sourceCamera);
-		//targetCamera.projectionMatrix = sourceCamera.projectionMatrix;
 
         targetCamera.transform.position = tmpPosition;
         targetCamera.transform.rotation = tmpRotation;
@@ -232,8 +224,8 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 		destination.subpixelMorphologicalAntialiasing = source.subpixelMorphologicalAntialiasing;
 		destination.temporalAntialiasing = source.temporalAntialiasing;
 		destination.fog = source.fog;
-		//destination.dithering = source.dithering;
 		destination.stopNaNPropagation = source.stopNaNPropagation;
+		destination.finalBlitToCameraTarget = source.finalBlitToCameraTarget;
 
 	}
 }
