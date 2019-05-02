@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,12 +17,14 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 	 * ****************************************/
     
     //[Header("Target Camera Object")]
-    [SerializeField] public GameObject targetCameraObject;
+	[Tooltip("If you don't specify a targetCamera, the targetCameraName will be used to find the targetCamera.")]
+    [SerializeField] public String targetCameraName;
+	[SerializeField] public Camera targetCamera;
 
 	//Whether the camera properties should be updated at each frame or not
 	//[Header("Target Camera Update Settings")]
 
-    [Tooltip("Should the transform be copied to the target camera on start ?")]
+	[Tooltip("Should the transform be copied to the target camera on start ?")]
 	[SerializeField] public bool updateTransformOnStart = true;
 
     [Tooltip("Should the camera settings be copied to the target camera on start ?")]
@@ -46,8 +49,6 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
     protected Camera sourceCamera;
 
     //Target camera attributes
-    protected Camera targetCamera;
-
     protected PostProcessLayer targetPostProcessLayer;
 
     private Vector3 tmpPosition;
@@ -84,6 +85,11 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 	public void GetSourceCameraComponents() {
 		sourceCamera = GetComponent<Camera>();
 
+		if (!sourceCamera) {
+			Debug.LogError("Could not find a Camera component on " + gameObject.name);
+			return;
+		}
+
 		//Check if this camera has post process
 		postProcessLayer = GetComponent<PostProcessLayer>();
 
@@ -99,20 +105,21 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 	public void GetTargetCameraComponents() {
 
 		//Look for Camera Component
-		targetCamera = targetCameraObject.GetComponent<Camera>();
+		if (!targetCamera)
+			targetCamera = GameObject.Find(targetCameraName).GetComponent<Camera>();
 
 		if (!targetCamera) {
-			Debug.LogWarning("The target camera object " + targetCameraObject + " does not contain a camera component.");
+			Debug.LogWarning("Could not find the target camera to copy to from " + gameObject.name);
 			return;
 		}
 
 		if (hasPostProcessLayer && updatePostProcessOnStart) {
 			//Look for PostProcessLayer Component
-			targetPostProcessLayer = targetCameraObject.GetComponent<PostProcessLayer>();
+			targetPostProcessLayer = targetCamera.gameObject.GetComponent<PostProcessLayer>();
 
 			if (!targetPostProcessLayer) {
-				Debug.Log("TargetCamera " + targetCameraObject + " does not have a post process layer, adding one.");
-				targetPostProcessLayer = targetCameraObject.AddComponent<PostProcessLayer>();
+				Debug.Log("TargetCamera " + targetCamera + " does not have a post process layer, adding one.");
+				targetPostProcessLayer = targetCamera.gameObject.AddComponent<PostProcessLayer>();
 			}
 		}
 
@@ -123,13 +130,6 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
     }
 
 	public virtual void UpdateTargetCamera(bool updateTransform, bool updateCamera, bool updatePostProcess) {
-
-        //Don't update if no target camera 
-        if (!targetCameraObject)
-        {
-            Debug.LogWarning("No target camera object.");
-            return;
-        }
 
 		//Ensure the source camera components are initialized
 		if (!sourceInitialized) {
@@ -142,22 +142,22 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 		}
 
 		//Don't update self
-		if (targetCameraObject == gameObject)
+		if (targetCamera == sourceCamera)
         {
             return;
         }
 
 		//Copy layer to TargetCamera (for postprocess mainly)
-		targetCameraObject.layer = gameObject.layer;
+		targetCamera.gameObject.layer = gameObject.layer;
 
         if (updateCamera) {
 			//Copy camera settings to TargetCamera
-			CopyCameraComponent(sourceCamera, targetCamera);
+			CopyCameraComponent();
 		}
 
 		if (updateTransform) {
 			//Copy transform to TargetCamera
-            CopyTransformComponent(transform, targetCameraObject.transform);
+            CopyTransformComponent(transform, targetCamera.transform);
 		}
 
 		if (updatePostProcess) {
@@ -169,31 +169,7 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
             sourceCamera.enabled = false;
     }
 
-	private void CopyCameraComponent(Camera source, Camera destination) {
-
-        //Camera properties
-        /*
-        destination.clearFlags = source.clearFlags;
-		destination.backgroundColor = source.backgroundColor;
-		destination.cullingMask = source.cullingMask;
-		destination.orthographic = source.orthographic;
-		destination.orthographicSize = source.orthographicSize;
-		destination.fieldOfView = source.fieldOfView;
-		destination.farClipPlane = source.farClipPlane;
-		destination.nearClipPlane = source.nearClipPlane;
-		destination.rect = source.rect;
-		destination.depth = source.depth;
-		destination.renderingPath = source.renderingPath;
-		destination.targetTexture = source.targetTexture;
-		destination.targetDisplay = source.targetDisplay;
-		destination.allowHDR = source.allowHDR;
-		destination.allowMSAA = source.allowMSAA;
-		destination.allowDynamicResolution = source.allowDynamicResolution;
-		destination.clearStencilAfterLightingPass = source.clearStencilAfterLightingPass;
-		destination.depthTextureMode = source.depthTextureMode;
-		destination.eventMask = source.eventMask;
-		destination.opaqueSortMode = source.opaqueSortMode;
-        */
+	private void CopyCameraComponent() {
 
         //Keep and reapply current transform since copyFrom also copy the transform
         tmpPosition = targetCamera.transform.position;

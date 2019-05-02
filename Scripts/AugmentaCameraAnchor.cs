@@ -76,7 +76,7 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 	#region Augmenta Functions
 
 	public void InitializeTargetCamera() {
-        targetCameraObject = linkedAugmentaArea.augmentaCamera.gameObject;
+        targetCamera = linkedAugmentaArea.augmentaCamera.gameObject.GetComponent<Camera>();
     }
 
 	void UpdateAugmentaAreaCorners() {
