@@ -45,8 +45,10 @@ public class AugmentaAreaAnchor : MonoBehaviour {
     public float Width = 1280;
     public float Height = 800;
     public float meterPerPixel = 0.005f;
-	public float scaling = 1.0f;
 	public bool DrawGizmos;
+
+    [Header("Augmenta Area scene settings")]
+    public float scaling = 1.0f;
 
     [Header("Augmenta Camera")]
 	public AugmentaCameraAnchor augmentaCameraAnchor;
@@ -150,6 +152,7 @@ public class AugmentaAreaAnchor : MonoBehaviour {
 	public void UpdateAugmentaArea() {
 		linkedAugmentaArea.transform.position = transform.position;
 		linkedAugmentaArea.transform.rotation = transform.rotation;
+        linkedAugmentaArea.scaling = scaling;
 	}
 
 	public virtual void SceneUpdated(AugmentaScene s)
