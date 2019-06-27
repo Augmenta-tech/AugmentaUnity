@@ -112,6 +112,7 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 
     void ComputeOrthoCamera()
     {
+        sourceCamera.orthographic = true;
         sourceCamera.aspect = linkedAugmentaArea.AspectRatio;
         sourceCamera.orthographicSize = linkedAugmentaArea.transform.localScale.y / 2;
         
@@ -120,6 +121,8 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 
     void ComputePerspectiveCamera()
     {
+        sourceCamera.orthographic = false;
+
         if (centerOnAugmentaArea) {
             sourceCamera.transform.localPosition = new Vector3(0.0f, 0.0f, transform.localPosition.z);
         }
@@ -133,6 +136,7 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 
     void ComputeOffCenterCamera()
     {
+        sourceCamera.orthographic = false;
         sourceCamera.ResetAspect();
 
         Vector3 pa, pb, pc, pd;
