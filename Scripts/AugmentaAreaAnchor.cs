@@ -65,7 +65,7 @@ public class AugmentaAreaAnchor : MonoBehaviour {
 			if (!augmentaCameraAnchor)
 				return;
 
-			augmentaCameraAnchor.transform.localPosition = new Vector3(augmentaCameraAnchor.transform.localPosition.x, augmentaCameraAnchor.transform.localPosition.y, _distanceToArea);
+			//augmentaCameraAnchor.transform.localPosition = new Vector3(augmentaCameraAnchor.transform.localPosition.x, augmentaCameraAnchor.transform.localPosition.y, _distanceToArea);
 //			augmentaCameraAnchor.UpdateTargetCamera(true, false, false);
         }
     }
@@ -104,16 +104,17 @@ public class AugmentaAreaAnchor : MonoBehaviour {
 	}
 
 	public virtual void Update () {
-        if (linkedAugmentaArea)
-        {
-			UpdateAugmentaArea();
-		}
+
 
         foreach (var element in InstantiatedObjects)
         {
             if (!linkedAugmentaArea.AugmentaPeople.ContainsKey(element.Key)) continue;
 
             element.Value.transform.position = Vector3.Lerp(element.Value.transform.position, linkedAugmentaArea.AugmentaPeople[element.Key].Position, PositionFollowTightness);
+        }
+        if (linkedAugmentaArea)
+        {
+            UpdateAugmentaArea();
         }
     }
 
@@ -145,11 +146,11 @@ public class AugmentaAreaAnchor : MonoBehaviour {
 	}
 
 
-	#endregion
+    #endregion
 
-	#region Augmenta Functions
+    #region Augmenta Functions
 
-	public void UpdateAugmentaArea() {
+    public void UpdateAugmentaArea() {
 		linkedAugmentaArea.transform.position = transform.position;
 		linkedAugmentaArea.transform.rotation = transform.rotation;
         linkedAugmentaArea.scaling = scaling;
@@ -167,6 +168,9 @@ public class AugmentaAreaAnchor : MonoBehaviour {
     {
         if (!InstantiatedObjects.ContainsKey(p.pid))
         {
+            if (PrefabToInstantiate == null)
+                return;
+
             var newObject = Instantiate(PrefabToInstantiate, p.Position, Quaternion.identity, this.transform);
             newObject.transform.localRotation = Quaternion.Euler(Vector3.zero);
             InstantiatedObjects.Add(p.pid, newObject);

@@ -18,7 +18,7 @@ public class AugmentaCameraAnchorEditor : Editor
 
 	SerializedProperty _cameraType;
 	SerializedProperty _centerOnAugmentaArea;
-	SerializedProperty _lookTarget;
+	//SerializedProperty _lookTarget;
 
 	private void OnEnable() {
 
@@ -34,7 +34,7 @@ public class AugmentaCameraAnchorEditor : Editor
 
 		_cameraType = serializedObject.FindProperty("cameraType");
 		_centerOnAugmentaArea = serializedObject.FindProperty("centerOnAugmentaArea");
-		_lookTarget = serializedObject.FindProperty("lookTarget");
+	//	_lookTarget = serializedObject.FindProperty("lookTarget");
 	}
 
 	public override void OnInspectorGUI()
@@ -63,7 +63,7 @@ public class AugmentaCameraAnchorEditor : Editor
 
 		EditorGUILayout.PropertyField(_cameraType, new GUIContent("Camera Type"));
 		EditorGUILayout.PropertyField(_centerOnAugmentaArea, new GUIContent("Center On Augmenta Area"));
-		EditorGUILayout.PropertyField(_lookTarget, new GUIContent("Look Target"));
+	//	EditorGUILayout.PropertyField(_lookTarget, new GUIContent("Look Target"));
 
 		serializedObject.ApplyModifiedProperties();
 	}

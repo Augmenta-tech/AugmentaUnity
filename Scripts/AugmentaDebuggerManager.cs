@@ -49,6 +49,8 @@ public class AugmentaDebuggerManager : AugmentaAreaAnchor {
 
 	public override void Update()
     {
+        base.Update();
+
         PositionFollowTightness = 20; //To prevent people from touching it
 
         //because it is under aAugmnetaArea and is scaled by it, to keep correct aspect ratio
@@ -56,7 +58,6 @@ public class AugmentaDebuggerManager : AugmentaAreaAnchor {
 
         Background.transform.localScale = new Vector3(linkedAugmentaArea.transform.localScale.x, linkedAugmentaArea.transform.localScale.y, 0.01f); ;
         Background.GetComponent<Renderer>().material.mainTextureScale = linkedAugmentaArea.transform.localScale * 0.5f; //because texture is made of 4 same size squares ;
-        base.Update();
     }
 
     public override void PersonEntered(AugmentaPerson p)

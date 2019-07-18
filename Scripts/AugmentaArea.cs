@@ -99,7 +99,8 @@ public enum AugmentaEventType
 public class AugmentaArea : MonoBehaviour  {
 
     [HideInInspector]
-    public AugmentaCamera augmentaCamera;
+    public Camera augmentaCamera;
+    public Transform dataArea;
 
     [Header("Augmenta settings")]
     public string augmentaAreaId;
@@ -230,7 +231,7 @@ public class AugmentaArea : MonoBehaviour  {
 	void Awake() {
 
 		//Get the AugmentaCamera
-		augmentaCamera = transform.GetComponentInChildren<AugmentaCamera>();
+		augmentaCamera = transform.GetComponentInChildren<Camera>();
 
 		cameraRendering = false;
 
@@ -280,7 +281,7 @@ public class AugmentaArea : MonoBehaviour  {
 		if (!DrawGizmos) return;
 
 		Gizmos.color = Color.red;
-		DrawGizmoCube(transform.position, transform.rotation, transform.localScale);
+        DrawGizmoCube(dataArea.transform.position, dataArea.transform.rotation, dataArea.transform.localScale);
 
 		//Draw persons
 		Gizmos.color = Color.green;
@@ -405,7 +406,7 @@ public class AugmentaArea : MonoBehaviour  {
 		p.highest.y = highest.y;
 		p.highest.z = (float)args[14];
 
-		p.Position = transform.TransformPoint(new Vector3(-(p.centroid.x - 0.5f), -(p.centroid.y - 0.5f), p.centroid.z));
+		p.Position = dataArea.transform.TransformPoint(new Vector3((p.centroid.x - 0.5f), -(p.centroid.y - 0.5f), p.centroid.z));
 
 		// Inactive time reset to zero : the Person has just been updated
 		p.inactiveTime = 0;
@@ -564,7 +565,7 @@ public class AugmentaArea : MonoBehaviour  {
 
 			AspectRatio = (AugmentaScene.Width / AugmentaScene.Height);
 
-			transform.localScale = new Vector3(AugmentaScene.Width * meterPerPixel * scaling, AugmentaScene.Height * meterPerPixel * scaling, 1.0f);
+			dataArea.transform.localScale = new Vector3(AugmentaScene.Width * meterPerPixel * scaling, AugmentaScene.Height * meterPerPixel * scaling, 1.0f);
 
 			SendAugmentaEvent(AugmentaEventType.SceneUpdated);
 		} else {

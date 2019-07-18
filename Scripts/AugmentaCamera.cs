@@ -21,7 +21,7 @@ public class AugmentaCamera : AugmentaCameraAnchor
         alwaysUpdatePostProcess = false;
         disableAfterUpdate = false;
 
-        targetCamera = GetComponent<Camera>();
+        //targetCamera = GetComponent<Camera>();
 
 		base.Awake();
     }

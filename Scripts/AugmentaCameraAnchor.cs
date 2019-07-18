@@ -23,13 +23,8 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
     private Vector3 BottomRightCorner;
     private Vector3 TopLeftCorner;
     private Vector3 TopRightCorner;
-    public Transform lookTarget;
 
 	#region MonoBehaviour Functions
-
-	public override void Awake() {
-		base.Awake();
-	}
 
 	// Use this for initialization
 	public virtual void Start () {
@@ -38,15 +33,13 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 
     }
 
-	void Update() {
+	void OnPreRender() {
 
 		UpdateAugmentaAreaCorners();
 
 		if (centerOnAugmentaArea) {
-			sourceCamera.transform.localPosition = new Vector3(0, 0, transform.localPosition.z);
-		} else {
-			sourceCamera.transform.localPosition = new Vector3(sourceCamera.transform.localPosition.x, sourceCamera.transform.localPosition.y, transform.localPosition.z);
-		}
+			transform.localPosition = new Vector3(0, 0, transform.localPosition.z);
+		} 
 
 		//Don't update camera with a 0 sized AugmentaArea
 		if ((linkedAugmentaArea.AugmentaScene.Width == 0 || linkedAugmentaArea.AugmentaScene.Height == 0))
@@ -80,10 +73,10 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
     }
 
 	void UpdateAugmentaAreaCorners() {
-		BottomLeftCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, -0.5f, 0));
-		BottomRightCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, -0.5f, 0));
-		TopLeftCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(0.5f, 0.5f, 0));
-		TopRightCorner = linkedAugmentaArea.transform.TransformPoint(new Vector3(-0.5f, 0.5f, 0));
+		BottomLeftCorner = linkedAugmentaArea.dataArea.transform.TransformPoint(new Vector3(-0.5f, -0.5f, 0));
+		BottomRightCorner = linkedAugmentaArea.dataArea.transform.TransformPoint(new Vector3(0.5f, -0.5f, 0));
+		TopLeftCorner = linkedAugmentaArea.dataArea.transform.TransformPoint(new Vector3(-0.5f, 0.5f, 0));
+		TopRightCorner = linkedAugmentaArea.dataArea.transform.TransformPoint(new Vector3(0.5f, 0.5f, 0));
 	}
 
 	private void CopyAugmentaCameraSettings() {
@@ -93,8 +86,8 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 		if (!linkedAugmentaArea.augmentaCamera)
 			return;
 
-		linkedAugmentaArea.augmentaCamera.cameraType = cameraType;
-		linkedAugmentaArea.augmentaCamera.centerOnAugmentaArea = centerOnAugmentaArea;
+	//	linkedAugmentaArea.augmentaCamera.cameraType = cameraType;
+	//	linkedAugmentaArea.augmentaCamera.centerOnAugmentaArea = centerOnAugmentaArea;
 	}
 
 	#endregion

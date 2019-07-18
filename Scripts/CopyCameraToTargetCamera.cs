@@ -150,17 +150,20 @@ public class CopyCameraToTargetCamera : MonoBehaviour {
 		//Copy layer to TargetCamera (for postprocess mainly)
 		targetCamera.gameObject.layer = gameObject.layer;
 
-        if (updateCamera) {
-			//Copy camera settings to TargetCamera
-			CopyCameraComponent();
-		}
 
 		if (updateTransform) {
 			//Copy transform to TargetCamera
             CopyTransformComponent(transform, targetCamera.transform);
 		}
 
-		if (updatePostProcess) {
+
+        if (updateCamera)
+        {
+            //Copy camera settings to TargetCamera
+            CopyCameraComponent();
+        }
+
+        if (updatePostProcess) {
 			//If post processings, copy post processing settings to TargetCamera
 			CopyPostProcessLayerComponent(postProcessLayer, targetPostProcessLayer);
 		}
