@@ -33,7 +33,7 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 
     }
 
-	void OnPreRender() {
+	void Update() {
 
 		UpdateAugmentaAreaCorners();
 
@@ -129,8 +129,9 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 
     void ComputeOffCenterCamera()
     {
-        sourceCamera.orthographic = false;
+        //sourceCamera.ResetProjectionMatrix();
         sourceCamera.ResetAspect();
+        sourceCamera.orthographic = false;
 
         Vector3 pa, pb, pc, pd;
         pa = BottomLeftCorner; //Bottom-Left
