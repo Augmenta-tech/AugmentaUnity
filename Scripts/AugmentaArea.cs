@@ -305,9 +305,16 @@ public class AugmentaArea : MonoBehaviour  {
 		augmentaAreas.Add(augmentaAreaId, this);
 	}
 
-	public void ConnectToAnchor() {
+	public void ConnectToAnchor(AugmentaAreaAnchor anchor) {
 		connectedToAnchor = true;
-	}
+
+        AugmentaScene.Width = anchor.Width;
+        AugmentaScene.Height = anchor.Height;
+
+        AspectRatio = (AugmentaScene.Width / AugmentaScene.Height);
+
+        dataArea.transform.localScale = new Vector3(AugmentaScene.Width * meterPerPixel * scaling, AugmentaScene.Height * meterPerPixel * scaling, 1.0f);
+    }
 
 	public void DisconnectFromAnchor() {
 		connectedToAnchor = false;

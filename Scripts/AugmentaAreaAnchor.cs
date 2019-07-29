@@ -87,7 +87,7 @@ public class AugmentaAreaAnchor : MonoBehaviour {
             augmentaCameraAnchor = transform.GetChild(0).GetComponent<AugmentaCameraAnchor>();
 
         linkedAugmentaArea = AugmentaArea.augmentaAreas[linkedAugmentaAreaId];
-        linkedAugmentaArea.ConnectToAnchor();
+        linkedAugmentaArea.ConnectToAnchor(this);
 
 		augmentaCameraAnchor.linkedAugmentaArea = linkedAugmentaArea;
 		augmentaCameraAnchor.InitializeTargetCamera();
