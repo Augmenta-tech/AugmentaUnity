@@ -5,10 +5,9 @@ Example project using this library here : https://github.com/Theoriz/AugmentaUni
 # Feature List
 ## Implemented
 - OSC Data Parsing
--- Scene
--- PersonsArray
--- PersonEnterEvent
--- PersonLeftEvent
+
+   Scene, PersonsArray, SceneUpdatedEvent, PersonEnterEvent, PersonUpdatedEvent,PersonLeftEvent
+
 - Scene Object
 - Person Object
 - Debug View
