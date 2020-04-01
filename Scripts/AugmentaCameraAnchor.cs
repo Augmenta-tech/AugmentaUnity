@@ -129,7 +129,11 @@ public class AugmentaCameraAnchor : CopyCameraToTargetCamera {
 
 		sourceCamera.ResetProjectionMatrix();
 
-		sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(linkedAugmentaArea.AugmentaScene.Height * 0.5f * linkedAugmentaArea.meterPerPixel * linkedAugmentaArea.scaling, transform.localPosition.z);
+        if (linkedAugmentaArea.protocolVersion == ProtocolVersion.v1) {
+            sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(linkedAugmentaArea.AugmentaScene.Height * 0.5f * linkedAugmentaArea.meterPerPixel * linkedAugmentaArea.scaling, transform.localPosition.z);
+        } else if (linkedAugmentaArea.protocolVersion == ProtocolVersion.v2) {
+            sourceCamera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(linkedAugmentaArea.AugmentaScene.Height * 0.5f * linkedAugmentaArea.scaling, transform.localPosition.z);
+        }
         sourceCamera.aspect = linkedAugmentaArea.AugmentaScene.Width / linkedAugmentaArea.AugmentaScene.Height;
         
     }

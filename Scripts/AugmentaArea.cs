@@ -96,6 +96,12 @@ public enum AugmentaEventType
     SceneUpdated
 };
 
+public enum ProtocolVersion
+{
+	v1,
+	v2
+};
+
 public class AugmentaArea : MonoBehaviour  {
 
     [HideInInspector]
@@ -134,6 +140,8 @@ public class AugmentaArea : MonoBehaviour  {
             connected = CreateAugmentaOSCListener();
         }
     }
+
+	public ProtocolVersion protocolVersion = ProtocolVersion.v2;
     public float meterPerPixel= 0.005f;
     public float scaling = 1.0f;
 
@@ -559,12 +567,21 @@ public class AugmentaArea : MonoBehaviour  {
 				AugmentaPeople.Remove(pid);
 			}
 		} else if (address == "/au/scene/" || address == "/au/scene") {
-			AugmentaScene.Width = (int)args[5];
-			AugmentaScene.Height = (int)args[6];
+
+			if (protocolVersion == ProtocolVersion.v1) {
+				AugmentaScene.Width = (int)args[5];
+				AugmentaScene.Height = (int)args[6];
+
+				transform.localScale = new Vector3(AugmentaScene.Width * meterPerPixel * scaling, AugmentaScene.Height * meterPerPixel * scaling, 1.0f);
+
+			} else if (protocolVersion == ProtocolVersion.v2) {
+				AugmentaScene.Width = (float)args[5];
+				AugmentaScene.Height = (float)args[6];
+
+				transform.localScale = new Vector3(AugmentaScene.Width * scaling, AugmentaScene.Height * scaling, 1.0f);
+			}
 
 			AspectRatio = (AugmentaScene.Width / AugmentaScene.Height);
-
-			transform.localScale = new Vector3(AugmentaScene.Width * meterPerPixel * scaling, AugmentaScene.Height * meterPerPixel * scaling, 1.0f);
 
 			SendAugmentaEvent(AugmentaEventType.SceneUpdated);
 		} else {

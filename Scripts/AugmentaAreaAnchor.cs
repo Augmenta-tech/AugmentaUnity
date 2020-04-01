@@ -42,8 +42,9 @@ public class AugmentaAreaAnchor : MonoBehaviour {
     public int VelocityAverageValueCount = 1;
 
     [Header("Augmenta Area Visualization")]
-    public float Width = 1280;
-    public float Height = 800;
+    public ProtocolVersion protocolVersion = ProtocolVersion.v2;
+    public float Width = 5;
+    public float Height = 5;
     public float meterPerPixel = 0.005f;
 	public bool DrawGizmos;
 
@@ -140,8 +141,13 @@ public class AugmentaAreaAnchor : MonoBehaviour {
 
 		Gizmos.color = Color.blue;
 
-		//Draw area 
-		DrawGizmoCube(transform.position, transform.rotation, new Vector3(Width * meterPerPixel * scaling, Height * meterPerPixel * scaling, 1.0f));
+        //Draw area 
+        if (protocolVersion == ProtocolVersion.v1) {
+            DrawGizmoCube(transform.position, transform.rotation, new Vector3(Width * meterPerPixel * scaling, Height * meterPerPixel * scaling, 1.0f));
+        } else if (protocolVersion == ProtocolVersion.v2) {
+            DrawGizmoCube(transform.position, transform.rotation, new Vector3(Width * scaling, Height * scaling, 1.0f));
+        }
+
 	}
 
 
