@@ -49,11 +49,12 @@ MonoBehaviour:
     type: 3}
   PositionFollowTightness: 0.8
   VelocityAverageValueCount: 1
-  Width: 1280
-  Height: 800
+  protocolVersion: 1
+  Width: 5
+  Height: 5
   meterPerPixel: 0.005
-  scaling: 1
   DrawGizmos: 1
+  scaling: 1
   augmentaCameraAnchor: {fileID: 289279835}
   preserveCameraTransformOnSceneChange: 1
   linkedAugmentaArea: {fileID: 0}
@@ -214,7 +215,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 696a309ed41234e4593715990b53a35f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetCameraObject: {fileID: 0}
+  targetCameraName: 
+  targetCamera: {fileID: 0}
   updateTransformOnStart: 1
   updateCameraOnStart: 1
   updatePostProcessOnStart: 1

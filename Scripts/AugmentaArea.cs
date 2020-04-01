@@ -142,10 +142,12 @@ public class AugmentaArea : MonoBehaviour  {
     }
 
 	public ProtocolVersion protocolVersion = ProtocolVersion.v2;
-    public float meterPerPixel= 0.005f;
     public float scaling = 1.0f;
 
-    [HideInInspector]
+	[Header("For protocol V1 only")]
+	public float meterPerPixel = 0.005f;
+
+	[HideInInspector]
     public float AspectRatio;
 
     [Header("Augmenta people settings")]
@@ -213,8 +215,12 @@ public class AugmentaArea : MonoBehaviour  {
 
     public Camera spoutCamera;
 
-    /* Events */
-    public delegate void PersonEntered(AugmentaPerson p);
+	public List<TestCards.TestOverlay> overlays;
+
+	public AugmentaScene AugmentaScene;
+
+	/* Events */
+	public delegate void PersonEntered(AugmentaPerson p);
     public event PersonEntered personEntered;
 
     public delegate void PersonUpdated(AugmentaPerson p);
@@ -229,9 +235,7 @@ public class AugmentaArea : MonoBehaviour  {
 	public Dictionary<int, AugmentaPerson> AugmentaPeople = new Dictionary<int, AugmentaPerson>(); // Containing all current persons
     private List<int> _orderedPids = new List<int>(); //Used to find oldest and newest
 
-    public List<TestCards.TestOverlay> overlays;
 
-    public AugmentaScene AugmentaScene;
 
 	#region MonoBehaviour Functions
 

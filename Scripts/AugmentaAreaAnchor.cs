@@ -45,11 +45,13 @@ public class AugmentaAreaAnchor : MonoBehaviour {
     public ProtocolVersion protocolVersion = ProtocolVersion.v2;
     public float Width = 5;
     public float Height = 5;
-    public float meterPerPixel = 0.005f;
 	public bool DrawGizmos;
 
     [Header("Augmenta Area scene settings")]
     public float scaling = 1.0f;
+
+    [Header("For protocol V1 only")]
+    public float meterPerPixel = 0.005f;
 
     [Header("Augmenta Camera")]
 	public AugmentaCameraAnchor augmentaCameraAnchor;
