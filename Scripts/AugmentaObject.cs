@@ -1,18 +1,18 @@
-using System;
+//using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Augmenta
 {
-	public class AugmentaPerson : MonoBehaviour
+	public class AugmentaObject : MonoBehaviour
 	{
-        [Header("Person Settings")]
+        [Header("Object Settings")]
         public AugmentaManager augmentaManager;
         public bool showDebug = false;
         public GameObject debugObject;
 
-        [Header("Augmenta Person Values")]
-        public int pid;
+        [Header("Augmenta Object Values")]
+        public int id;
 		public int oid;
 		public int age;
 		public Vector2 centroid;
@@ -22,6 +22,8 @@ namespace Augmenta
 		public Vector3 highest;
 
         public float inactiveTime;
+
+        private Material augmentaObjectMaterialInstance;
 
         private bool _initialized = false;
 
@@ -46,16 +48,16 @@ namespace Augmenta
         void OnDrawGizmos() {
 
             Gizmos.color = Color.red;
-            DrawGizmoCube(GetPersonWorldPosition(true),
+            DrawGizmoCube(GetAugmentaObjectWorldPosition(true),
                           transform.rotation, 
-                          GetPersonWorldScale());
+                          GetAugmentaObjectWorldScale());
         }
 
         void OnDisable() {
 
             //Disconnect from person updated event
             if (_initialized) {
-                augmentaManager.personUpdated -= UpdatePerson;
+                augmentaManager.augmentaObjectUpdated -= UpdateAugmentaObject;
             }
         }
 
@@ -64,7 +66,7 @@ namespace Augmenta
         #region Scene Handling Functions
 
         /// <summary>
-        /// Initialize the person
+        /// Initialize the augmenta object
         /// </summary>
         void Initialize() {
 
@@ -72,30 +74,37 @@ namespace Augmenta
                 return;
 
             //Connect to Augmenta events
-            augmentaManager.personUpdated += UpdatePerson;
+            augmentaManager.augmentaObjectUpdated += UpdateAugmentaObject;
+
+            //Get an instance of the debug material
+            augmentaObjectMaterialInstance = debugObject.GetComponent<Renderer>().material;
+
+            //Apply a random color to the material
+            Random.InitState(id);
+            augmentaObjectMaterialInstance.SetColor("_Color", Color.HSVToRGB(Random.value, 0.85f, 0.75f));
 
             _initialized = true;
         }
 
         /// <summary>
-        /// Response to person updated event
+        /// Response to augmenta object updated event
         /// </summary>
-        /// <param name="person"></param>
-        public void UpdatePerson(AugmentaPerson person) {
+        /// <param name="augmentaObject"></param>
+        public void UpdateAugmentaObject(AugmentaObject augmentaObject) {
 
-            if (person.pid != pid)
+            if (augmentaObject.id != id)
                 return;
 
             //Update debug object size
-            debugObject.transform.position = GetPersonWorldPosition(true);
-            debugObject.transform.localScale = GetPersonWorldScale();
+            debugObject.transform.position = GetAugmentaObjectWorldPosition(true);
+            debugObject.transform.localScale = GetAugmentaObjectWorldScale();
         }
 
         /// <summary>
-        /// Return the person world position from the Augmenta scene position, offsetted by half the person height or not.
+        /// Return the Augmenta object world position from the Augmenta scene position, offsetted by half the object height or not.
         /// </summary>
         /// <returns></returns>
-        Vector3 GetPersonWorldPosition(bool offset) {
+        Vector3 GetAugmentaObjectWorldPosition(bool offset) {
 
             return augmentaManager.augmentaScene.transform.TransformPoint((centroid.x - 0.5f) * augmentaManager.augmentaScene.width * augmentaManager.scaling,
                                                                           offset ? highest.z * 0.5f * augmentaManager.scaling : 0,
@@ -103,10 +112,10 @@ namespace Augmenta
         }
 
         /// <summary>
-        /// Return the person scale
+        /// Return the Augmenta object scale
         /// </summary>
         /// <returns></returns>
-        Vector3 GetPersonWorldScale() {
+        Vector3 GetAugmentaObjectWorldScale() {
 
             return new Vector3(boundingRect.width * augmentaManager.augmentaScene.width * augmentaManager.scaling,
                                highest.z * augmentaManager.scaling,

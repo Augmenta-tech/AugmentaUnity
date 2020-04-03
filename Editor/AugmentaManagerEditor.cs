@@ -9,31 +9,31 @@ namespace Augmenta
     public class AugmentaManagerEditor : Editor
     {
 
-        SerializedProperty id;
+        SerializedProperty augmentaId;
         SerializedProperty inputPort;
         SerializedProperty scaling;
         SerializedProperty flipX;
         SerializedProperty flipY;
-        SerializedProperty personTimeOut;
-        SerializedProperty desiredPersonType;
-        SerializedProperty desiredPersonCount;
+        SerializedProperty augmentaObjectTimeOut;
+        SerializedProperty desiredAugmentaObjectType;
+        SerializedProperty desiredAugmentaObjectCount;
         SerializedProperty augmentaScenePrefab;
-        SerializedProperty augmentaPersonPrefab;
+        SerializedProperty augmentaObjectPrefab;
         SerializedProperty mute;
         SerializedProperty showDebug;
 
         void OnEnable() {
 
-            id = serializedObject.FindProperty("id");
+            augmentaId = serializedObject.FindProperty("augmentaId");
             inputPort = serializedObject.FindProperty("_inputPort");
             scaling = serializedObject.FindProperty("scaling");
             flipX = serializedObject.FindProperty("flipX");
             flipY = serializedObject.FindProperty("flipY");
-            personTimeOut = serializedObject.FindProperty("personTimeOut");
-            desiredPersonType = serializedObject.FindProperty("desiredPersonType");
-            desiredPersonCount = serializedObject.FindProperty("desiredPersonCount");
+            augmentaObjectTimeOut = serializedObject.FindProperty("augmentaObjectTimeOut");
+            desiredAugmentaObjectType = serializedObject.FindProperty("desiredAugmentaObjectType");
+            desiredAugmentaObjectCount = serializedObject.FindProperty("desiredAugmentaObjectCount");
             augmentaScenePrefab = serializedObject.FindProperty("augmentaScenePrefab");
-            augmentaPersonPrefab = serializedObject.FindProperty("augmentaPersonPrefab");
+            augmentaObjectPrefab = serializedObject.FindProperty("augmentaObjectPrefab");
             mute = serializedObject.FindProperty("mute");
             showDebug = serializedObject.FindProperty("showDebug");
         }
@@ -44,7 +44,7 @@ namespace Augmenta
 
             serializedObject.Update();
 
-            EditorGUILayout.PropertyField(id, new GUIContent("ID"));
+            EditorGUILayout.PropertyField(augmentaId, new GUIContent("Augmenta ID"));
 
             //Input port change handling
             EditorGUI.BeginChangeCheck();
@@ -57,14 +57,14 @@ namespace Augmenta
             EditorGUILayout.PropertyField(scaling, new GUIContent("Scaling"));
             EditorGUILayout.PropertyField(flipX, new GUIContent("Flip X"));
             EditorGUILayout.PropertyField(flipY, new GUIContent("Flip Y"));
-            EditorGUILayout.PropertyField(personTimeOut, new GUIContent("Person TimeOut"));
-            EditorGUILayout.PropertyField(desiredPersonType, new GUIContent("Desired Person Type"));
-            if(desiredPersonType.enumValueIndex > 0) {
-                EditorGUILayout.PropertyField(desiredPersonCount, new GUIContent("Desired Person Count"));
+            EditorGUILayout.PropertyField(augmentaObjectTimeOut, new GUIContent("Augmenta Object TimeOut"));
+            EditorGUILayout.PropertyField(desiredAugmentaObjectType, new GUIContent("Desired Augmenta Object Type"));
+            if(desiredAugmentaObjectType.enumValueIndex > 0) {
+                EditorGUILayout.PropertyField(desiredAugmentaObjectCount, new GUIContent("Desired Augmenta Object Count"));
             }
 
             EditorGUILayout.PropertyField(augmentaScenePrefab, new GUIContent("Augmenta Scene Prefab"));
-            EditorGUILayout.PropertyField(augmentaPersonPrefab, new GUIContent("Augmenta Person Prefab"));
+            EditorGUILayout.PropertyField(augmentaObjectPrefab, new GUIContent("Augmenta Object Prefab"));
 
             EditorGUILayout.PropertyField(mute, new GUIContent("Mute"));
 

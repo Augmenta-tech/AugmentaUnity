@@ -6,32 +6,6 @@ using Augmenta;
 using Augmenta.UnityOSC;
 
 /// <summary>
-/// The AugmentaArea handles the incoming Augmenta OSC messages and updates the AugmentaPeople list and AugmentaScene accordingly.
-///  
-/// It also sends the events personEntered, personUpdated, personLeaving and sceneUpdated when the corresponding events are happening in Augmenta.
-///  
-/// AugmentaArea parameters:
-/// 
-/// DEBUG:
-/// Mute: If muted, the AugmentaArea will not process incoming OSC messages.
-/// Mire: Enable the display of a mire in the AugmentaArea.
-/// AugmentaDebugger: AugmentaDebugger instance that will be used for debug handling.
-/// Augmenta Debug: Enable the Augmenta Debug, drawing each person with their information.
-/// Debug Transparency: The transparency of the debug view.
-/// Draw Gizmos: Enable the drawing of gizmos.
-/// 
-/// AUGMENTA CAMERA:
-/// MeterPerPixel: Size of a pixel in meter. In order to have a coherent scale between Unity and reality, this value should be the size of a pixel on the projection surface.
-/// Scaling: Coefficient applied on the MeterPerPixel value in order to roughly correct miscalibrations. If the value of MeterPerPixel is accurate, the scaling value should be 1.
-/// 
-/// AUGMENTA PERSONS SETTINGS:
-/// FlipX: Flip the Augmenta persons positions and movements horizontally.
-/// FlipY: Flip the Augmenta persons positions and movements vertically.
-/// PersonTimeOut: Number of seconds before a person who hasn't been updated is removed.
-/// NbAugmentaPersons: Number of persons detected.
-/// ActualPersonType: Type of person displayed: All Persons = every person is displayed; Oldest = only the oldest person is displayed; Newest = only the newest person is displayed.
-/// AskedPersons: Number of persons displayed in Oldest or Newest modes. 
-/// 
 ///  Augmenta OSC Protocol :
 
 ///  /au/personWillLeave/ args0 arg1 ... argn
@@ -70,7 +44,7 @@ using Augmenta.UnityOSC;
 
 namespace Augmenta {
 
-	public enum DesiredPersonType
+	public enum DesiredAugmentaObjectType
 	{
 		All,
 		Oldest,
@@ -79,16 +53,16 @@ namespace Augmenta {
 
 	public enum AugmentaEventType
 	{
-		PersonEntered,
-		PersonUpdated,
-		PersonLeft,
+		AugmentaObjectEntered,
+		AugmentaObjectUpdated,
+		AugmentaObjectLeft,
 		SceneUpdated
 	};
 
 	public class AugmentaManager : MonoBehaviour
 	{
 		[Header("Augmenta ID")]
-		public string id;
+		public string augmentaId;
 
 		[Header("OSC Settings")]
 
@@ -105,39 +79,39 @@ namespace Augmenta {
 		//public float pixelSize = 0.005f;
 		public float scaling = 1.0f;
 
-		[Header("Augmenta Person Settings")]
+		[Header("Augmenta Objects Settings")]
 		public bool flipX;
 		public bool flipY;
-		// Number of seconds before a person who hasn't been updated is removed
-		public float personTimeOut = 1.0f; // seconds
-		public DesiredPersonType desiredPersonType = DesiredPersonType.All;
-		public int desiredPersonCount = 1;
+		// Number of seconds before an augmenta object who hasn't been updated is removed
+		public float augmentaObjectTimeOut = 1.0f; // seconds
+		public DesiredAugmentaObjectType desiredAugmentaObjectType = DesiredAugmentaObjectType.All;
+		public int desiredAugmentaObjectCount = 1;
 
 		[Header("Augmenta Prefabs")]
 		public GameObject augmentaScenePrefab;
-		public GameObject augmentaPersonPrefab;
+		public GameObject augmentaObjectPrefab;
 
 		[Header("Debug")]
 		public bool mute = false;
 		public bool showDebug = true;
 
 		/* Events */
-		public delegate void PersonEntered(AugmentaPerson p);
-		public event PersonEntered personEntered;
+		public delegate void AugmentaObjectEntered(AugmentaObject augmentaObject);
+		public event AugmentaObjectEntered augmentaObjectEntered;
 
-		public delegate void PersonUpdated(AugmentaPerson p);
-		public event PersonUpdated personUpdated;
+		public delegate void AugmentaObjectUpdated(AugmentaObject augmentaObject);
+		public event AugmentaObjectUpdated augmentaObjectUpdated;
 
-		public delegate void PersonLeft(AugmentaPerson p);
-		public event PersonLeft personLeft;
+		public delegate void AugmentaObjectLeft(AugmentaObject augmentaObject);
+		public event AugmentaObjectLeft augmentaObjectLeft;
 
 		public delegate void SceneUpdated();
 		public event SceneUpdated sceneUpdated;
 
-		public Dictionary<int, AugmentaPerson> augmentaPersons;
+		public Dictionary<int, AugmentaObject> augmentaObjects;
 		public AugmentaScene augmentaScene;
 
-		private List<int> _expiredPids = new List<int>(); //Used to remove timed out persons
+		private List<int> _expiredIds = new List<int>(); //Used to remove timed out objects
 
 		#region MonoBehaviour Functions
 
@@ -146,8 +120,8 @@ namespace Augmenta {
 			//Initialize scene
 			InitializeAugmentaScene();
 
-			//Initialize persons array
-			augmentaPersons = new Dictionary<int, AugmentaPerson>();
+			//Initialize objects array
+			augmentaObjects = new Dictionary<int, AugmentaObject>();
 
 			//Create OSC Receiver
 			CreateAugmentaOSCReceiver();
@@ -155,11 +129,8 @@ namespace Augmenta {
 
 		private void Update() {
 
-			//Check if persons are alive
+			//Check if objects are alive
 			CheckAlive();
-
-			//for (int i = 0; i < _orderedPids.Count; i++)
-			//	Debug.Log("_orderedPids[" + i + "] = " + _orderedPids[i]);
 		}
 
 		private void OnDisable() {
@@ -178,7 +149,7 @@ namespace Augmenta {
 		void InitializeAugmentaScene() {
 
 			GameObject sceneObject = Instantiate(augmentaScenePrefab, transform);
-			sceneObject.name = "Scene " + id;
+			sceneObject.name = "Augmenta Scene " + augmentaId;
 
 			augmentaScene = sceneObject.GetComponent<AugmentaScene>();
 
@@ -190,23 +161,23 @@ namespace Augmenta {
 		}
 
 		/// <summary>
-		/// Send the Augmenta event of corresponding type, according to the desired person.
+		/// Send the Augmenta event of corresponding type, according to the desired object.
 		/// </summary>
-		/// <param name="type"></param>
-		/// <param name="person"></param>
-		public void SendAugmentaEvent(AugmentaEventType type, AugmentaPerson person = null) {
+		/// <param name="eventType"></param>
+		/// <param name="augmentaObject"></param>
+		public void SendAugmentaEvent(AugmentaEventType eventType, AugmentaObject augmentaObject = null) {
 
-			switch (type) {
-				case AugmentaEventType.PersonEntered:
-					personEntered?.Invoke(person);
+			switch (eventType) {
+				case AugmentaEventType.AugmentaObjectEntered:
+					augmentaObjectEntered?.Invoke(augmentaObject);
 					break;
 
-				case AugmentaEventType.PersonUpdated:
-					personUpdated?.Invoke(person);
+				case AugmentaEventType.AugmentaObjectUpdated:
+					augmentaObjectUpdated?.Invoke(augmentaObject);
 					break;
 
-				case AugmentaEventType.PersonLeft:
-					personLeft?.Invoke(person);
+				case AugmentaEventType.AugmentaObjectLeft:
+					augmentaObjectLeft?.Invoke(augmentaObject);
 					break;
 
 				case AugmentaEventType.SceneUpdated:
@@ -216,41 +187,41 @@ namespace Augmenta {
 		}
 
 		/// <summary>
-		/// Add new Augmenta person.
+		/// Add new Augmenta object.
 		/// </summary>
 		/// <param name="args"></param>
 		/// <returns></returns>
-		private AugmentaPerson AddPerson(ArrayList args) {
+		private AugmentaObject AddAugmentaObject(ArrayList args) {
 
-			GameObject newPersonObject = Instantiate(augmentaPersonPrefab, augmentaScene.gameObject.transform);
-			newPersonObject.name = "Person " + args[0];
+			GameObject newAugmentaObjectObject = Instantiate(augmentaObjectPrefab, augmentaScene.gameObject.transform);
+			newAugmentaObjectObject.name = "Augmenta Object " + args[0];
 
-			AugmentaPerson newPerson = newPersonObject.GetComponent<AugmentaPerson>();
-			newPerson.augmentaManager = this;
-			newPerson.showDebug = showDebug;
-			newPerson.ShowDebug(showDebug);
+			AugmentaObject newAugmentaObject = newAugmentaObjectObject.GetComponent<AugmentaObject>();
+			newAugmentaObject.augmentaManager = this;
+			newAugmentaObject.showDebug = showDebug;
+			newAugmentaObject.ShowDebug(showDebug);
 
-			UpdatePerson(newPerson, args);
-			newPerson.UpdatePerson(newPerson);
+			UpdateAugmentaObject(newAugmentaObject, args);
+			newAugmentaObject.UpdateAugmentaObject(newAugmentaObject);
 
-			augmentaPersons.Add(newPerson.pid, newPerson);
+			augmentaObjects.Add(newAugmentaObject.id, newAugmentaObject);
 
-			return newPerson;
+			return newAugmentaObject;
 		}
 
 		/// <summary>
-		/// Update an Augmenta person from incoming data.
+		/// Update an Augmenta object from incoming data.
 		/// </summary>
-		/// <param name="p"></param>
+		/// <param name="augmentaObject"></param>
 		/// <param name="args"></param>
-		private void UpdatePerson(AugmentaPerson p, ArrayList args) {
+		private void UpdateAugmentaObject(AugmentaObject augmentaObject, ArrayList args) {
 
-			p.pid = (int)args[0];
-			p.oid = (int)args[1];
-			p.age = (int)args[2];
+			augmentaObject.id = (int)args[0];
+			augmentaObject.oid = (int)args[1];
+			augmentaObject.age = (int)args[2];
 			Vector2 centroid = new Vector2((float)args[3], (float)args[4]);
 			Vector2 velocity = new Vector2((float)args[5], (float)args[6]);
-			p.depth = (float)args[7];
+			augmentaObject.depth = (float)args[7];
 			Rect boundingRect = new Rect((float)args[8], (float)args[9], (float)args[10], (float)args[11]);
 			Vector3 highest = new Vector3((float)args[12], (float)args[13], (float)args[14]);
 
@@ -268,73 +239,73 @@ namespace Augmenta {
 				highest.y = 1 - highest.y;
 			}
 
-			p.centroid = centroid;
-			p.velocity = velocity;
-			p.boundingRect = boundingRect;
-			p.highest = highest;
+			augmentaObject.centroid = centroid;
+			augmentaObject.velocity = velocity;
+			augmentaObject.boundingRect = boundingRect;
+			augmentaObject.highest = highest;
 
-			//Inactive time reset to zero : the Person has just been updated
-			p.inactiveTime = 0;
+			//Inactive time reset to zero : the object has just been updated
+			augmentaObject.inactiveTime = 0;
 		}
 
 		/// <summary>
-		/// Remove a person with its pid
+		/// Remove an object with its id
 		/// </summary>
-		/// <param name="pid"></param>
-		public void RemovePerson(int pid) {
+		/// <param name="id"></param>
+		public void RemoveAugmentaObject(int id) {
 
-			Destroy(augmentaPersons[pid].gameObject);
-			augmentaPersons.Remove(pid);
+			Destroy(augmentaObjects[id].gameObject);
+			augmentaObjects.Remove(id);
 		}
 
 		/// <summary>
-		/// Remove all persons
+		/// Remove all augmenta objects
 		/// </summary>
-		public void RemoveAllPersons() {
+		public void RemoveAllAugmentaObjects() {
 
-			while (augmentaPersons.Count > 0) {
-				RemovePerson(augmentaPersons.ElementAt(0).Key);
+			while (augmentaObjects.Count > 0) {
+				RemoveAugmentaObject(augmentaObjects.ElementAt(0).Key);
 			}
 		}
 
 		/// <summary>
-		/// Return true if the person is desired (i.e. should be added/updated).
+		/// Return true if the object is desired (i.e. should be added/updated).
 		/// </summary>
-		/// <param name="pid"></param>
+		/// <param name="oid"></param>
 		/// <returns></returns>
-		public bool IsPersonDesired(int oid) {
+		public bool IsAugmentaObjectDesired(int oid) {
 
-			if (desiredPersonType == DesiredPersonType.Oldest) {
-				return oid < desiredPersonCount;
-			} else if (desiredPersonType == DesiredPersonType.Newest) {
-				return oid >= (augmentaScene.personCount - desiredPersonCount);
+			if (desiredAugmentaObjectType == DesiredAugmentaObjectType.Oldest) {
+				return oid < desiredAugmentaObjectCount;
+			} else if (desiredAugmentaObjectType == DesiredAugmentaObjectType.Newest) {
+				return oid >= (augmentaScene.augmentaObjectCount - desiredAugmentaObjectCount);
 			} else {
 				return true;
 			}
 		}
 
 		/// <summary>
-		/// Check if persons are alive
+		/// Check if augmenta objects are alive
 		/// </summary>
 		void CheckAlive() {
 
-			_expiredPids.Clear();
+			_expiredIds.Clear();
 
-			foreach (int key in augmentaPersons.Keys) {
+			foreach (int key in augmentaObjects.Keys) {
 
-				if (augmentaPersons[key].inactiveTime < personTimeOut) {
+				if (augmentaObjects[key].inactiveTime < augmentaObjectTimeOut) {
 					// We add a frame to the inactiveTime count
-					augmentaPersons[key].inactiveTime += Time.deltaTime;
+					augmentaObjects[key].inactiveTime += Time.deltaTime;
 				} else {
-					// The Person hasn't been updated for a certain number of frames : mark for removal
-					_expiredPids.Add(key);
+					// The object hasn't been updated for a certain number of frames : mark for removal
+					_expiredIds.Add(key);
 				}
 			}
 
-			//Remove expired persons
-			foreach (int pid in _expiredPids) {
-				SendAugmentaEvent(AugmentaEventType.PersonLeft, augmentaPersons[pid]);
-				RemovePerson(pid);
+			//Remove expired objects
+			foreach (int id in _expiredIds) {
+				SendAugmentaEvent(AugmentaEventType.AugmentaObjectLeft, augmentaObjects[id]);
+				RemoveAugmentaObject(id);
 			}
 		}
 
@@ -351,8 +322,8 @@ namespace Augmenta {
 
 			RemoveAugmentaOSCReceiver();
 
-			if (OSCMaster.CreateReceiver("Augmenta-" + id, inputPort) != null) {
-				OSCMaster.Receivers["Augmenta-" + id].messageReceived += OSCMessageReceived;
+			if (OSCMaster.CreateReceiver("Augmenta-" + augmentaId, inputPort) != null) {
+				OSCMaster.Receivers["Augmenta-" + augmentaId].messageReceived += OSCMessageReceived;
 			} else {
 				Debug.LogError("Could not create OSC receiver at port " + inputPort + ".");
 			}
@@ -367,9 +338,9 @@ namespace Augmenta {
 			if (OSCMaster.Instance == null)
 				return;
 
-			if (OSCMaster.Receivers.ContainsKey("Augmenta-" + id)) {
-				OSCMaster.Receivers["Augmenta-" + id].messageReceived -= OSCMessageReceived;
-				OSCMaster.RemoveReceiver("Augmenta-" + id);
+			if (OSCMaster.Receivers.ContainsKey("Augmenta-" + augmentaId)) {
+				OSCMaster.Receivers["Augmenta-" + augmentaId].messageReceived -= OSCMessageReceived;
+				OSCMaster.RemoveReceiver("Augmenta-" + augmentaId);
 			}
 		}
 
@@ -384,27 +355,27 @@ namespace Augmenta {
 			string address = message.Address;
 			ArrayList args = new ArrayList(message.Data);
 
-			int pid, oid;
-			AugmentaPerson currentPerson = null;
+			int id, oid;
+			AugmentaObject augmentaObject = null;
 
 			switch (address) {
 
 				case "/au/personEntered/":
 				case "/au/personEntered":
 
-					pid = (int)args[0];
+					id = (int)args[0];
 					oid = (int)args[1];
 
-					if (IsPersonDesired(oid)) {
-						if (!augmentaPersons.ContainsKey(pid)) {
-							//New person
-							currentPerson = AddPerson(args);
-							SendAugmentaEvent(AugmentaEventType.PersonEntered, currentPerson);
+					if (IsAugmentaObjectDesired(oid)) {
+						if (!augmentaObjects.ContainsKey(id)) {
+							//New object
+							augmentaObject = AddAugmentaObject(args);
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectEntered, augmentaObject);
 						} else {
-							//Person was already there
-							currentPerson = augmentaPersons[pid];
-							UpdatePerson(currentPerson, args);
-							SendAugmentaEvent(AugmentaEventType.PersonUpdated, currentPerson);
+							//Object was already there
+							augmentaObject = augmentaObjects[id];
+							UpdateAugmentaObject(augmentaObject, args);
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectUpdated, augmentaObject);
 						}
 					}
 
@@ -413,17 +384,17 @@ namespace Augmenta {
 				case "/au/personUpdated/":
 				case "/au/personUpdated":
 
-					pid = (int)args[0];
+					id = (int)args[0];
 					oid = (int)args[1];
 
-					if (IsPersonDesired(oid)) {
-						if (!augmentaPersons.ContainsKey(pid)) {
-							currentPerson = AddPerson(args);
-							SendAugmentaEvent(AugmentaEventType.PersonEntered, currentPerson);
+					if (IsAugmentaObjectDesired(oid)) {
+						if (!augmentaObjects.ContainsKey(id)) {
+							augmentaObject = AddAugmentaObject(args);
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectEntered, augmentaObject);
 						} else {
-							currentPerson = augmentaPersons[pid];
-							UpdatePerson(currentPerson, args);
-							SendAugmentaEvent(AugmentaEventType.PersonUpdated, currentPerson);
+							augmentaObject = augmentaObjects[id];
+							UpdateAugmentaObject(augmentaObject, args);
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectUpdated, augmentaObject);
 						}
 					}
 
@@ -432,14 +403,14 @@ namespace Augmenta {
 				case "/au/personWillLeave/":
 				case "/au/personWillLeave":
 
-					pid = (int)args[0];
+					id = (int)args[0];
 					oid = (int)args[1];
 
-					if (IsPersonDesired(oid)) {
-						if (augmentaPersons.ContainsKey(pid)) {
-							currentPerson = augmentaPersons[pid];
-							SendAugmentaEvent(AugmentaEventType.PersonLeft, currentPerson);
-							RemovePerson(pid);
+					if (IsAugmentaObjectDesired(oid)) {
+						if (augmentaObjects.ContainsKey(id)) {
+							augmentaObject = augmentaObjects[id];
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectLeft, augmentaObject);
+							RemoveAugmentaObject(id);
 						}
 					}
 
@@ -448,7 +419,7 @@ namespace Augmenta {
 				case "/au/scene/":
 				case "/au/scene":
 
-					augmentaScene.personCount = (int)args[2];
+					augmentaScene.augmentaObjectCount = (int)args[2];
 					augmentaScene.width = (float)args[5];
 					augmentaScene.height = (float)args[6];
 
@@ -470,8 +441,8 @@ namespace Augmenta {
 
 			augmentaScene.showDebug = show;
 
-			foreach(var person in augmentaPersons) {
-				person.Value.showDebug = show;
+			foreach(var augmentaObject in augmentaObjects) {
+				augmentaObject.Value.showDebug = show;
 			}
 		}
 

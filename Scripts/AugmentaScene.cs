@@ -15,7 +15,7 @@ namespace Augmenta
 		[Header("Augmenta Scene Values")]
 		public float width;
 		public float height;
-		public int personCount; //Person count from the scene updated message  /!\ Because of personTimeOut, it can be different from the instantiated person count /!\
+		public int augmentaObjectCount; //Object count from the scene updated message  /!\ Because of personTimeOut, it can be different from the instantiated person count /!\
 
 		private Material debugMaterial;
 
