@@ -6,7 +6,7 @@ using Augmenta;
 using Augmenta.UnityOSC;
 
 /// <summary>
-///  Augmenta OSC Protocol :
+///  Augmenta OSC Protocol V1 :
 
 ///  /au/personWillLeave/ args0 arg1 ... argn
 ///  /au/personUpdated/   args0 arg1 ... argn
@@ -40,6 +40,47 @@ using Augmenta.UnityOSC;
 ///  5: scene.width (float)
 ///  6: scene.height (float)
 
+/* Augmenta OSC Protocol v2.0
+
+/object/enter arg0 arg1 ... argN
+/object/leave arg0 arg1 ... argN
+/object/update arg0 arg1 ... argN
+
+where args are : 
+0: frame(int)     // Frame number
+1: id(int)                        // id ex : 42th object to enter stage has pid=42
+2: oid(int)                        // Ordered id ex : if 3 objects on stage, 43th object might have oid=2 
+3: age(float)                      // Alive time (in s)
+4: centroid.x(float 0:1)           // Position projected to the ground (normalised)
+5: centroid.y(float 0:1)               
+6: velocity.x(float -1:1)           // Speed and direction vector (in unit.s-1) (normalised)
+7: velocity.y(float -1:1)
+8: orientation(float 0:360) // With respect to horizontal axis right (0° = (1,0)), rotate counterclockwise
+							// Estimation of the object orientation from its rotation and velocity
+9: boundingRect.x(float 0:1)       // Bounding box center coord (normalised)	
+10: boundingRect.y(float 0:1)       
+11: boundingRect.width(float 0:1) // Bounding box width (normalised)
+12: boundingRect.height(float 0:1)
+13: boundingRect.rotation(float 0:360) // With respect to horizontal axis right counterclockwise
+14: height(float)           // Height of the object (in m) (absolute)
+
+/scene   arg0 arg1 ... argN
+0: frame (int)                // Frame number
+1: objectCount (int)                  // Number of objects
+2: scene.width (float)             // Scene width in 
+3: scene.height (float)
+
+/fusion arg0 arg1 ... argN
+
+0: videoOut.PixelWidth (int)      // VideoOut width in fusion
+1: videoOut.PixelHeight (int)
+2: videoOut.coord.x (int)          // top left coord in fusion
+3: videoOut.coord.y (int)
+4: scene.coord.x (float)          // Scene top left coord (0 for node by default)
+5: scene.coord.y (float)
+
+*/
+
 /// </summary>
 
 namespace Augmenta {
@@ -53,18 +94,24 @@ namespace Augmenta {
 
 	public enum AugmentaEventType
 	{
-		AugmentaObjectEntered,
-		AugmentaObjectUpdated,
-		AugmentaObjectLeft,
+		AugmentaObjectEnter,
+		AugmentaObjectUpdate,
+		AugmentaObjectLeave,
 		SceneUpdated
 	};
 
+	public enum AugmentaProtocolVersion
+	{
+		V1,
+		V2
+	}
+
 	public class AugmentaManager : MonoBehaviour
 	{
-		[Header("Augmenta ID")]
+		//Augmenta ID
 		public string augmentaId;
 
-		[Header("OSC Settings")]
+		//OSC Settings
 
 		[SerializeField] private int _inputPort = 12000;
 		public int inputPort {
@@ -75,11 +122,13 @@ namespace Augmenta {
 			}
 		}
 
-		[Header("Augmenta Scene Settings")]
-		//public float pixelSize = 0.005f;
+		public AugmentaProtocolVersion protocolVersion = AugmentaProtocolVersion.V2;
+
+		//Augmenta Scene Settings
+		public float pixelSize = 0.005f;
 		public float scaling = 1.0f;
 
-		[Header("Augmenta Objects Settings")]
+		//Augmenta Objects Settings
 		public bool flipX;
 		public bool flipY;
 		// Number of seconds before an augmenta object who hasn't been updated is removed
@@ -87,23 +136,23 @@ namespace Augmenta {
 		public DesiredAugmentaObjectType desiredAugmentaObjectType = DesiredAugmentaObjectType.All;
 		public int desiredAugmentaObjectCount = 1;
 
-		[Header("Augmenta Prefabs")]
+		//Augmenta Prefabs
 		public GameObject augmentaScenePrefab;
 		public GameObject augmentaObjectPrefab;
 
-		[Header("Debug")]
+		//Debug
 		public bool mute = false;
 		public bool showDebug = true;
 
-		/* Events */
-		public delegate void AugmentaObjectEntered(AugmentaObject augmentaObject);
-		public event AugmentaObjectEntered augmentaObjectEntered;
+		//Events
+		public delegate void AugmentaObjectEnter(AugmentaObject augmentaObject);
+		public event AugmentaObjectEnter augmentaObjectEnter;
 
-		public delegate void AugmentaObjectUpdated(AugmentaObject augmentaObject);
-		public event AugmentaObjectUpdated augmentaObjectUpdated;
+		public delegate void AugmentaObjectUpdate(AugmentaObject augmentaObject);
+		public event AugmentaObjectUpdate augmentaObjectUpdate;
 
-		public delegate void AugmentaObjectLeft(AugmentaObject augmentaObject);
-		public event AugmentaObjectLeft augmentaObjectLeft;
+		public delegate void AugmentaObjectLeave(AugmentaObject augmentaObject);
+		public event AugmentaObjectLeave augmentaObjectLeave;
 
 		public delegate void SceneUpdated();
 		public event SceneUpdated sceneUpdated;
@@ -168,16 +217,16 @@ namespace Augmenta {
 		public void SendAugmentaEvent(AugmentaEventType eventType, AugmentaObject augmentaObject = null) {
 
 			switch (eventType) {
-				case AugmentaEventType.AugmentaObjectEntered:
-					augmentaObjectEntered?.Invoke(augmentaObject);
+				case AugmentaEventType.AugmentaObjectEnter:
+					augmentaObjectEnter?.Invoke(augmentaObject);
 					break;
 
-				case AugmentaEventType.AugmentaObjectUpdated:
-					augmentaObjectUpdated?.Invoke(augmentaObject);
+				case AugmentaEventType.AugmentaObjectUpdate:
+					augmentaObjectUpdate?.Invoke(augmentaObject);
 					break;
 
-				case AugmentaEventType.AugmentaObjectLeft:
-					augmentaObjectLeft?.Invoke(augmentaObject);
+				case AugmentaEventType.AugmentaObjectLeave:
+					augmentaObjectLeave?.Invoke(augmentaObject);
 					break;
 
 				case AugmentaEventType.SceneUpdated:
@@ -194,7 +243,6 @@ namespace Augmenta {
 		private AugmentaObject AddAugmentaObject(ArrayList args) {
 
 			GameObject newAugmentaObjectObject = Instantiate(augmentaObjectPrefab, augmentaScene.gameObject.transform);
-			newAugmentaObjectObject.name = "Augmenta Object " + args[0];
 
 			AugmentaObject newAugmentaObject = newAugmentaObjectObject.GetComponent<AugmentaObject>();
 			newAugmentaObject.augmentaManager = this;
@@ -206,6 +254,8 @@ namespace Augmenta {
 
 			augmentaObjects.Add(newAugmentaObject.id, newAugmentaObject);
 
+			newAugmentaObjectObject.name = "Augmenta Object " + newAugmentaObject.id;
+
 			return newAugmentaObject;
 		}
 
@@ -216,32 +266,64 @@ namespace Augmenta {
 		/// <param name="args"></param>
 		private void UpdateAugmentaObject(AugmentaObject augmentaObject, ArrayList args) {
 
-			augmentaObject.id = (int)args[0];
-			augmentaObject.oid = (int)args[1];
-			augmentaObject.age = (int)args[2];
-			Vector2 centroid = new Vector2((float)args[3], (float)args[4]);
-			Vector2 velocity = new Vector2((float)args[5], (float)args[6]);
-			augmentaObject.depth = (float)args[7];
-			Rect boundingRect = new Rect((float)args[8], (float)args[9], (float)args[10], (float)args[11]);
-			Vector3 highest = new Vector3((float)args[12], (float)args[13], (float)args[14]);
+			Vector2 centroid = Vector2.zero;
+			Vector2 velocity = Vector2.zero;
+			Vector3 highest = Vector3.zero;
+			Rect boundingRect = new Rect();
+			float orientation = 0;
+			float rotation = 0;
+
+			switch (protocolVersion) {
+
+				case AugmentaProtocolVersion.V1:
+
+					augmentaObject.id = (int)args[0];
+					augmentaObject.oid = (int)args[1];
+					augmentaObject.ageInFrames = (int)args[2];
+					centroid = new Vector2((float)args[3], (float)args[4]);
+					velocity = new Vector2((float)args[5], (float)args[6]);
+					augmentaObject.depth = (float)args[7];
+					boundingRect = new Rect((float)args[8], (float)args[9], (float)args[10], (float)args[11]);
+					highest = new Vector3((float)args[12], (float)args[13], (float)args[14]);
+					break;
+
+				case AugmentaProtocolVersion.V2:
+
+					augmentaObject.id = (int)args[1];
+					augmentaObject.oid = (int)args[2];
+					augmentaObject.ageInSeconds = (float)args[3];
+					centroid = new Vector2((float)args[4], (float)args[5]);
+					velocity = new Vector2((float)args[6], (float)args[7]);
+					orientation = (float)args[8];
+					boundingRect = new Rect((float)args[9], (float)args[10], (float)args[11], (float)args[12]);
+					rotation = (float)args[13];
+					highest = new Vector3(0, 0, (float)args[14]);
+					break;
+			}
 
 			if (flipX) {
 				centroid.x = 1 - centroid.x;
 				velocity.x = -velocity.x;
+				orientation = orientation > 180 ? 360.0f - orientation : 180.0f - orientation;
 				boundingRect.x = 1 - boundingRect.x;
+				rotation = rotation > 180 ? 360.0f - rotation : 180.0f - rotation;
 				highest.x = 1 - highest.x;
 			}
 
 			if (flipY) {
 				centroid.y = 1 - centroid.y;
 				velocity.y = -velocity.y;
+				orientation = 360.0f - orientation;
 				boundingRect.y = 1 - boundingRect.y;
+				rotation = 360.0f - rotation;
 				highest.y = 1 - highest.y;
 			}
 
 			augmentaObject.centroid = centroid;
 			augmentaObject.velocity = velocity;
+			augmentaObject.orientation = orientation;
 			augmentaObject.boundingRect = boundingRect;
+			augmentaObject.boundingRectRotation = rotation;
 			augmentaObject.highest = highest;
 
 			//Inactive time reset to zero : the object has just been updated
@@ -304,7 +386,7 @@ namespace Augmenta {
 
 			//Remove expired objects
 			foreach (int id in _expiredIds) {
-				SendAugmentaEvent(AugmentaEventType.AugmentaObjectLeft, augmentaObjects[id]);
+				SendAugmentaEvent(AugmentaEventType.AugmentaObjectLeave, augmentaObjects[id]);
 				RemoveAugmentaObject(id);
 			}
 		}
@@ -352,6 +434,23 @@ namespace Augmenta {
 
 			if (mute) return;
 
+			switch (protocolVersion) {
+				case AugmentaProtocolVersion.V1:
+					ParseAugmentaProtocolV1(message);
+					break;
+
+				case AugmentaProtocolVersion.V2:
+					ParseAugmentaProtocolV2(message);
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Parse the OSC message using Augmenta protocol V1
+		/// </summary>
+		/// /// <param name="message"></param>
+		private void ParseAugmentaProtocolV1(OSCMessage message) {
+
 			string address = message.Address;
 			ArrayList args = new ArrayList(message.Data);
 
@@ -370,12 +469,12 @@ namespace Augmenta {
 						if (!augmentaObjects.ContainsKey(id)) {
 							//New object
 							augmentaObject = AddAugmentaObject(args);
-							SendAugmentaEvent(AugmentaEventType.AugmentaObjectEntered, augmentaObject);
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectEnter, augmentaObject);
 						} else {
 							//Object was already there
 							augmentaObject = augmentaObjects[id];
 							UpdateAugmentaObject(augmentaObject, args);
-							SendAugmentaEvent(AugmentaEventType.AugmentaObjectUpdated, augmentaObject);
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectUpdate, augmentaObject);
 						}
 					}
 
@@ -390,11 +489,11 @@ namespace Augmenta {
 					if (IsAugmentaObjectDesired(oid)) {
 						if (!augmentaObjects.ContainsKey(id)) {
 							augmentaObject = AddAugmentaObject(args);
-							SendAugmentaEvent(AugmentaEventType.AugmentaObjectEntered, augmentaObject);
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectEnter, augmentaObject);
 						} else {
 							augmentaObject = augmentaObjects[id];
 							UpdateAugmentaObject(augmentaObject, args);
-							SendAugmentaEvent(AugmentaEventType.AugmentaObjectUpdated, augmentaObject);
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectUpdate, augmentaObject);
 						}
 					}
 
@@ -409,7 +508,7 @@ namespace Augmenta {
 					if (IsAugmentaObjectDesired(oid)) {
 						if (augmentaObjects.ContainsKey(id)) {
 							augmentaObject = augmentaObjects[id];
-							SendAugmentaEvent(AugmentaEventType.AugmentaObjectLeft, augmentaObject);
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectLeave, augmentaObject);
 							RemoveAugmentaObject(id);
 						}
 					}
@@ -420,8 +519,91 @@ namespace Augmenta {
 				case "/au/scene":
 
 					augmentaScene.augmentaObjectCount = (int)args[2];
-					augmentaScene.width = (float)args[5];
-					augmentaScene.height = (float)args[6];
+					augmentaScene.width = (int)args[5] * pixelSize;
+					augmentaScene.height = (int)args[6] * pixelSize;
+
+					SendAugmentaEvent(AugmentaEventType.SceneUpdated);
+
+					break;
+			}
+		}
+
+		/// <summary>
+		/// Parse the OSC message using Augmenta protocol V2
+		/// </summary>
+		/// <param name="message"></param>
+		private void ParseAugmentaProtocolV2(OSCMessage message) {
+
+			string address = message.Address;
+			ArrayList args = new ArrayList(message.Data);
+
+			int id, oid;
+			AugmentaObject augmentaObject = null;
+
+			switch (address) {
+
+				case "/object/enter/":
+				case "/object/enter":
+
+					id = (int)args[1];
+					oid = (int)args[2];
+
+					if (IsAugmentaObjectDesired(oid)) {
+						if (!augmentaObjects.ContainsKey(id)) {
+							//New object
+							augmentaObject = AddAugmentaObject(args);
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectEnter, augmentaObject);
+						} else {
+							//Object was already there
+							augmentaObject = augmentaObjects[id];
+							UpdateAugmentaObject(augmentaObject, args);
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectUpdate, augmentaObject);
+						}
+					}
+
+					break;
+
+				case "/object/update/":
+				case "/object/update":
+
+					id = (int)args[1];
+					oid = (int)args[2];
+
+					if (IsAugmentaObjectDesired(oid)) {
+						if (!augmentaObjects.ContainsKey(id)) {
+							augmentaObject = AddAugmentaObject(args);
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectEnter, augmentaObject);
+						} else {
+							augmentaObject = augmentaObjects[id];
+							UpdateAugmentaObject(augmentaObject, args);
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectUpdate, augmentaObject);
+						}
+					}
+
+					break;
+
+				case "/object/leave/":
+				case "/object/leave":
+
+					id = (int)args[1];
+					oid = (int)args[2];
+
+					if (IsAugmentaObjectDesired(oid)) {
+						if (augmentaObjects.ContainsKey(id)) {
+							augmentaObject = augmentaObjects[id];
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectLeave, augmentaObject);
+							RemoveAugmentaObject(id);
+						}
+					}
+
+					break;
+
+				case "/scene/":
+				case "/scene":
+
+					augmentaScene.augmentaObjectCount = (int)args[1];
+					augmentaScene.width = (float)args[2];
+					augmentaScene.height = (float)args[3];
 
 					SendAugmentaEvent(AugmentaEventType.SceneUpdated);
 
@@ -430,6 +612,19 @@ namespace Augmenta {
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Clamp angle between 0 and 360 degrees
+		/// </summary>
+		/// <param name="angle"></param>
+		/// <returns></returns>
+		private float ClampAngle(float angle) {
+
+			while (angle < 0)
+				angle += 360.0f;
+
+			return angle % 360.0f;
+		}
 
 		#region Debug Functions
 

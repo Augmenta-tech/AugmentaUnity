@@ -45,6 +45,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   augmentaId: Example
   _inputPort: 12002
+  protocolVersion: 1
+  pixelSize: 0.005
   scaling: 1
   flipX: 0
   flipY: 0

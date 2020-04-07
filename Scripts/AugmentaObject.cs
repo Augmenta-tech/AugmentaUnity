@@ -14,11 +14,14 @@ namespace Augmenta
         [Header("Augmenta Object Values")]
         public int id;
 		public int oid;
-		public int age;
+		public int ageInFrames;
+        public float ageInSeconds;
 		public Vector2 centroid;
         public Vector2 velocity;
+        public float orientation;
 		public float depth;
 		public Rect boundingRect;
+        public float boundingRectRotation;
 		public Vector3 highest;
 
         public float inactiveTime;
@@ -49,7 +52,7 @@ namespace Augmenta
 
             Gizmos.color = Color.red;
             DrawGizmoCube(GetAugmentaObjectWorldPosition(true),
-                          transform.rotation, 
+                          debugObject.transform.rotation, 
                           GetAugmentaObjectWorldScale());
         }
 
@@ -57,7 +60,7 @@ namespace Augmenta
 
             //Disconnect from person updated event
             if (_initialized) {
-                augmentaManager.augmentaObjectUpdated -= UpdateAugmentaObject;
+                augmentaManager.augmentaObjectUpdate -= UpdateAugmentaObject;
             }
         }
 
@@ -74,7 +77,7 @@ namespace Augmenta
                 return;
 
             //Connect to Augmenta events
-            augmentaManager.augmentaObjectUpdated += UpdateAugmentaObject;
+            augmentaManager.augmentaObjectUpdate += UpdateAugmentaObject;
 
             //Get an instance of the debug material
             augmentaObjectMaterialInstance = debugObject.GetComponent<Renderer>().material;
@@ -98,6 +101,7 @@ namespace Augmenta
             //Update debug object size
             debugObject.transform.position = GetAugmentaObjectWorldPosition(true);
             debugObject.transform.localScale = GetAugmentaObjectWorldScale();
+            debugObject.transform.localRotation = Quaternion.Euler(0, boundingRectRotation, 0);
         }
 
         /// <summary>
