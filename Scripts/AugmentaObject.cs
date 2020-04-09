@@ -23,6 +23,8 @@ namespace Augmenta
 		public Rect boundingRect;
         public float boundingRectRotation;
 		public Vector3 highest;
+        public float distanceToSensor;
+        public float reflectivity;
 
         public float inactiveTime;
 
@@ -93,7 +95,7 @@ namespace Augmenta
         /// Response to augmenta object updated event
         /// </summary>
         /// <param name="augmentaObject"></param>
-        public void UpdateAugmentaObject(AugmentaObject augmentaObject) {
+        public void UpdateAugmentaObject(AugmentaObject augmentaObject, AugmentaDataType augmentaDataType) {
 
             if (augmentaObject.id != id)
                 return;

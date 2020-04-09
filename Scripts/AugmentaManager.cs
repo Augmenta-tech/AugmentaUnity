@@ -100,6 +100,13 @@ namespace Augmenta {
 		SceneUpdated
 	};
 
+	public enum AugmentaDataType
+	{
+		Main,
+		Extra,
+		Shape	//Not implemented in Augmenta protocol yet.
+	}
+
 	public enum AugmentaProtocolVersion
 	{
 		V1,
@@ -145,13 +152,13 @@ namespace Augmenta {
 		public bool showDebug = true;
 
 		//Events
-		public delegate void AugmentaObjectEnter(AugmentaObject augmentaObject);
+		public delegate void AugmentaObjectEnter(AugmentaObject augmentaObject, AugmentaDataType augmentaDataType);
 		public event AugmentaObjectEnter augmentaObjectEnter;
 
-		public delegate void AugmentaObjectUpdate(AugmentaObject augmentaObject);
+		public delegate void AugmentaObjectUpdate(AugmentaObject augmentaObject, AugmentaDataType augmentaDataType);
 		public event AugmentaObjectUpdate augmentaObjectUpdate;
 
-		public delegate void AugmentaObjectLeave(AugmentaObject augmentaObject);
+		public delegate void AugmentaObjectLeave(AugmentaObject augmentaObject, AugmentaDataType augmentaDataType);
 		public event AugmentaObjectLeave augmentaObjectLeave;
 
 		public delegate void SceneUpdated();
@@ -214,19 +221,19 @@ namespace Augmenta {
 		/// </summary>
 		/// <param name="eventType"></param>
 		/// <param name="augmentaObject"></param>
-		public void SendAugmentaEvent(AugmentaEventType eventType, AugmentaObject augmentaObject = null) {
+		public void SendAugmentaEvent(AugmentaEventType eventType, AugmentaObject augmentaObject = null, AugmentaDataType augmentaDataType = AugmentaDataType.Main) {
 
 			switch (eventType) {
 				case AugmentaEventType.AugmentaObjectEnter:
-					augmentaObjectEnter?.Invoke(augmentaObject);
+					augmentaObjectEnter?.Invoke(augmentaObject, augmentaDataType);
 					break;
 
 				case AugmentaEventType.AugmentaObjectUpdate:
-					augmentaObjectUpdate?.Invoke(augmentaObject);
+					augmentaObjectUpdate?.Invoke(augmentaObject, augmentaDataType);
 					break;
 
 				case AugmentaEventType.AugmentaObjectLeave:
-					augmentaObjectLeave?.Invoke(augmentaObject);
+					augmentaObjectLeave?.Invoke(augmentaObject, augmentaDataType);
 					break;
 
 				case AugmentaEventType.SceneUpdated:
@@ -240,7 +247,7 @@ namespace Augmenta {
 		/// </summary>
 		/// <param name="args"></param>
 		/// <returns></returns>
-		private AugmentaObject AddAugmentaObject(ArrayList args) {
+		private AugmentaObject AddAugmentaObject(ArrayList args, AugmentaDataType objectDataType = AugmentaDataType.Main) {
 
 			GameObject newAugmentaObjectObject = Instantiate(augmentaObjectPrefab, augmentaScene.gameObject.transform);
 
@@ -249,8 +256,9 @@ namespace Augmenta {
 			newAugmentaObject.showDebug = showDebug;
 			newAugmentaObject.ShowDebug(showDebug);
 
-			UpdateAugmentaObject(newAugmentaObject, args);
-			newAugmentaObject.UpdateAugmentaObject(newAugmentaObject);
+			UpdateAugmentaObject(newAugmentaObject, args, objectDataType);
+
+			newAugmentaObject.UpdateAugmentaObject(newAugmentaObject, objectDataType);
 
 			augmentaObjects.Add(newAugmentaObject.id, newAugmentaObject);
 
@@ -260,11 +268,30 @@ namespace Augmenta {
 		}
 
 		/// <summary>
-		/// Update an Augmenta object from incoming data.
+		/// Update an Augmenta object data from incoming data
 		/// </summary>
 		/// <param name="augmentaObject"></param>
 		/// <param name="args"></param>
-		private void UpdateAugmentaObject(AugmentaObject augmentaObject, ArrayList args) {
+		/// <param name="augmentaDataType"></param>
+		private void UpdateAugmentaObject(AugmentaObject augmentaObject, ArrayList args, AugmentaDataType augmentaDataType = AugmentaDataType.Main) {
+
+			switch (augmentaDataType) {
+				case AugmentaDataType.Main:
+					UpdateAugmentaObjectMain(augmentaObject, args);
+					break;
+				case AugmentaDataType.Extra:
+					UpdateAugmentaObjectExtra(augmentaObject, args);
+					break;
+			}
+
+		}
+
+		/// <summary>
+		/// Update an Augmenta object main data from incoming data.
+		/// </summary>
+		/// <param name="augmentaObject"></param>
+		/// <param name="args"></param>
+		private void UpdateAugmentaObjectMain(AugmentaObject augmentaObject, ArrayList args) {
 
 			Vector2 centroid = Vector2.zero;
 			Vector2 velocity = Vector2.zero;
@@ -297,7 +324,7 @@ namespace Augmenta {
 					orientation = (float)args[8];
 					boundingRect = new Rect((float)args[9], (float)args[10], (float)args[11], (float)args[12]);
 					rotation = (float)args[13];
-					highest = new Vector3(0, 0, (float)args[14]);
+					highest = new Vector3(augmentaObject.highest.x, augmentaObject.highest.y, (float)args[14]);
 					break;
 			}
 
@@ -325,6 +352,33 @@ namespace Augmenta {
 			augmentaObject.boundingRect = boundingRect;
 			augmentaObject.boundingRectRotation = rotation;
 			augmentaObject.highest = highest;
+
+			//Inactive time reset to zero : the object has just been updated
+			augmentaObject.inactiveTime = 0;
+		}
+
+		/// <summary>
+		/// Update an Augmenta object extra data from incoming data.
+		/// </summary>
+		/// <param name="augmentaObject"></param>
+		/// <param name="args"></param>
+		private void UpdateAugmentaObjectExtra(AugmentaObject augmentaObject, ArrayList args) {
+
+			Vector3 highest = new Vector3((float)args[3], (float)args[4], augmentaObject.highest.z);
+
+			if (flipX) {
+				highest.x = 1 - highest.x;
+			}
+
+			if (flipY) {
+				highest.y = 1 - highest.y;
+			}
+
+			augmentaObject.id = (int)args[1];
+			augmentaObject.oid = (int)args[2];
+			augmentaObject.highest = highest;
+			augmentaObject.distanceToSensor = (float)args[5];
+			augmentaObject.reflectivity = (float)args[6];
 
 			//Inactive time reset to zero : the object has just been updated
 			augmentaObject.inactiveTime = 0;
@@ -592,6 +646,62 @@ namespace Augmenta {
 						if (augmentaObjects.ContainsKey(id)) {
 							augmentaObject = augmentaObjects[id];
 							SendAugmentaEvent(AugmentaEventType.AugmentaObjectLeave, augmentaObject);
+							RemoveAugmentaObject(id);
+						}
+					}
+
+					break;
+
+				case "/object/enter/extra/":
+				case "/object/enter/extra":
+
+					id = (int)args[1];
+					oid = (int)args[2];
+
+					if (IsAugmentaObjectDesired(oid)) {
+						if (!augmentaObjects.ContainsKey(id)) {
+							//New object
+							augmentaObject = AddAugmentaObject(args, AugmentaDataType.Extra);
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectEnter, augmentaObject, AugmentaDataType.Extra);
+						} else {
+							//Object was already there
+							augmentaObject = augmentaObjects[id];
+							UpdateAugmentaObject(augmentaObject, args, AugmentaDataType.Extra);
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectUpdate, augmentaObject, AugmentaDataType.Extra);
+						}
+					}
+
+					break;
+
+				case "/object/update/extra/":
+				case "/object/update/extra":
+
+					id = (int)args[1];
+					oid = (int)args[2];
+
+					if (IsAugmentaObjectDesired(oid)) {
+						if (!augmentaObjects.ContainsKey(id)) {
+							augmentaObject = AddAugmentaObject(args, AugmentaDataType.Extra);
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectEnter, augmentaObject, AugmentaDataType.Extra);
+						} else {
+							augmentaObject = augmentaObjects[id];
+							UpdateAugmentaObject(augmentaObject, args, AugmentaDataType.Extra);
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectUpdate, augmentaObject, AugmentaDataType.Extra);
+						}
+					}
+
+					break;
+
+				case "/object/leave/extra/":
+				case "/object/leave/extra":
+
+					id = (int)args[1];
+					oid = (int)args[2];
+
+					if (IsAugmentaObjectDesired(oid)) {
+						if (augmentaObjects.ContainsKey(id)) {
+							augmentaObject = augmentaObjects[id];
+							SendAugmentaEvent(AugmentaEventType.AugmentaObjectLeave, augmentaObject, AugmentaDataType.Extra);
 							RemoveAugmentaObject(id);
 						}
 					}
