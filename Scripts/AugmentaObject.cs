@@ -10,6 +10,10 @@ namespace Augmenta
         public AugmentaManager augmentaManager;
         public bool showDebug = false;
         public GameObject debugObject;
+        public GameObject debugVelocityPivot;
+        public GameObject debugVelocity;
+        public GameObject debugOrientationPivot;
+        public GameObject debugOrientation;
 
         [Header("Augmenta Object Values")]
         public int id;
@@ -102,8 +106,20 @@ namespace Augmenta
 
             //Update debug object size
             debugObject.transform.position = GetAugmentaObjectWorldPosition(true);
+            debugObject.transform.localRotation = Quaternion.Euler(0.0f, -boundingRectRotation, 0.0f);
             debugObject.transform.localScale = GetAugmentaObjectWorldScale();
-            debugObject.transform.localRotation = Quaternion.Euler(0, boundingRectRotation, 0);
+
+            //Update debug velocity
+            debugVelocityPivot.transform.position = debugObject.transform.position;
+            debugVelocity.transform.localPosition = new Vector3(0, highest.z * augmentaManager.scaling * 0.5f, velocity.magnitude * 0.5f);
+            debugVelocityPivot.transform.localRotation = Quaternion.Euler(0, Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg + 90, 0);
+            debugVelocity.transform.localScale = new Vector3(debugVelocity.transform.localScale.x, debugVelocity.transform.localScale.y, velocity.magnitude);
+
+            //Update debug orientation
+            debugOrientationPivot.transform.position = debugObject.transform.position;
+            debugOrientation.transform.localPosition = new Vector3(0, highest.z * augmentaManager.scaling * 0.5f, 0.25f);
+            debugOrientationPivot.transform.localRotation = Quaternion.Euler(0, orientation, 0);
+
         }
 
         /// <summary>
