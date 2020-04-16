@@ -40,8 +40,6 @@ public class AugmentaCamera : MonoBehaviour
         if (augmentaManager.augmentaScene.width <= 0 || augmentaManager.augmentaScene.height <= 0)
             return;
 
-        UpdateAugmentaSceneCorners();
-
         switch (cameraType) {
 
             case CameraType.Orthographic:
@@ -71,6 +69,9 @@ public class AugmentaCamera : MonoBehaviour
 
     #region Camera Update Functions
 
+    /// <summary>
+    /// Compute the size and aspect for an orthographic camera
+    /// </summary>
     void ComputeOrthoCamera() {
         camera.orthographic = true;
         camera.aspect = augmentaManager.augmentaScene.width / augmentaManager.augmentaScene.height;
@@ -79,22 +80,27 @@ public class AugmentaCamera : MonoBehaviour
         camera.ResetProjectionMatrix();
     }
 
+    /// <summary>
+    /// Compute the size and aspect for a perspective camera
+    /// </summary>
     void ComputePerspectiveCamera() {
 
         camera.orthographic = false;
         camera.ResetProjectionMatrix();
 
-        if (augmentaManager.protocolVersion == AugmentaProtocolVersion.V1) {
-            camera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(augmentaManager.augmentaScene.height * 0.5f * augmentaManager.pixelSize * augmentaManager.scaling, transform.localPosition.y);
-        } else if (augmentaManager.protocolVersion == AugmentaProtocolVersion.V2) {
-            camera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(augmentaManager.augmentaScene.height * 0.5f * augmentaManager.scaling, transform.localPosition.y);
-        }
+        camera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(augmentaManager.augmentaScene.debugObject.transform.localScale.y * 0.5f, transform.localPosition.y);
 
         camera.aspect = augmentaManager.augmentaScene.width / augmentaManager.augmentaScene.height;
 
     }
 
+    /// <summary>
+    /// Compute the projection matrix for an off center camera
+    /// </summary>
     void ComputeOffCenterCamera() {
+
+        UpdateAugmentaSceneCorners();
+
         camera.orthographic = false;
         camera.ResetAspect();
 
