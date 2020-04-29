@@ -170,6 +170,8 @@ namespace Augmenta
         public void ShowDebug(bool show) {
 
             debugObject.SetActive(show);
+            debugOrientationPivot.SetActive(show);
+            debugVelocityPivot.SetActive(show);
         }
 
         #endregion
