@@ -30,7 +30,14 @@ namespace Augmenta
         public float distanceToSensor;
         public float reflectivity;
 
+        [Header("Unity Object Values")]
         public float inactiveTime;
+        [Tooltip("Object center position on the Augmenta Scene plane, ignoring its height.")]
+        public Vector3 worldPosition2D;
+        [Tooltip("Object center position above the Augmenta Scene plane, taking its height into account.")]
+        public Vector3 worldPosition3D;
+        [Tooltip("Object size in meters.")]
+        public Vector3 worldScale;
 
         private Material augmentaObjectMaterialInstance;
 
@@ -57,9 +64,9 @@ namespace Augmenta
         void OnDrawGizmos() {
 
             Gizmos.color = Color.red;
-            DrawGizmoCube(GetAugmentaObjectWorldPosition(true),
+            DrawGizmoCube(worldPosition3D,
                           debugObject.transform.rotation, 
-                          GetAugmentaObjectWorldScale());
+                          worldScale);
         }
 
         void OnDisable() {
@@ -104,10 +111,15 @@ namespace Augmenta
             if (augmentaObject.id != id)
                 return;
 
+            //Update object values
+            worldPosition2D = GetAugmentaObjectWorldPosition(false);
+            worldPosition3D = GetAugmentaObjectWorldPosition(true);
+            worldScale = GetAugmentaObjectWorldScale();
+
             //Update debug object size
-            debugObject.transform.position = GetAugmentaObjectWorldPosition(true);
+            debugObject.transform.position = worldPosition3D;
             debugObject.transform.localRotation = Quaternion.Euler(0.0f, -boundingRectRotation, 0.0f);
-            debugObject.transform.localScale = GetAugmentaObjectWorldScale();
+            debugObject.transform.localScale = worldScale;
 
             //Update debug velocity
             debugVelocityPivot.transform.position = debugObject.transform.position;
