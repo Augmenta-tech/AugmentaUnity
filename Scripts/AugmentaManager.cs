@@ -740,6 +740,8 @@ namespace Augmenta {
 
 		#endregion
 
+		#region Utility Functions
+
 		/// <summary>
 		/// Clamp angle between 0 and 360 degrees
 		/// </summary>
@@ -752,6 +754,24 @@ namespace Augmenta {
 
 			return angle % 360.0f;
 		}
+
+		#endregion
+
+		#region External Function
+
+		public void ChangeCustomObjectPrefab(GameObject newCustomObjectPrefab) {
+
+			customObjectPrefab = newCustomObjectPrefab;
+
+			foreach (var augmentaObject in augmentaObjects) {
+				augmentaObject.Value.ChangeCustomObject();
+
+				if(customObjectPrefab)
+					augmentaObject.Value.useCustomObject = true;
+			}
+		}
+
+		#endregion
 
 		#region Debug Functions
 

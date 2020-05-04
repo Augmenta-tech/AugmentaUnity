@@ -86,7 +86,7 @@ namespace Augmenta
 
         #endregion
 
-        #region Scene Handling Functions
+        #region Object Handling Functions
 
         /// <summary>
         /// Initialize the augmenta object
@@ -185,6 +185,15 @@ namespace Augmenta
             return new Vector3(boundingRect.width * augmentaManager.augmentaScene.width * augmentaManager.scaling,
                                highest.z * augmentaManager.scaling,
                                boundingRect.height * augmentaManager.augmentaScene.height * augmentaManager.scaling);
+        }
+
+        /// <summary>
+        /// Update the custom object instantiated
+        /// </summary>
+        public void ChangeCustomObject() {
+
+            Destroy(_customObject);
+
         }
 
         #endregion
