@@ -21,6 +21,10 @@ namespace Augmenta
         SerializedProperty desiredAugmentaObjectCount;
         SerializedProperty augmentaScenePrefab;
         SerializedProperty augmentaObjectPrefab;
+        SerializedProperty customObjectPrefab;
+        SerializedProperty customObjectPositionType;
+        SerializedProperty customObjectRotationType;
+        SerializedProperty customObjectScalingType;
         SerializedProperty mute;
         SerializedProperty showDebug;
 
@@ -38,6 +42,10 @@ namespace Augmenta
             desiredAugmentaObjectCount = serializedObject.FindProperty("desiredAugmentaObjectCount");
             augmentaScenePrefab = serializedObject.FindProperty("augmentaScenePrefab");
             augmentaObjectPrefab = serializedObject.FindProperty("augmentaObjectPrefab");
+            customObjectPrefab = serializedObject.FindProperty("customObjectPrefab");
+            customObjectPositionType = serializedObject.FindProperty("customObjectPositionType");
+            customObjectRotationType = serializedObject.FindProperty("customObjectRotationType");
+            customObjectScalingType = serializedObject.FindProperty("customObjectScalingType");
             mute = serializedObject.FindProperty("mute");
             showDebug = serializedObject.FindProperty("showDebug");
         }
@@ -84,6 +92,15 @@ namespace Augmenta
             EditorGUILayout.LabelField("AUGMENTA PREFABS", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(augmentaScenePrefab, new GUIContent("Augmenta Scene Prefab"));
             EditorGUILayout.PropertyField(augmentaObjectPrefab, new GUIContent("Augmenta Object Prefab"));
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("CUSTOM OBJECT", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(customObjectPrefab, new GUIContent("Custom Object Prefab"));
+            if(customObjectPrefab.objectReferenceValue != null) {
+                EditorGUILayout.PropertyField(customObjectPositionType, new GUIContent("Custom Object Position"));
+                EditorGUILayout.PropertyField(customObjectRotationType, new GUIContent("Custom Object Rotation"));
+                EditorGUILayout.PropertyField(customObjectScalingType, new GUIContent("Custom Object Scaling"));
+            }
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("DEBUG", EditorStyles.boldLabel);

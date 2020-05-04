@@ -6,7 +6,7 @@ using Augmenta;
 using Augmenta.UnityOSC;
 
 /// <summary>
-///  Augmenta OSC Protocol V1 :
+/*  Augmenta OSC Protocol V1 :
 
 ///  /au/personWillLeave/ args0 arg1 ... argn
 ///  /au/personUpdated/   args0 arg1 ... argn
@@ -40,7 +40,7 @@ using Augmenta.UnityOSC;
 ///  5: scene.width (float)
 ///  6: scene.height (float)
 
-/* Augmenta OSC Protocol v2.0
+ Augmenta OSC Protocol v2.0
 
 /object/enter arg0 arg1 ... argN
 /object/leave arg0 arg1 ... argN
@@ -146,6 +146,22 @@ namespace Augmenta {
 		//Augmenta Prefabs
 		public GameObject augmentaScenePrefab;
 		public GameObject augmentaObjectPrefab;
+
+		//Custom Objects
+		[Tooltip("Custom prefab to instantiate on Augmenta objects.")]
+		public GameObject customObjectPrefab;
+
+		public enum CustomObjectPositionType { World2D, World3D }
+		[Tooltip("World2D = Projected on Augmenta scene plane. World3D = Above Augmenta scene plane according to height.")]
+		public CustomObjectPositionType customObjectPositionType;
+
+		public enum CustomObjectRotationType { None, AugmentaRotation, AugmentaOrientation }
+		[Tooltip("AugmentaRotation = Follow the Augmenta object rotation. AugmentaOrientation = Follow the Augmenta object orientation.")]
+		public CustomObjectRotationType customObjectRotationType;
+
+		public enum CustomObjectScalingType { None, AugmentaSize }
+		[Tooltip("AugmentaSize = Follow the Augmenta object size.")]
+		public CustomObjectScalingType customObjectScalingType;
 
 		//Debug
 		public bool mute = false;
@@ -253,6 +269,7 @@ namespace Augmenta {
 
 			AugmentaObject newAugmentaObject = newAugmentaObjectObject.GetComponent<AugmentaObject>();
 			newAugmentaObject.augmentaManager = this;
+			newAugmentaObject.useCustomObject = customObjectPrefab;
 			newAugmentaObject.showDebug = showDebug;
 			newAugmentaObject.ShowDebug(showDebug);
 

@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Hold the object values from the Augmenta protocol and update the object debug view.
+/// </summary>
 namespace Augmenta
 {
 	public class AugmentaObject : MonoBehaviour
 	{
-        [Header("Object Settings")]
+        [Header("Augmenta Object Settings")]
         public AugmentaManager augmentaManager;
         public bool showDebug = false;
         public GameObject debugObject;
@@ -39,7 +42,11 @@ namespace Augmenta
         [Tooltip("Object size in meters.")]
         public Vector3 worldScale;
 
-        private Material augmentaObjectMaterialInstance;
+        [HideInInspector] public bool useCustomObject;
+
+        private GameObject _customObject;
+
+        private Material _augmentaObjectMaterialInstance;
 
         private bool _initialized = false;
 
@@ -93,11 +100,11 @@ namespace Augmenta
             augmentaManager.augmentaObjectUpdate += UpdateAugmentaObject;
 
             //Get an instance of the debug material
-            augmentaObjectMaterialInstance = debugObject.GetComponent<Renderer>().material;
+            _augmentaObjectMaterialInstance = debugObject.GetComponent<Renderer>().material;
 
             //Apply a random color to the material
             Random.InitState(id);
-            augmentaObjectMaterialInstance.SetColor("_Color", Color.HSVToRGB(Random.value, 0.85f, 0.75f));
+            _augmentaObjectMaterialInstance.SetColor("_Color", Color.HSVToRGB(Random.value, 0.85f, 0.75f));
 
             _initialized = true;
         }
@@ -132,6 +139,30 @@ namespace Augmenta
             debugOrientation.transform.localPosition = new Vector3(0, highest.z * augmentaManager.scaling * 0.5f, 0.25f);
             debugOrientationPivot.transform.localRotation = Quaternion.Euler(0, orientation, 0);
 
+            //Update custom object
+            if (useCustomObject) {
+
+                //Instantiate it
+                if (!_customObject)
+                    _customObject = Instantiate(augmentaManager.customObjectPrefab, transform);
+
+                //Update position
+                switch (augmentaManager.customObjectPositionType) {
+                    case AugmentaManager.CustomObjectPositionType.World2D: _customObject.transform.position = worldPosition2D; break;
+                    case AugmentaManager.CustomObjectPositionType.World3D: _customObject.transform.position = worldPosition3D; break;
+                }
+
+                //Update rotation
+                switch (augmentaManager.customObjectRotationType) {
+                    case AugmentaManager.CustomObjectRotationType.AugmentaRotation: _customObject.transform.localRotation = Quaternion.Euler(0.0f, -boundingRectRotation, 0.0f); break;
+                    case AugmentaManager.CustomObjectRotationType.AugmentaOrientation: _customObject.transform.localRotation = Quaternion.Euler(0.0f, orientation, 0.0f); break;
+                }
+
+                //Update scale
+                switch (augmentaManager.customObjectScalingType) {
+                    case AugmentaManager.CustomObjectScalingType.AugmentaSize: _customObject.transform.localScale = worldScale; break;
+                }
+            }
         }
 
         /// <summary>

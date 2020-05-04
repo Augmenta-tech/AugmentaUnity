@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Hold the scene values from the Augmenta protocol and update the scene debug view.
+/// </summary>
 namespace Augmenta
 {
 	public class AugmentaScene : MonoBehaviour
