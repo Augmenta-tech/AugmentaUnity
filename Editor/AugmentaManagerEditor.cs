@@ -26,7 +26,8 @@ namespace Augmenta
         SerializedProperty customObjectRotationType;
         SerializedProperty customObjectScalingType;
         SerializedProperty mute;
-        SerializedProperty showDebug;
+        SerializedProperty showSceneDebug;
+        SerializedProperty showObjectDebug;
 
         void OnEnable() {
 
@@ -47,7 +48,8 @@ namespace Augmenta
             customObjectRotationType = serializedObject.FindProperty("customObjectRotationType");
             customObjectScalingType = serializedObject.FindProperty("customObjectScalingType");
             mute = serializedObject.FindProperty("mute");
-            showDebug = serializedObject.FindProperty("showDebug");
+            showSceneDebug = serializedObject.FindProperty("showSceneDebug");
+            showObjectDebug = serializedObject.FindProperty("showObjectDebug");
         }
 
         public override void OnInspectorGUI() {
@@ -108,10 +110,11 @@ namespace Augmenta
 
             //Show debug change handling
             EditorGUI.BeginChangeCheck();
-            EditorGUILayout.PropertyField(showDebug, new GUIContent("Show Debug"));
+            EditorGUILayout.PropertyField(showSceneDebug, new GUIContent("Show Scene Debug"));
+            EditorGUILayout.PropertyField(showObjectDebug, new GUIContent("Show Object Debug"));
             if (EditorGUI.EndChangeCheck() && Application.isPlaying) {
                 serializedObject.ApplyModifiedProperties();
-                augmentaManager.ShowDebug(showDebug.boolValue);
+                augmentaManager.ShowDebug(showSceneDebug.boolValue, showObjectDebug.boolValue);
             }
 
             serializedObject.ApplyModifiedProperties();

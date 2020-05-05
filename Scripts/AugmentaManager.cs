@@ -165,7 +165,8 @@ namespace Augmenta {
 
 		//Debug
 		public bool mute = false;
-		public bool showDebug = true;
+		public bool showSceneDebug = true;
+		public bool showObjectDebug = true;
 
 		//Events
 		public delegate void AugmentaObjectEnter(AugmentaObject augmentaObject, AugmentaDataType augmentaDataType);
@@ -222,12 +223,13 @@ namespace Augmenta {
 
 			GameObject sceneObject = Instantiate(augmentaScenePrefab, transform);
 			sceneObject.name = "Augmenta Scene " + augmentaId;
+			SetLayerRecursively(sceneObject, gameObject.layer);
 
 			augmentaScene = sceneObject.GetComponent<AugmentaScene>();
 
 			augmentaScene.augmentaManager = this;
-			augmentaScene.showDebug = showDebug;
-			augmentaScene.ShowDebug(showDebug);
+			augmentaScene.showDebug = showSceneDebug;
+			augmentaScene.ShowDebug(showSceneDebug);
 
 			augmentaScene.UpdateScene();
 		}
@@ -270,8 +272,8 @@ namespace Augmenta {
 			AugmentaObject newAugmentaObject = newAugmentaObjectObject.GetComponent<AugmentaObject>();
 			newAugmentaObject.augmentaManager = this;
 			newAugmentaObject.useCustomObject = customObjectPrefab;
-			newAugmentaObject.showDebug = showDebug;
-			newAugmentaObject.ShowDebug(showDebug);
+			newAugmentaObject.showDebug = showObjectDebug;
+			newAugmentaObject.ShowDebug(showObjectDebug);
 
 			UpdateAugmentaObject(newAugmentaObject, args, objectDataType);
 
@@ -280,6 +282,7 @@ namespace Augmenta {
 			augmentaObjects.Add(newAugmentaObject.id, newAugmentaObject);
 
 			newAugmentaObjectObject.name = "Augmenta Object " + newAugmentaObject.id;
+			SetLayerRecursively(newAugmentaObjectObject, gameObject.layer);
 
 			return newAugmentaObject;
 		}
@@ -755,6 +758,19 @@ namespace Augmenta {
 			return angle % 360.0f;
 		}
 
+		/// <summary>
+		/// Change the layer of the gameobject and all its child
+		/// </summary>
+		/// <param name="obj"></param>
+		/// <param name="layer"></param>
+		void SetLayerRecursively(GameObject obj, int layer) {
+			obj.layer = layer;
+
+			foreach (Transform child in obj.transform) {
+				SetLayerRecursively(child.gameObject, layer);
+			}
+		}
+
 		#endregion
 
 		#region External Function
@@ -779,12 +795,12 @@ namespace Augmenta {
 		/// Show debug of scene and persons
 		/// </summary>
 		/// <param name="show"></param>
-		public void ShowDebug(bool show) {
+		public void ShowDebug(bool showScene, bool showObject) {
 
-			augmentaScene.showDebug = show;
+			augmentaScene.showDebug = showScene;
 
 			foreach(var augmentaObject in augmentaObjects) {
-				augmentaObject.Value.showDebug = show;
+				augmentaObject.Value.showDebug = showObject;
 			}
 		}
 
