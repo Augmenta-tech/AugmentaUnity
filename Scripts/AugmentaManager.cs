@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Augmenta;
 using Augmenta.UnityOSC;
 
 /// <summary>
@@ -478,8 +477,8 @@ namespace Augmenta {
 
 			RemoveAugmentaOSCReceiver();
 
-			if (OSCMaster.CreateReceiver("Augmenta-" + augmentaId, inputPort) != null) {
-				OSCMaster.Receivers["Augmenta-" + augmentaId].messageReceived += OSCMessageReceived;
+			if (UnityOSC.OSCMaster.CreateReceiver("Augmenta-" + augmentaId, inputPort) != null) {
+				UnityOSC.OSCMaster.Receivers["Augmenta-" + augmentaId].messageReceived += OSCMessageReceived;
 			} else {
 				Debug.LogError("Could not create OSC receiver at port " + inputPort + ".");
 			}
@@ -490,13 +489,13 @@ namespace Augmenta {
 		/// </summary>
 		public void RemoveAugmentaOSCReceiver() {
 
-			//To avoid errors if OSCMaster was destroyed before this
-			if (OSCMaster.Instance == null)
+			//To avoid errors if UnityOSC.OSCMaster was destroyed before this
+			if (UnityOSC.OSCMaster.Instance == null)
 				return;
 
-			if (OSCMaster.Receivers.ContainsKey("Augmenta-" + augmentaId)) {
-				OSCMaster.Receivers["Augmenta-" + augmentaId].messageReceived -= OSCMessageReceived;
-				OSCMaster.RemoveReceiver("Augmenta-" + augmentaId);
+			if (UnityOSC.OSCMaster.Receivers.ContainsKey("Augmenta-" + augmentaId)) {
+				UnityOSC.OSCMaster.Receivers["Augmenta-" + augmentaId].messageReceived -= OSCMessageReceived;
+				UnityOSC.OSCMaster.RemoveReceiver("Augmenta-" + augmentaId);
 			}
 		}
 
