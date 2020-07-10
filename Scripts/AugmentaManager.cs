@@ -6,81 +6,7 @@ using Augmenta;
 using Augmenta.UnityOSC;
 
 /// <summary>
-/*  Augmenta OSC Protocol V1 :
-
-///  /au/personWillLeave/ args0 arg1 ... argn
-///  /au/personUpdated/   args0 arg1 ... argn
-///  /au/personEntered/   args0 arg1 ... argn
-
-///  where args are :
-
-///  0: pid (int)
-///  1: oid (int)
-///  2: age (int)
-///  3: centroid.x (float)
-///  4: centroid.y (float)
-///  5: velocity.x (float)
-///  6: velocity.y (float)
-///  7: depth (float)
-///  8: boundingRect.x (float)
-///  9: boundingRect.y (float)
-///  10: boundingRect.width (float)
-///  11: boundingRect.height (float)
-///  12: highest.x (float)
-///  13: highest.y (float)
-///  14: highest.z (float)
-
-///  /au/scene/   args0 arg1...argn
-
-///  0: currentTime (int)
-///  1: percentCovered (float)
-///  2: numPeople (int)
-///  3: averageMotion.x (float)
-///  4: averageMotion.y (float)
-///  5: scene.width (float)
-///  6: scene.height (float)
-
- Augmenta OSC Protocol v2.0
-
-/object/enter arg0 arg1 ... argN
-/object/leave arg0 arg1 ... argN
-/object/update arg0 arg1 ... argN
-
-where args are : 
-0: frame(int)     // Frame number
-1: id(int)                        // id ex : 42th object to enter stage has pid=42
-2: oid(int)                        // Ordered id ex : if 3 objects on stage, 43th object might have oid=2 
-3: age(float)                      // Alive time (in s)
-4: centroid.x(float 0:1)           // Position projected to the ground (normalised)
-5: centroid.y(float 0:1)               
-6: velocity.x(float -1:1)           // Speed and direction vector (in unit.s-1) (normalised)
-7: velocity.y(float -1:1)
-8: orientation(float 0:360) // With respect to horizontal axis right (0° = (1,0)), rotate counterclockwise
-							// Estimation of the object orientation from its rotation and velocity
-9: boundingRect.x(float 0:1)       // Bounding box center coord (normalised)	
-10: boundingRect.y(float 0:1)       
-11: boundingRect.width(float 0:1) // Bounding box width (normalised)
-12: boundingRect.height(float 0:1)
-13: boundingRect.rotation(float 0:360) // With respect to horizontal axis right counterclockwise
-14: height(float)           // Height of the object (in m) (absolute)
-
-/scene   arg0 arg1 ... argN
-0: frame (int)                // Frame number
-1: objectCount (int)                  // Number of objects
-2: scene.width (float)             // Scene width in 
-3: scene.height (float)
-
-/fusion arg0 arg1 ... argN
-
-0: videoOut.PixelWidth (int)      // VideoOut width in fusion
-1: videoOut.PixelHeight (int)
-2: videoOut.coord.x (int)          // top left coord in fusion
-3: videoOut.coord.y (int)
-4: scene.coord.x (float)          // Scene top left coord (0 for node by default)
-5: scene.coord.y (float)
-
-*/
-
+/// https://github.com/Theoriz/Augmenta/wiki#data
 /// </summary>
 
 namespace Augmenta {
@@ -97,7 +23,8 @@ namespace Augmenta {
 		AugmentaObjectEnter,
 		AugmentaObjectUpdate,
 		AugmentaObjectLeave,
-		SceneUpdated
+		SceneUpdated,
+		FusionUpdated
 	};
 
 	public enum AugmentaDataType
@@ -163,6 +90,11 @@ namespace Augmenta {
 		[Tooltip("AugmentaSize = Follow the Augmenta object size.")]
 		public CustomObjectScalingType customObjectScalingType;
 
+		//Fusion
+		public Vector2Int videoOutputSizeInPixels = new Vector2Int();
+		public Vector2 videoOutputSizeInMeters = new Vector2();
+		public Vector2 videoOutputOffset = new Vector2();
+
 		//Debug
 		public bool mute = false;
 		public bool showSceneDebug = true;
@@ -180,6 +112,9 @@ namespace Augmenta {
 
 		public delegate void SceneUpdated();
 		public event SceneUpdated sceneUpdated;
+
+		public delegate void FusionUpdated();
+		public event FusionUpdated fusionUpdated;
 
 		public Dictionary<int, AugmentaObject> augmentaObjects;
 		public AugmentaScene augmentaScene;
@@ -256,6 +191,10 @@ namespace Augmenta {
 
 				case AugmentaEventType.SceneUpdated:
 					sceneUpdated?.Invoke();
+					break;
+
+				case AugmentaEventType.FusionUpdated:
+					fusionUpdated?.Invoke();
 					break;
 			}
 		}
@@ -738,6 +677,18 @@ namespace Augmenta {
 					SendAugmentaEvent(AugmentaEventType.SceneUpdated);
 
 					break;
+
+				case "/fusion/":
+				case "/fusion":
+
+					videoOutputOffset = new Vector2((float)args[0], (float)args[1]);
+					videoOutputSizeInMeters = new Vector2((float)args[2], (float)args[3]);
+					videoOutputSizeInPixels = new Vector2Int((int)args[4], (int)args[5]);
+
+					SendAugmentaEvent(AugmentaEventType.FusionUpdated);
+
+					break;
+
 			}
 		}
 

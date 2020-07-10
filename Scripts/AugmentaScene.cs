@@ -20,7 +20,7 @@ namespace Augmenta
 		public float height;
 		public int augmentaObjectCount; //Object count from the scene updated message  /!\ Because of personTimeOut, it can be different from the instantiated person count /!\
 
-		private Material debugMaterial;
+		private Material _debugMaterial;
 
 		private bool _initialized = false;
 
@@ -71,7 +71,7 @@ namespace Augmenta
 			augmentaManager.sceneUpdated += UpdateScene;
 
 			//Get the debug material
-			debugMaterial = debugObject.GetComponent<Renderer>().material;
+			_debugMaterial = debugObject.GetComponent<Renderer>().material;
 
 			_initialized = true;
 		}
@@ -89,7 +89,7 @@ namespace Augmenta
 			debugObject.transform.localScale = new Vector3(width * augmentaManager.scaling, height * augmentaManager.scaling, 0);
 
 			//Update debug material tiling
-			debugMaterial.mainTextureScale = debugObject.transform.localScale * 0.5f;
+			_debugMaterial.mainTextureScale = debugObject.transform.localScale * 0.5f;
 		}
 
 		#endregion
