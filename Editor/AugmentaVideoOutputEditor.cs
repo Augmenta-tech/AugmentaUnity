@@ -11,6 +11,9 @@ namespace Augmenta
         SerializedProperty augmentaManager;
         SerializedProperty augmentaVideoOutputCamera;
 
+        SerializedProperty useExternalCamera;
+        SerializedProperty paddingColor;
+
         SerializedProperty autoOutputSizeInPixels;
         SerializedProperty autoOutputSizeInMeters;
         SerializedProperty autoOutputOffset;
@@ -19,12 +22,13 @@ namespace Augmenta
         SerializedProperty videoOutputSizeInMeters;
         SerializedProperty videoOutputOffset;
 
-        SerializedProperty videoOutputTexture;
-
         void OnEnable() {
 
             augmentaManager = serializedObject.FindProperty("augmentaManager");
-            augmentaVideoOutputCamera = serializedObject.FindProperty("augmentaVideoOutputCamera");
+            augmentaVideoOutputCamera = serializedObject.FindProperty("camera");
+
+            useExternalCamera = serializedObject.FindProperty("useExternalCamera");
+            paddingColor = serializedObject.FindProperty("paddingColor");
 
             autoOutputSizeInPixels = serializedObject.FindProperty("autoOutputSizeInPixels");
             autoOutputSizeInMeters = serializedObject.FindProperty("autoOutputSizeInMeters");
@@ -33,8 +37,6 @@ namespace Augmenta
             videoOutputSizeInPixels = serializedObject.FindProperty("_videoOutputSizeInPixels");
             videoOutputSizeInMeters = serializedObject.FindProperty("_videoOutputSizeInMeters");
             videoOutputOffset = serializedObject.FindProperty("_videoOutputOffset");
-
-            videoOutputTexture = serializedObject.FindProperty("videoOutputTexture");
         }
 
         public override void OnInspectorGUI() {
@@ -45,8 +47,16 @@ namespace Augmenta
 
             EditorGUILayout.LabelField("AUGMENTA COMPONENTS", EditorStyles.boldLabel);
             EditorGUILayout.PropertyField(augmentaManager, new GUIContent("Augmenta Manager"));
-            EditorGUILayout.PropertyField(augmentaVideoOutputCamera, new GUIContent("Augmenta Video Output Camera"));
             EditorGUILayout.Space();
+
+            EditorGUILayout.PropertyField(useExternalCamera, new GUIContent("Use External Output Camera", "If disabled, the script will look for an AugmentaVideoOutputCamera in its hierarchy.\nIf enabled, any camera from the scene can be used. Note that the specified camera will be assigned a render texture target."));
+            EditorGUILayout.Space();
+
+            if (useExternalCamera.boolValue) {
+                EditorGUILayout.PropertyField(augmentaVideoOutputCamera, new GUIContent("Output Camera"));
+                EditorGUILayout.PropertyField(paddingColor, new GUIContent("Texture Padding Color"));
+                EditorGUILayout.Space();
+            }
 
             EditorGUILayout.LabelField("VIDEO OUTPUT SETTINGS", EditorStyles.boldLabel);
 
@@ -80,10 +90,6 @@ namespace Augmenta
             EditorGUILayout.Space();
 
             serializedObject.ApplyModifiedProperties();
-
-            EditorGUILayout.LabelField("DEBUG (Read only)", EditorStyles.boldLabel);
-
-            EditorGUILayout.PropertyField(videoOutputTexture, new GUIContent("Video Output Texture"));
 
         }
     }

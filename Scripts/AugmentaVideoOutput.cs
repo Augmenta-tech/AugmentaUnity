@@ -11,9 +11,15 @@ namespace Augmenta
     public class AugmentaVideoOutput : MonoBehaviour
     {
         public AugmentaManager augmentaManager;
-        public AugmentaVideoOutputCamera augmentaVideoOutputCamera;
+        public new Camera camera;
 
-        public RenderTexture videoOutputTexture;
+        public RenderTexture videoOutputTexture {
+			get { return useExternalCamera ? _outputCustomRenderTexture : _outputRenderTexture; }
+        }
+
+        public bool useExternalCamera;
+
+        public Color paddingColor = Color.black;
 
         [Tooltip("Use data from Fusion to determine the output size in pixels.")]
         public bool autoOutputSizeInPixels = true;
@@ -49,6 +55,21 @@ namespace Augmenta
         [SerializeField] private Vector2 _videoOutputSizeInMeters = new Vector2();
         [SerializeField] private Vector2 _videoOutputOffset = new Vector2();
 
+        private RenderTexture _outputRenderTexture;
+        private CustomRenderTexture _outputCustomRenderTexture;
+
+        private Material outputCRTMaterial {
+			get { if(!_outputCRTMaterial) _outputCRTMaterial = new Material(Shader.Find("Augmenta/CameraDisplayTexture"));
+                return _outputCRTMaterial;
+            }
+		}
+        private Material _outputCRTMaterial;
+        private Matrix4x4 _cameraVPMatrix;
+        private Vector4 _botLeftCameraUV;
+        private Vector4 _botRightCameraUV;
+        private Vector4 _topLeftCameraUV;
+        private Vector4 _topRightCameraUV;
+
         private bool _initialized = false;
 
 		#region MonoBehavious Functions
@@ -61,8 +82,15 @@ namespace Augmenta
 
 		private void Update() {
 
+            if (!_initialized)
+                Initialize();
+
             UpdateVideoOutputCorners();
-		}
+
+            if (useExternalCamera)
+                UpdateCRTMaterial();
+
+        }
 
 		private void OnDisable() {
 
@@ -83,6 +111,8 @@ namespace Augmenta
 
 		#endregion
 
+		#region Setup 
+
 		void Initialize() {
 
 			if (!augmentaManager) {
@@ -92,10 +122,25 @@ namespace Augmenta
 
             augmentaManager.fusionUpdated += OnFusionUpdated;
 
-			if (!videoOutputTexture) {
-                //Initialize videoOutputTexture
-                RefreshVideoTexture();
+			if (!useExternalCamera) {
+                AugmentaVideoOutputCamera augmentaVideoOutputCamera = GetComponentInChildren<AugmentaVideoOutputCamera>();
+
+				if (!augmentaVideoOutputCamera) {
+                    Debug.LogError("Could not find an AugmentaVideoOutputCamera in " + name + " hierarchy.");
+                    return;
+				} else {
+                    camera = augmentaVideoOutputCamera.camera;
+				}
+			} else {
+
+				if (!camera) {
+                    Debug.LogError("No camera specified in " + name + " which is set to use an external camera.");
+                    return;
+                }
 			}
+
+            //Initialize videoOutputTexture
+            RefreshVideoTexture();
 
             _initialized = true;
 		}
@@ -105,31 +150,11 @@ namespace Augmenta
             augmentaManager.fusionUpdated -= OnFusionUpdated;
         }
 
-        public void RefreshVideoTexture() {
+		#endregion
 
-            if (videoOutputSizeInPixels.x == 0 || videoOutputSizeInPixels.y == 0)
-                return;
+		#region Augmenta Events
 
-            if (videoOutputTexture) {
-                if (videoOutputSizeInPixels.x != videoOutputTexture.width || videoOutputSizeInPixels.y != videoOutputTexture.height) {
-                    videoOutputTexture.Release();
-				} else {
-                    return;
-				}
-            }
-
-            //Create texture
-            videoOutputTexture = new RenderTexture(videoOutputSizeInPixels.x, videoOutputSizeInPixels.y, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
-            videoOutputTexture.Create();
-
-            //Assign texture as render target of video output camera
-            augmentaVideoOutputCamera.camera.targetTexture = videoOutputTexture;
-
-            //Send texture updated event
-            videoOutputTextureUpdated?.Invoke();
-		}
-
-        void OnFusionUpdated() {
+		void OnFusionUpdated() {
 
             if (!videoOutputTexture)
                 RefreshVideoTexture();
@@ -141,6 +166,56 @@ namespace Augmenta
 
 		}
 
+        #endregion
+
+        #region Video Texture
+
+        public void RefreshVideoTexture() {
+  
+            if (videoOutputSizeInPixels.x == 0 || videoOutputSizeInPixels.y == 0)
+                return;
+
+            if (videoOutputTexture) {
+                if (videoOutputSizeInPixels.x != videoOutputTexture.width || videoOutputSizeInPixels.y != videoOutputTexture.height) {
+                    videoOutputTexture.Release();
+                } else {
+                    return;
+                }
+            }
+
+			//Create texture
+            CreateOutputRenderTexture();
+
+            if (useExternalCamera)
+                CreateOutputCustomRenderTexture();
+
+            //Send texture updated event
+            videoOutputTextureUpdated?.Invoke();
+
+        }
+
+        void CreateOutputRenderTexture() {
+
+            _outputRenderTexture = new RenderTexture(videoOutputSizeInPixels.x, videoOutputSizeInPixels.y, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
+            _outputRenderTexture.Create();
+
+            //Assign texture as render target of video output camera
+            camera.targetTexture = _outputRenderTexture;
+
+        }
+
+        void CreateOutputCustomRenderTexture() {
+
+            _outputCustomRenderTexture = new CustomRenderTexture(videoOutputSizeInPixels.x, videoOutputSizeInPixels.y, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
+            _outputCustomRenderTexture.updateMode = CustomRenderTextureUpdateMode.Realtime;
+            _outputCustomRenderTexture.Create();
+
+            _outputCustomRenderTexture.material = outputCRTMaterial;
+
+            _outputCRTMaterial.SetTexture("_MainTex", _outputRenderTexture);
+
+        }
+
         void UpdateVideoOutputCorners() {
 
             if (!augmentaManager.augmentaScene)
@@ -151,5 +226,57 @@ namespace Augmenta
             botRightCorner = botLeftCorner + Vector3.right * videoOutputSizeInMeters.x;
             topRightCorner = topLeftCorner + Vector3.right * videoOutputSizeInMeters.x;
         }
+
+        #endregion
+
+        #region External Camera
+
+        void UpdateCRTMaterial() {
+
+            UpdateCameraDisplayMatrix();
+            UpdateCameraUV();
+
+            outputCRTMaterial.SetColor("_PaddingColor", paddingColor);
+            outputCRTMaterial.SetVector("_BotCamUV", new Vector4(_botLeftCameraUV.x, _botLeftCameraUV.y, _botRightCameraUV.x, _botRightCameraUV.y));
+            outputCRTMaterial.SetVector("_TopCamUV", new Vector4(_topLeftCameraUV.x, _topLeftCameraUV.y, _topRightCameraUV.x, _topRightCameraUV.y));
+        }
+
+        void UpdateCameraDisplayMatrix() {
+
+            Matrix4x4 V = camera.worldToCameraMatrix;
+            Matrix4x4 P = camera.projectionMatrix;
+
+            //bool d3d = SystemInfo.graphicsDeviceVersion.IndexOf("Direct3D") > -1;
+
+            //if (d3d) {
+            //    // Invert Y for rendering to a render texture
+            //    for (int j = 0; j < 4; j++) {
+            //        P[1, j] = -P[1, j];
+            //    }
+            //    // Scale and bias from OpenGL -> D3D depth range
+            //    for (int j = 0; j < 4; j++) {
+            //        P[2, j] = P[2, j] * 0.5f + P[3, j] * 0.5f;
+            //    }
+            //}
+
+            _cameraVPMatrix = P * V;
+        }
+
+        void UpdateCameraUV() {
+
+            _botLeftCameraUV = _cameraVPMatrix * new Vector4(botLeftCorner.x, botLeftCorner.y, botLeftCorner.z, 1);
+            _botLeftCameraUV = (_botLeftCameraUV / _botLeftCameraUV.w) * 0.5f + Vector4.one * 0.5f;
+
+            _botRightCameraUV = _cameraVPMatrix * new Vector4(botRightCorner.x, botRightCorner.y, botRightCorner.z, 1);
+            _botRightCameraUV = (_botRightCameraUV / _botRightCameraUV.w) * 0.5f + Vector4.one * 0.5f;
+
+            _topLeftCameraUV = _cameraVPMatrix * new Vector4(topLeftCorner.x, topLeftCorner.y, topLeftCorner.z, 1);
+            _topLeftCameraUV = (_topLeftCameraUV / _topLeftCameraUV.w) * 0.5f + Vector4.one * 0.5f;
+
+            _topRightCameraUV = _cameraVPMatrix * new Vector4(topRightCorner.x, topRightCorner.y, topRightCorner.z, 1);
+            _topRightCameraUV = (_topRightCameraUV / _topRightCameraUV.w) * 0.5f + Vector4.one * 0.5f;
+        }
+
+        #endregion
     }
 }
