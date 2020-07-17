@@ -90,6 +90,7 @@ namespace Augmenta
 
 			//Update debug material tiling
 			_debugMaterial.mainTextureScale = debugObject.transform.localScale * 0.5f;
+			_debugMaterial.mainTextureOffset = Vector2.down * debugObject.transform.localScale.y * 0.5f;
 		}
 
 		#endregion
