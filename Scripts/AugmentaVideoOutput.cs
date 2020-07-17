@@ -70,6 +70,8 @@ namespace Augmenta
         private Vector4 _topLeftCameraUV;
         private Vector4 _topRightCameraUV;
 
+        private Vector3 _offset;
+
         private bool _initialized = false;
 
 		#region MonoBehavious Functions
@@ -221,10 +223,11 @@ namespace Augmenta
             if (!augmentaManager.augmentaScene)
                 return;
 
-            topLeftCorner = augmentaManager.augmentaScene.debugObject.transform.TransformPoint(new Vector3(-0.5f, 0.5f, 0)) + new Vector3(videoOutputOffset.x, 0, videoOutputOffset.y);
-            botLeftCorner = topLeftCorner - Vector3.forward * videoOutputSizeInMeters.y;
-            botRightCorner = botLeftCorner + Vector3.right * videoOutputSizeInMeters.x;
-            topRightCorner = topLeftCorner + Vector3.right * videoOutputSizeInMeters.x;
+            _offset = augmentaManager.augmentaScene.debugObject.transform.TransformDirection(new Vector3(videoOutputOffset.x, -videoOutputOffset.y, 0));
+            topLeftCorner = augmentaManager.augmentaScene.debugObject.transform.TransformPoint(new Vector3(-0.5f, 0.5f, 0)) + _offset;
+            botLeftCorner = topLeftCorner + augmentaManager.augmentaScene.debugObject.transform.TransformDirection(Vector3.down * videoOutputSizeInMeters.y);
+            botRightCorner = botLeftCorner + augmentaManager.augmentaScene.debugObject.transform.TransformDirection(Vector3.right * videoOutputSizeInMeters.x);
+            topRightCorner = botRightCorner + augmentaManager.augmentaScene.debugObject.transform.TransformDirection(Vector3.up * videoOutputSizeInMeters.y);
         }
 
         #endregion

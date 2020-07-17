@@ -16,10 +16,15 @@ namespace Augmenta
     {
         public AugmentaManager augmentaManager;
 
+        public float distanceToScene = 10.0f;
+
         private Vector3 _botLeftCorner;
         private Vector3 _botRightCorner;
         private Vector3 _topLeftCorner;
         private Vector3 _topRightCorner;
+
+        private Vector3 _sceneUp;
+        private Vector3 _sceneForward;
 
         // Update is called once per frame
         void Update() {
@@ -32,6 +37,7 @@ namespace Augmenta
                 return;
 
             UpdateAugmentaSceneCorners();
+            OrientCamera();
 
             switch (cameraType) {
 
@@ -42,7 +48,7 @@ namespace Augmenta
 
                 case CameraType.Perspective:
                     CenterCamera();
-                    ComputePerspectiveCamera(augmentaManager.augmentaScene.width * augmentaManager.scaling, augmentaManager.augmentaScene.height * augmentaManager.scaling);
+                    ComputePerspectiveCamera(augmentaManager.augmentaScene.width * augmentaManager.scaling, augmentaManager.augmentaScene.height * augmentaManager.scaling, distanceToScene);
                     break;
 
                 case CameraType.OffCenter:
@@ -64,7 +70,15 @@ namespace Augmenta
 
         void CenterCamera() {
 
-            camera.transform.position = new Vector3(_botLeftCorner.x + (_botRightCorner.x - _botLeftCorner.x) * 0.5f, camera.transform.position.y, _botLeftCorner.z + (_topLeftCorner.z - _botLeftCorner.z) * 0.5f);
+            camera.transform.position = (_topRightCorner - _topLeftCorner - _botRightCorner + _botLeftCorner) * 0.25f - _sceneForward * distanceToScene;
+        }
+
+        void OrientCamera() {
+
+            _sceneUp = (_topLeftCorner - _botLeftCorner).normalized;
+            _sceneForward = Vector3.Cross((_topRightCorner - _topLeftCorner).normalized, _sceneUp).normalized;
+
+            camera.transform.rotation = Quaternion.LookRotation(_sceneForward, _sceneUp);
         }
     }
 }

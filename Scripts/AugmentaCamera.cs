@@ -43,12 +43,12 @@ namespace Augmenta
         /// <summary>
         /// Compute the size and aspect for a perspective camera
         /// </summary>
-        protected void ComputePerspectiveCamera(float width, float height) {
+        protected void ComputePerspectiveCamera(float width, float height, float distance) {
 
             camera.orthographic = false;
             camera.ResetProjectionMatrix();
 
-            camera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(height * 0.5f, transform.localPosition.y);
+            camera.fieldOfView = 2.0f * Mathf.Rad2Deg * Mathf.Atan2(height * 0.5f, distance);
 
             camera.aspect = width / height;
 
