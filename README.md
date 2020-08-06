@@ -1,6 +1,6 @@
 # Augmenta Unity
 
-Example project using this library [here](https://github.com/Theoriz/AugmentaUnity-Demo/tree/V2-Minimalist).
+Example project using this library [here](https://github.com/Theoriz/AugmentaUnity-Demo).
 
 # Feature List
 ## Implemented
