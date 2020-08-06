@@ -89,8 +89,8 @@ namespace Augmenta
 			debugObject.transform.localScale = new Vector3(width * augmentaManager.scaling, height * augmentaManager.scaling, 0);
 
 			//Update debug material tiling
-			_debugMaterial.mainTextureScale = debugObject.transform.localScale * 0.5f;
-			_debugMaterial.mainTextureOffset = Vector2.down * debugObject.transform.localScale.y * 0.5f;
+			_debugMaterial.SetTextureScale("_UnlitColorMap", debugObject.transform.localScale * 0.5f);
+			_debugMaterial.SetTextureOffset("_UnlitColorMap", Vector2.down * debugObject.transform.localScale.y * 0.5f);
 		}
 
 		#endregion
