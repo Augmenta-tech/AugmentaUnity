@@ -120,9 +120,39 @@ namespace Augmenta {
 
 		private List<int> _expiredIds = new List<int>(); //Used to remove timed out objects
 
+		private bool _initialized = false;
+
 		#region MonoBehaviour Functions
 
 		private void Awake() {
+
+			if (!_initialized)
+				Initialize();
+		}
+
+		private void Update() {
+
+			if (!_initialized)
+				Initialize();
+
+			//Check if objects are alive
+			CheckAlive();
+		}
+
+		private void OnDisable() {
+
+			if (_initialized) {
+				//Remove OSC Receiver
+				RemoveAugmentaOSCReceiver();
+			}
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Initialize Augmenta
+		/// </summary>
+		void Initialize() {
 
 			//Initialize scene
 			InitializeAugmentaScene();
@@ -132,21 +162,9 @@ namespace Augmenta {
 
 			//Create OSC Receiver
 			CreateAugmentaOSCReceiver();
+
+			_initialized = true;
 		}
-
-		private void Update() {
-
-			//Check if objects are alive
-			CheckAlive();
-		}
-
-		private void OnDisable() {
-
-			//Remove OSC Receiver
-			RemoveAugmentaOSCReceiver();
-		}
-
-		#endregion
 
 		#region Augmenta Functions
 
@@ -747,7 +765,11 @@ namespace Augmenta {
 		/// <param name="show"></param>
 		public void ShowDebug(bool showScene, bool showObject) {
 
-			augmentaScene.showDebug = showScene;
+			if (!_initialized)
+				Initialize();
+
+			if (augmentaScene)
+				augmentaScene.showDebug = showScene;
 
 			foreach(var augmentaObject in augmentaObjects) {
 				augmentaObject.Value.showDebug = showObject;

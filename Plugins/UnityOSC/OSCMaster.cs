@@ -11,7 +11,7 @@ namespace Augmenta.UnityOSC
         public static OSCMaster Instance {
             get {
 
-                if (applicationIsQuitting)
+                if (destroying)
                     return null;
 
                 if (_instance == null) {
@@ -33,7 +33,7 @@ namespace Augmenta.UnityOSC
         public bool LogIncoming;
         public bool LogOutgoing;
 
-        private static bool applicationIsQuitting = false;
+        private static bool destroying = false;
 
         void Awake() {
             Instance = this;
@@ -129,7 +129,7 @@ namespace Augmenta.UnityOSC
         }
 
 
-        void OnApplicationQuit() {
+        void OnDestroy() {
             foreach (var pair in Clients) {
                 pair.Value.Close();
             }
@@ -140,7 +140,7 @@ namespace Augmenta.UnityOSC
 
             _instance = null;
 
-            applicationIsQuitting = true;
+            destroying = true;
         }
     }
 }
