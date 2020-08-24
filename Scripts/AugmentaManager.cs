@@ -748,10 +748,9 @@ namespace Augmenta {
 			customObjectPrefab = newCustomObjectPrefab;
 
 			foreach (var augmentaObject in augmentaObjects) {
-				augmentaObject.Value.ChangeCustomObject();
 
-				if(customObjectPrefab)
-					augmentaObject.Value.useCustomObject = true;
+				augmentaObject.Value.ChangeCustomObject();
+				augmentaObject.Value.useCustomObject = customObjectPrefab;
 			}
 		}
 
