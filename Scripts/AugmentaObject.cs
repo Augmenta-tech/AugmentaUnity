@@ -146,7 +146,7 @@ namespace Augmenta
             //Update debug orientation
             debugOrientationPivot.transform.position = debugObject.transform.position;
             debugOrientation.transform.localPosition = new Vector3(0, highest.z * augmentaManager.scaling * 0.5f, 0.25f);
-            debugOrientationPivot.transform.localRotation = Quaternion.Euler(0, orientation, 0);
+            debugOrientationPivot.transform.localRotation = Quaternion.Euler(0, -orientation, 0);
             debugOrientationPivot.transform.localScale = new Vector3(worldScale.x, 1, worldScale.z);
 
             //Update custom object
