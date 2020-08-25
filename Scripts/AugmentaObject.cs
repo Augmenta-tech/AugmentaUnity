@@ -54,7 +54,9 @@ namespace Augmenta
 
         private void OnEnable() {
 
-            _initialized = false;
+            //Initialization
+            if (!_initialized)
+                Initialize();
         }
 
         void Update() {
@@ -81,6 +83,8 @@ namespace Augmenta
             //Disconnect from person updated event
             if (_initialized) {
                 augmentaManager.augmentaObjectUpdate -= UpdateAugmentaObject;
+
+                _initialized = false;
             }
         }
 
@@ -117,6 +121,10 @@ namespace Augmenta
 
             if (augmentaObject.id != id)
                 return;
+
+            //Initialization
+            if (!_initialized)
+                Initialize();
 
             //Update object values
             worldPosition2D = GetAugmentaObjectWorldPosition(false);
