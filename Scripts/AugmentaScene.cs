@@ -22,6 +22,8 @@ namespace Augmenta
 
 		private Material _debugMaterial;
 
+		private bool _isHDRP = false;
+
 		private bool _initialized = false;
 
 		#region MonoBehaviour Functions
@@ -73,6 +75,9 @@ namespace Augmenta
 			//Get the debug material
 			_debugMaterial = debugObject.GetComponent<Renderer>().material;
 
+			//Check if HDRP is used from scene debug object shader type
+			_isHDRP = _debugMaterial.shader.name.Contains("HDRP");
+
 			_initialized = true;
 		}
 
@@ -89,8 +94,13 @@ namespace Augmenta
 			debugObject.transform.localScale = new Vector3(width * augmentaManager.scaling, height * augmentaManager.scaling, 0);
 
 			//Update debug material tiling
-			_debugMaterial.SetTextureScale("_UnlitColorMap", debugObject.transform.localScale * 0.5f);
-			_debugMaterial.SetTextureOffset("_UnlitColorMap", Vector2.down * debugObject.transform.localScale.y * 0.5f);
+			if (_isHDRP) {
+				_debugMaterial.SetTextureScale("_UnlitColorMap", debugObject.transform.localScale * 0.5f);
+				_debugMaterial.SetTextureOffset("_UnlitColorMap", Vector2.down * debugObject.transform.localScale.y * 0.5f);
+			} else {
+				_debugMaterial.mainTextureScale = debugObject.transform.localScale * 0.5f;
+				_debugMaterial.mainTextureOffset = Vector2.down * debugObject.transform.localScale.y * 0.5f;
+			}
 		}
 
 		#endregion
