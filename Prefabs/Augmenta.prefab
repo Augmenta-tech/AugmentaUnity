@@ -53,10 +53,18 @@ MonoBehaviour:
   augmentaObjectTimeOut: 1
   desiredAugmentaObjectType: 0
   desiredAugmentaObjectCount: 1
-  augmentaScenePrefab: {fileID: 7870137636367897960, guid: d4b5a473aa1aa9e49a685c145d54f94c,
+  augmentaScenePrefab: {fileID: 7870137636367897960, guid: 1f88dc5aedbc8814b9b3f0bf73b3c6b6,
     type: 3}
-  augmentaObjectPrefab: {fileID: 9127892026477570146, guid: b449b93e1bdecdd47a52577866ce76eb,
+  augmentaObjectPrefab: {fileID: 9127892026477570146, guid: d1029461073db394a800b516377c2ab4,
     type: 3}
+  customObjectPrefab: {fileID: 0}
+  customObjectPositionType: 0
+  customObjectRotationType: 0
+  customObjectScalingType: 0
+  videoOutputSizeInPixels: {x: 0, y: 0}
+  videoOutputSizeInMeters: {x: 0, y: 0}
+  videoOutputOffset: {x: 0, y: 0}
   mute: 0
-  showDebug: 1
+  showSceneDebug: 1
+  showObjectDebug: 1
   augmentaScene: {fileID: 0}
