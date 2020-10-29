@@ -28,7 +28,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1195827156203567033}
+  - {fileID: 8430483184757073711}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -61,7 +61,7 @@ MonoBehaviour:
   _videoOutputSizeInPixels: {x: 1200, y: 1200}
   _videoOutputSizeInMeters: {x: 0, y: 0}
   _videoOutputOffset: {x: 0, y: 0}
---- !u!1001 &2861481498902348799
+--- !u!1001 &4886827805804024681
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -76,7 +76,7 @@ PrefabInstance:
     - target: {fileID: 3449700284069024509, guid: 9718b9e5c9033e1469fe9707fd2bd899,
         type: 3}
       propertyPath: m_Name
-      value: Fusion Spout
+      value: SpoutFusion
       objectReference: {fileID: 0}
     - target: {fileID: 3976230099118339142, guid: 9718b9e5c9033e1469fe9707fd2bd899,
         type: 3}
@@ -135,9 +135,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9718b9e5c9033e1469fe9707fd2bd899, type: 3}
---- !u!4 &1195827156203567033 stripped
+--- !u!4 &8430483184757073711 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3976230099118339142, guid: 9718b9e5c9033e1469fe9707fd2bd899,
     type: 3}
-  m_PrefabInstance: {fileID: 2861481498902348799}
+  m_PrefabInstance: {fileID: 4886827805804024681}
   m_PrefabAsset: {fileID: 0}
