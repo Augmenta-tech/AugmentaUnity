@@ -11,13 +11,18 @@ namespace Augmenta
     public class AugmentaVideoOutput : MonoBehaviour
     {
         public AugmentaManager augmentaManager;
+
+        public enum CameraMode { None, VideoOutput, External }
+        public CameraMode cameraMode {
+			get { return _cameraMode; }
+            set { _cameraMode = value; Initialize(); }
+		}
+
         public new Camera camera;
 
         public RenderTexture videoOutputTexture {
-			get { return useExternalCamera ? _outputCustomRenderTexture : _outputRenderTexture; }
+			get { return cameraMode == CameraMode.External ? _outputCustomRenderTexture : _outputRenderTexture; }
         }
-
-        public bool useExternalCamera;
 
         public Color paddingColor = Color.black;
 
@@ -59,6 +64,8 @@ namespace Augmenta
         [SerializeField] private Vector2 _videoOutputSizeInMeters = new Vector2();
         [SerializeField] private Vector2 _videoOutputOffset = new Vector2();
 
+        [SerializeField] private CameraMode _cameraMode;
+
         private RenderTexture _outputRenderTexture;
         private CustomRenderTexture _outputCustomRenderTexture;
 
@@ -95,7 +102,7 @@ namespace Augmenta
 
             UpdateVideoOutputCorners();
 
-            if (useExternalCamera)
+            if (cameraMode == CameraMode.External)
                 UpdateCRTMaterial();
 
             if (showFusionSpout && !_spoutObject.activeSelf) {
@@ -126,16 +133,17 @@ namespace Augmenta
 
 		#region Setup 
 
-		void Initialize() {
+		public void Initialize() {
+
+            if (_initialized)
+                CleanUp();
 
 			if (!augmentaManager) {
                 Debug.LogError("AugmentaManager is not specified in AugmentaVideoOutput " + name+".");
                 return;
 			}
 
-            augmentaManager.fusionUpdated += OnFusionUpdated;
-
-			if (!useExternalCamera) {
+			if (cameraMode == CameraMode.External) {
                 AugmentaVideoOutputCamera augmentaVideoOutputCamera = GetComponentInChildren<AugmentaVideoOutputCamera>();
 
 				if (!augmentaVideoOutputCamera) {
@@ -144,8 +152,7 @@ namespace Augmenta
 				} else {
                     camera = augmentaVideoOutputCamera.camera;
 				}
-			} else {
-
+			} else if (cameraMode == CameraMode.VideoOutput) {
 				if (!camera) {
                     Debug.LogError("No camera specified in " + name + " which is set to use an external camera.");
                     return;
@@ -158,6 +165,8 @@ namespace Augmenta
             //Initialize spout fusion
             _spoutObject = GetComponentInChildren<AugmentaVideoOutputFusionSpout>().gameObject;
             _spoutObject.SetActive(showFusionSpout);
+
+            augmentaManager.fusionUpdated += OnFusionUpdated;
 
             _initialized = true;
 		}
@@ -188,7 +197,10 @@ namespace Augmenta
         #region Video Texture
 
         public void RefreshVideoTexture() {
-  
+
+            if (cameraMode == CameraMode.None || !camera)
+                return;
+
             if (videoOutputSizeInPixels.x == 0 || videoOutputSizeInPixels.y == 0)
                 return;
 
@@ -203,7 +215,7 @@ namespace Augmenta
 			//Create texture
             CreateOutputRenderTexture();
 
-            if (useExternalCamera)
+            if (cameraMode == CameraMode.External)
                 CreateOutputCustomRenderTexture();
 
             //Send texture updated event

@@ -212,6 +212,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1203811005689838401, guid: 3b1a973b921bcfc44b78a997e6497dd7,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8323288267989200192, guid: 3b1a973b921bcfc44b78a997e6497dd7,
         type: 3}
       propertyPath: m_Name
@@ -226,6 +231,11 @@ PrefabInstance:
         type: 3}
       propertyPath: augmentaManager
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8323288267989200193, guid: 3b1a973b921bcfc44b78a997e6497dd7,
+        type: 3}
+      propertyPath: _cameraMode
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8323288267989200254, guid: 3b1a973b921bcfc44b78a997e6497dd7,
         type: 3}

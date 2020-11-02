@@ -11,7 +11,7 @@ namespace Augmenta
         SerializedProperty augmentaManager;
         SerializedProperty augmentaVideoOutputCamera;
 
-        SerializedProperty useExternalCamera;
+        SerializedProperty cameraMode;
         SerializedProperty paddingColor;
 
         SerializedProperty autoOutputSizeInPixels;
@@ -31,7 +31,7 @@ namespace Augmenta
             augmentaManager = serializedObject.FindProperty("augmentaManager");
             augmentaVideoOutputCamera = serializedObject.FindProperty("camera");
 
-            useExternalCamera = serializedObject.FindProperty("useExternalCamera");
+            cameraMode = serializedObject.FindProperty("_cameraMode");
             paddingColor = serializedObject.FindProperty("paddingColor");
 
             autoOutputSizeInPixels = serializedObject.FindProperty("autoOutputSizeInPixels");
@@ -57,10 +57,15 @@ namespace Augmenta
             EditorGUILayout.PropertyField(augmentaManager, new GUIContent("Augmenta Manager"));
             EditorGUILayout.Space();
 
-            EditorGUILayout.PropertyField(useExternalCamera, new GUIContent("Use External Output Camera", "If disabled, the script will look for an AugmentaVideoOutputCamera in its hierarchy.\nIf enabled, any camera from the scene can be used. Note that the specified camera will be assigned a render texture target."));
+            EditorGUI.BeginChangeCheck();
+            EditorGUILayout.PropertyField(cameraMode, new GUIContent("Camera Mode", "None: no camera used with this video output.\nVideoOutput: the script will look for an AugmentaVideoOutputCamera in its hierarchy.\nExternal: any camera from the scene can be used. Note that the specified camera will be assigned a render texture target."));
+            if (EditorGUI.EndChangeCheck() && Application.isPlaying) {
+                serializedObject.ApplyModifiedProperties();
+                augmentaVideoOutput.Initialize();
+            }
             EditorGUILayout.Space();
 
-            if (useExternalCamera.boolValue) {
+            if (cameraMode.enumValueIndex == 2) {
                 EditorGUILayout.PropertyField(augmentaVideoOutputCamera, new GUIContent("Output Camera"));
                 EditorGUILayout.PropertyField(paddingColor, new GUIContent("Texture Padding Color"));
                 EditorGUILayout.Space();

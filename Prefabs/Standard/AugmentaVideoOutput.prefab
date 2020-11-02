@@ -46,7 +46,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   augmentaManager: {fileID: 0}
   camera: {fileID: 0}
-  useExternalCamera: 1
   paddingColor: {r: 0, g: 0, b: 0, a: 1}
   autoOutputSizeInPixels: 1
   autoOutputSizeInMeters: 1
@@ -61,6 +60,7 @@ MonoBehaviour:
   _videoOutputSizeInPixels: {x: 1200, y: 1200}
   _videoOutputSizeInMeters: {x: 0, y: 0}
   _videoOutputOffset: {x: 0, y: 0}
+  _cameraMode: 2
 --- !u!1001 &2853773144206020359
 PrefabInstance:
   m_ObjectHideFlags: 0
