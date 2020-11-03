@@ -56,6 +56,8 @@ namespace Augmenta
         public delegate void VideoOutputTextureUpdated();
         public event VideoOutputTextureUpdated videoOutputTextureUpdated;
 
+        public bool renderVideoOutputCameraToTexture = true;
+
         public bool showFusionSpout = false;
         public bool autoFindFusionSpout = true;
         public string fusionSpoutName = "Augmenta Fusion - Scene";
@@ -228,9 +230,10 @@ namespace Augmenta
             _outputRenderTexture = new RenderTexture(videoOutputSizeInPixels.x, videoOutputSizeInPixels.y, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
             _outputRenderTexture.Create();
 
-            //Assign texture as render target of video output camera
-            camera.targetTexture = _outputRenderTexture;
-
+            if (!(cameraMode == CameraMode.VideoOutput && !renderVideoOutputCameraToTexture)) {
+                //Assign texture as render target of video output camera
+                camera.targetTexture = _outputRenderTexture;
+            }
         }
 
         void CreateOutputCustomRenderTexture() {
