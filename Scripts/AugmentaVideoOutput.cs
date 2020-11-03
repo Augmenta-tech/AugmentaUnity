@@ -143,7 +143,7 @@ namespace Augmenta
                 return;
 			}
 
-			if (cameraMode == CameraMode.External) {
+			if (cameraMode == CameraMode.VideoOutput) {
                 AugmentaVideoOutputCamera augmentaVideoOutputCamera = GetComponentInChildren<AugmentaVideoOutputCamera>();
 
 				if (!augmentaVideoOutputCamera) {
@@ -152,7 +152,7 @@ namespace Augmenta
 				} else {
                     camera = augmentaVideoOutputCamera.camera;
 				}
-			} else if (cameraMode == CameraMode.VideoOutput) {
+			} else if (cameraMode == CameraMode.External) {
 				if (!camera) {
                     Debug.LogError("No camera specified in " + name + " which is set to use an external camera.");
                     return;
