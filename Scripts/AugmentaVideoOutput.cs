@@ -56,6 +56,12 @@ namespace Augmenta
         public delegate void VideoOutputTextureUpdated();
         public event VideoOutputTextureUpdated videoOutputTextureUpdated;
 
+        public bool renderVideoOutputCameraToTexture = true;
+
+        public bool showFusionSpout = false;
+        public bool autoFindFusionSpout = true;
+        public string fusionSpoutName = "Augmenta Fusion - Scene";
+
         [SerializeField] private Vector2Int _videoOutputSizeInPixels = new Vector2Int();
         [SerializeField] private Vector2 _videoOutputSizeInMeters = new Vector2();
         [SerializeField] private Vector2 _videoOutputOffset = new Vector2();
@@ -79,6 +85,8 @@ namespace Augmenta
 
         private Vector3 _offset;
 
+        private GameObject _spoutObject;
+
         private bool _initialized = false;
 
 		#region MonoBehavious Functions
@@ -98,6 +106,12 @@ namespace Augmenta
 
             if (cameraMode == CameraMode.External)
                 UpdateCRTMaterial();
+
+            if (showFusionSpout && !_spoutObject.activeSelf) {
+                _spoutObject.SetActive(true);
+            } else if (!showFusionSpout && _spoutObject.activeSelf) {
+                _spoutObject.SetActive(false);
+			}
         }
 
 		private void OnDisable() {
@@ -131,7 +145,7 @@ namespace Augmenta
                 return;
 			}
 
-			if (cameraMode == CameraMode.External) {
+			if (cameraMode == CameraMode.VideoOutput) {
                 AugmentaVideoOutputCamera augmentaVideoOutputCamera = GetComponentInChildren<AugmentaVideoOutputCamera>();
 
 				if (!augmentaVideoOutputCamera) {
@@ -140,7 +154,7 @@ namespace Augmenta
 				} else {
                     camera = augmentaVideoOutputCamera.camera;
 				}
-			} else if (cameraMode == CameraMode.VideoOutput) {
+			} else if (cameraMode == CameraMode.External) {
 				if (!camera) {
                     Debug.LogError("No camera specified in " + name + " which is set to use an external camera.");
                     return;
@@ -149,7 +163,10 @@ namespace Augmenta
 
             //Initialize videoOutputTexture
             RefreshVideoTexture();
-            RefreshVideoTexture();
+
+            //Initialize spout fusion
+            _spoutObject = GetComponentInChildren<AugmentaVideoOutputFusionSpout>().gameObject;
+            _spoutObject.SetActive(showFusionSpout);
 
             augmentaManager.fusionUpdated += OnFusionUpdated;
 
@@ -213,9 +230,10 @@ namespace Augmenta
             _outputRenderTexture = new RenderTexture(videoOutputSizeInPixels.x, videoOutputSizeInPixels.y, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
             _outputRenderTexture.Create();
 
-            //Assign texture as render target of video output camera
-            camera.targetTexture = _outputRenderTexture;
-
+            if (!(cameraMode == CameraMode.VideoOutput && !renderVideoOutputCameraToTexture)) {
+                //Assign texture as render target of video output camera
+                camera.targetTexture = _outputRenderTexture;
+            }
         }
 
         void CreateOutputCustomRenderTexture() {

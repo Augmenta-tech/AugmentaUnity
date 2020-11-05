@@ -13,6 +13,7 @@ namespace Augmenta
 
         SerializedProperty cameraMode;
         SerializedProperty paddingColor;
+        SerializedProperty renderVideoOutputCameraToTexture;
 
         SerializedProperty autoOutputSizeInPixels;
         SerializedProperty autoOutputSizeInMeters;
@@ -29,6 +30,7 @@ namespace Augmenta
 
             cameraMode = serializedObject.FindProperty("_cameraMode");
             paddingColor = serializedObject.FindProperty("paddingColor");
+            renderVideoOutputCameraToTexture = serializedObject.FindProperty("renderVideoOutputCameraToTexture");
 
             autoOutputSizeInPixels = serializedObject.FindProperty("autoOutputSizeInPixels");
             autoOutputSizeInMeters = serializedObject.FindProperty("autoOutputSizeInMeters");
@@ -57,7 +59,10 @@ namespace Augmenta
             }
             EditorGUILayout.Space();
 
-            if (cameraMode.enumValueIndex == 2) {
+            if (cameraMode.enumValueIndex == 1) {
+                EditorGUILayout.PropertyField(renderVideoOutputCameraToTexture, new GUIContent("Render VideoOutput Camera To Texture"));
+                EditorGUILayout.Space();
+            } else if (cameraMode.enumValueIndex == 2) {
                 EditorGUILayout.PropertyField(augmentaVideoOutputCamera, new GUIContent("Output Camera"));
                 EditorGUILayout.PropertyField(paddingColor, new GUIContent("Texture Padding Color"));
                 EditorGUILayout.Space();
