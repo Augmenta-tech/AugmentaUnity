@@ -22,10 +22,6 @@ namespace Augmenta
         SerializedProperty videoOutputSizeInMeters;
         SerializedProperty videoOutputOffset;
 
-        SerializedProperty showFusionSpout;
-        SerializedProperty autoFindFusionSpout;
-        SerializedProperty fusionSpoutName;
-
         void OnEnable() {
 
             augmentaManager = serializedObject.FindProperty("augmentaManager");
@@ -41,10 +37,6 @@ namespace Augmenta
             videoOutputSizeInPixels = serializedObject.FindProperty("_videoOutputSizeInPixels");
             videoOutputSizeInMeters = serializedObject.FindProperty("_videoOutputSizeInMeters");
             videoOutputOffset = serializedObject.FindProperty("_videoOutputOffset");
-
-            showFusionSpout = serializedObject.FindProperty("showFusionSpout");
-            autoFindFusionSpout = serializedObject.FindProperty("autoFindFusionSpout");
-            fusionSpoutName = serializedObject.FindProperty("fusionSpoutName");
         }
 
         public override void OnInspectorGUI() {
@@ -99,16 +91,6 @@ namespace Augmenta
             if (!autoOutputOffset.boolValue) {
                 EditorGUILayout.PropertyField(videoOutputOffset, new GUIContent("Output Offset"));
             }
-
-            EditorGUILayout.Space();
-
-            EditorGUILayout.LabelField("FUSION SPOUT SETTINGS", EditorStyles.boldLabel);
-
-            EditorGUILayout.PropertyField(showFusionSpout, new GUIContent("Show Fusion Spout", "Display a Spout texture coming from Augmenta Fusion in the video output."));
-            EditorGUILayout.PropertyField(autoFindFusionSpout, new GUIContent("Auto Find Fusion Spout", "Display the first Spout texture from Augmenta Fusion found."));
-
-            if(!autoFindFusionSpout.boolValue)
-                EditorGUILayout.PropertyField(fusionSpoutName, new GUIContent("Fusion Spout Name", "Spout texture name from Augmenta Fusion."));
 
             serializedObject.ApplyModifiedProperties();
 

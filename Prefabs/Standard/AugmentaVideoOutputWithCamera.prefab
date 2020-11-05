@@ -205,110 +205,61 @@ MonoBehaviour:
       data1: 0
       data2: 0
   defaultFrameSettings: 0
---- !u!1001 &3694353597862228054
-PrefabInstance:
+--- !u!1 &4667622104088157462
+GameObject:
   m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1203811005689838401, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8323288267989200192, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-        type: 3}
-      propertyPath: m_Name
-      value: AugmentaVideoOutputWithCamera
-      objectReference: {fileID: 0}
-    - target: {fileID: 8323288267989200193, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-        type: 3}
-      propertyPath: useExternalCamera
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8323288267989200193, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-        type: 3}
-      propertyPath: augmentaManager
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8323288267989200193, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-        type: 3}
-      propertyPath: _cameraMode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8323288267989200254, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8323288267989200254, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8323288267989200254, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8323288267989200254, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8323288267989200254, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8323288267989200254, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8323288267989200254, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8323288267989200254, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8323288267989200254, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8323288267989200254, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8323288267989200254, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 3b1a973b921bcfc44b78a997e6497dd7, type: 3}
---- !u!4 &4667622104088157480 stripped
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4667622104088157480}
+  - component: {fileID: 4667622104088157463}
+  m_Layer: 0
+  m_Name: AugmentaVideoOutputWithCamera
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4667622104088157480
 Transform:
-  m_CorrespondingSourceObject: {fileID: 8323288267989200254, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-    type: 3}
-  m_PrefabInstance: {fileID: 3694353597862228054}
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4667622104088157463 stripped
+  m_GameObject: {fileID: 4667622104088157462}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 6432857332854150103}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4667622104088157463
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8323288267989200193, guid: 3b1a973b921bcfc44b78a997e6497dd7,
-    type: 3}
-  m_PrefabInstance: {fileID: 3694353597862228054}
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 4667622104088157462}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2bc981ad089ad4e468a94af62c1203b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  augmentaManager: {fileID: 0}
+  camera: {fileID: 0}
+  paddingColor: {r: 0, g: 0, b: 0, a: 1}
+  autoOutputSizeInPixels: 1
+  autoOutputSizeInMeters: 1
+  autoOutputOffset: 1
+  botLeftCorner: {x: 0, y: 0, z: 0}
+  botRightCorner: {x: 0, y: 0, z: 0}
+  topLeftCorner: {x: 0, y: 0, z: 0}
+  topRightCorner: {x: 0, y: 0, z: 0}
+  _videoOutputSizeInPixels: {x: 1200, y: 1200}
+  _videoOutputSizeInMeters: {x: 0, y: 0}
+  _videoOutputOffset: {x: 0, y: 0}
+  _cameraMode: 1
