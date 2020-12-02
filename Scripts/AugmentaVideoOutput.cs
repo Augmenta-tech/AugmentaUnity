@@ -168,6 +168,9 @@ namespace Augmenta
 
 		void OnFusionUpdated() {
 
+            if (cameraMode == CameraMode.None)
+                return;
+
             if (!videoOutputTexture)
                 RefreshVideoTexture();
 
