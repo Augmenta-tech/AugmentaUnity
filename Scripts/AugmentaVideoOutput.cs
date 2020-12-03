@@ -242,9 +242,9 @@ namespace Augmenta
 
             _offset = augmentaManager.augmentaScene.debugObject.transform.TransformDirection(new Vector3(videoOutputOffset.x, -videoOutputOffset.y, 0));
             topLeftCorner = augmentaManager.augmentaScene.debugObject.transform.TransformPoint(new Vector3(-0.5f, 0.5f, 0)) + _offset;
-            botLeftCorner = topLeftCorner + augmentaManager.augmentaScene.debugObject.transform.TransformDirection(Vector3.down * videoOutputSizeInMeters.y);
-            botRightCorner = botLeftCorner + augmentaManager.augmentaScene.debugObject.transform.TransformDirection(Vector3.right * videoOutputSizeInMeters.x);
-            topRightCorner = botRightCorner + augmentaManager.augmentaScene.debugObject.transform.TransformDirection(Vector3.up * videoOutputSizeInMeters.y);
+            botLeftCorner = topLeftCorner + augmentaManager.augmentaScene.debugObject.transform.TransformDirection(Vector3.down * videoOutputSizeInMeters.y * augmentaManager.scaling);
+            botRightCorner = botLeftCorner + augmentaManager.augmentaScene.debugObject.transform.TransformDirection(Vector3.right * videoOutputSizeInMeters.x * augmentaManager.scaling);
+            topRightCorner = botRightCorner + augmentaManager.augmentaScene.debugObject.transform.TransformDirection(Vector3.up * videoOutputSizeInMeters.y * augmentaManager.scaling);
         }
 
         #endregion
