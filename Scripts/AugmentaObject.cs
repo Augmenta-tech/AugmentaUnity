@@ -45,6 +45,7 @@ namespace Augmenta
         [HideInInspector] public bool useCustomObject;
 
         private GameObject _customObject;
+        private IAugmentaObjectBehaviour _customObjectBehaviour;
 
         private Material _augmentaObjectMaterialInstance;
 
@@ -88,14 +89,20 @@ namespace Augmenta
             }
         }
 
-        #endregion
+		private void OnDestroy() {
 
-        #region Object Handling Functions
+            //Destroy custom object
+            DestroyCustomObject();
+		}
 
-        /// <summary>
-        /// Initialize the augmenta object
-        /// </summary>
-        void Initialize() {
+		#endregion
+
+		#region Object Handling Functions
+
+		/// <summary>
+		/// Initialize the augmenta object
+		/// </summary>
+		void Initialize() {
 
             if (!augmentaManager)
                 return;
@@ -153,25 +160,12 @@ namespace Augmenta
             if (useCustomObject) {
 
                 //Instantiate it
-                if (!_customObject)
-                    _customObject = Instantiate(augmentaManager.customObjectPrefab, transform);
-
-                //Update position
-                switch (augmentaManager.customObjectPositionType) {
-                    case AugmentaManager.CustomObjectPositionType.World2D: _customObject.transform.position = worldPosition2D; break;
-                    case AugmentaManager.CustomObjectPositionType.World3D: _customObject.transform.position = worldPosition3D; break;
+                if (!_customObject) {
+                    InstantiateCustomObject();
                 }
 
-                //Update rotation
-                switch (augmentaManager.customObjectRotationType) {
-                    case AugmentaManager.CustomObjectRotationType.AugmentaRotation: _customObject.transform.localRotation = Quaternion.Euler(0.0f, -boundingRectRotation, 0.0f); break;
-                    case AugmentaManager.CustomObjectRotationType.AugmentaOrientation: _customObject.transform.localRotation = Quaternion.Euler(0.0f, orientation, 0.0f); break;
-                }
-
-                //Update scale
-                switch (augmentaManager.customObjectScalingType) {
-                    case AugmentaManager.CustomObjectScalingType.AugmentaSize: _customObject.transform.localScale = worldScale; break;
-                }
+                //Update custom object
+                UpdateCustomObject();
             }
         }
 
@@ -197,13 +191,72 @@ namespace Augmenta
                                boundingRect.height * augmentaManager.augmentaScene.height * augmentaManager.scaling);
         }
 
+		#endregion
+
+		#region Custom Object Handling Functions
+
         /// <summary>
-        /// Update the custom object instantiated
+        /// Instantiate the custom object
         /// </summary>
-        public void ChangeCustomObject() {
+        void InstantiateCustomObject() {
 
-            Destroy(_customObject);
+            _customObject = Instantiate(augmentaManager.customObjectPrefab, transform.parent);
 
+            //If it has a behaviour, launch Spawn
+            _customObjectBehaviour = _customObject.GetComponentInChildren<IAugmentaObjectBehaviour>();
+            if (_customObjectBehaviour != null)
+                _customObjectBehaviour.Spawn();
+        }
+
+        /// <summary>
+        /// Update the custom object
+        /// </summary>
+        void UpdateCustomObject() {
+
+            //Update position
+            switch (augmentaManager.customObjectPositionType) {
+                case AugmentaManager.CustomObjectPositionType.World2D: _customObject.transform.position = worldPosition2D; break;
+                case AugmentaManager.CustomObjectPositionType.World3D: _customObject.transform.position = worldPosition3D; break;
+            }
+
+            //Update rotation
+            switch (augmentaManager.customObjectRotationType) {
+                case AugmentaManager.CustomObjectRotationType.AugmentaRotation: _customObject.transform.localRotation = Quaternion.Euler(0.0f, -boundingRectRotation, 0.0f); break;
+                case AugmentaManager.CustomObjectRotationType.AugmentaOrientation: _customObject.transform.localRotation = Quaternion.Euler(0.0f, orientation, 0.0f); break;
+            }
+
+            //Update scale
+            switch (augmentaManager.customObjectScalingType) {
+                case AugmentaManager.CustomObjectScalingType.AugmentaSize: _customObject.transform.localScale = worldScale; break;
+            }
+        }
+
+		/// <summary>
+		/// Update the custom object prefab
+		/// </summary>
+		public void ChangeCustomObject() {
+
+            //Destroy the custom object
+            //It will be instantiated at the next update with the updated prefab if necessary
+            DestroyCustomObject();
+        }
+
+        /// <summary>
+        /// Destroy the custom object instantiated
+        /// </summary>
+        void DestroyCustomObject() {
+
+            if (!_customObject)
+                return;
+
+            //If it has a behaviour, call Destroy, otherwise destroy it directly
+            if (_customObjectBehaviour != null) {
+                _customObjectBehaviour.Destroy();
+                _customObject = null;
+            } else {
+                Destroy(_customObject);
+                _customObject = null;
+            }
         }
 
         #endregion
