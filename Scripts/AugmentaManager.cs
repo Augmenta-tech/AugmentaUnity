@@ -745,6 +745,13 @@ namespace Augmenta {
 
 		public void ChangeCustomObjectPrefab(GameObject newCustomObjectPrefab) {
 
+			//Don't change prefab or initialize if called from the editor as it will create garbage
+			if (!Application.isPlaying)
+				return;
+
+			if (!_initialized)
+				Initialize();
+
 			customObjectPrefab = newCustomObjectPrefab;
 
 			foreach (var augmentaObject in augmentaObjects) {
