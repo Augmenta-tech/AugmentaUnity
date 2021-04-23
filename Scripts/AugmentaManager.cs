@@ -233,8 +233,6 @@ namespace Augmenta {
 
 			UpdateAugmentaObject(newAugmentaObject, args, objectDataType);
 
-			newAugmentaObject.UpdateAugmentaObject(newAugmentaObject, objectDataType);
-
 			augmentaObjects.Add(newAugmentaObject.id, newAugmentaObject);
 
 			newAugmentaObjectObject.name = "Augmenta Object " + newAugmentaObject.id;
@@ -331,6 +329,8 @@ namespace Augmenta {
 
 			//Inactive time reset to zero : the object has just been updated
 			augmentaObject.inactiveTime = 0;
+
+			augmentaObject.UpdateAugmentaObject();
 		}
 
 		/// <summary>
@@ -358,6 +358,8 @@ namespace Augmenta {
 
 			//Inactive time reset to zero : the object has just been updated
 			augmentaObject.inactiveTime = 0;
+
+			augmentaObject.UpdateAugmentaObject();
 		}
 
 		/// <summary>

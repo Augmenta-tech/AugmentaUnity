@@ -74,18 +74,16 @@ namespace Augmenta
         void OnDrawGizmos() {
 
             Gizmos.color = Color.red;
-            DrawGizmoCube(worldPosition3D,
+            DrawGizmoCube(debugObject.transform.position,
                           debugObject.transform.rotation, 
-                          worldScale);
+                          debugObject.transform.localScale);
         }
 
         void OnDisable() {
 
             //Disconnect from person updated event
             if (_initialized) {
-                augmentaManager.augmentaObjectUpdate -= UpdateAugmentaObject;
-
-                _initialized = false;
+                CleanUp();
             }
         }
 
@@ -107,9 +105,6 @@ namespace Augmenta
             if (!augmentaManager)
                 return;
 
-            //Connect to Augmenta events
-            augmentaManager.augmentaObjectUpdate += UpdateAugmentaObject;
-
             //Get an instance of the debug material
             _augmentaObjectMaterialInstance = debugObject.GetComponent<Renderer>().material;
 
@@ -121,13 +116,18 @@ namespace Augmenta
         }
 
         /// <summary>
-        /// Response to augmenta object updated event
+        /// Clean up the augmenta object before removing it
+        /// </summary>
+        void CleanUp() {
+
+            _initialized = false;
+        }
+
+        /// <summary>
+        /// Update the Augmenta object Unity parameters
         /// </summary>
         /// <param name="augmentaObject"></param>
-        public void UpdateAugmentaObject(AugmentaObject augmentaObject, AugmentaDataType augmentaDataType) {
-
-            if (augmentaObject.id != id)
-                return;
+        public void UpdateAugmentaObject() {
 
             //Initialization
             if (!_initialized)
@@ -264,6 +264,7 @@ namespace Augmenta
         #region Gizmos Functions
 
         public void DrawGizmoCube(Vector3 position, Quaternion rotation, Vector3 scale) {
+
             Matrix4x4 cubeTransform = Matrix4x4.TRS(position, rotation, scale);
             Matrix4x4 oldGizmosMatrix = Gizmos.matrix;
 
