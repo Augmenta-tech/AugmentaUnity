@@ -41,6 +41,10 @@ namespace Augmenta
         public Vector3 worldPosition3D;
         [Tooltip("Object size in meters.")]
         public Vector3 worldScale;
+        [Tooltip("Object velocity on the Augmenta Scene plane in meters per second.")]
+        public Vector3 worldVelocity2D;
+        [Tooltip("Object velocity in meters per second.")]
+        public Vector3 worldVelocity3D;
 
         [HideInInspector] public bool useCustomObject;
 
@@ -49,7 +53,11 @@ namespace Augmenta
 
         private Material _augmentaObjectMaterialInstance;
 
+        private Vector3 _previousWorldPosition2D;
+        private Vector3 _previousWorldPosition3D;
+
         private bool _initialized = false;
+        private bool _previousPositionIsValid = false;
 
         #region MonoBehaviour Functions
 
@@ -77,6 +85,9 @@ namespace Augmenta
             DrawGizmoCube(debugObject.transform.position,
                           debugObject.transform.rotation, 
                           debugObject.transform.localScale);
+
+
+            //Gizmos.DrawLine(worldPosition2D, worldPosition2D + worldVelocity2D);
         }
 
         void OnDisable() {
@@ -121,6 +132,7 @@ namespace Augmenta
         void CleanUp() {
 
             _initialized = false;
+            _previousPositionIsValid = false;
         }
 
         /// <summary>
@@ -137,6 +149,18 @@ namespace Augmenta
             worldPosition2D = GetAugmentaObjectWorldPosition(false);
             worldPosition3D = GetAugmentaObjectWorldPosition(true);
             worldScale = GetAugmentaObjectWorldScale();
+
+			if (_previousPositionIsValid) {
+                worldVelocity2D = Vector3.Lerp(worldVelocity2D, (worldPosition2D - _previousWorldPosition2D) / Time.deltaTime, Time.deltaTime / Mathf.Max(augmentaManager.velocitySmoothing, 0.001f));
+                worldVelocity3D = Vector3.Lerp(worldVelocity3D, (worldPosition3D - _previousWorldPosition3D) / Time.deltaTime, Time.deltaTime / Mathf.Max(augmentaManager.velocitySmoothing, 0.001f));
+            }
+
+            _previousWorldPosition2D = worldPosition2D;
+            _previousWorldPosition3D = worldPosition3D;
+            _previousPositionIsValid = true;
+
+            worldPosition2D += worldVelocity2D * augmentaManager.positionOffsetFromVelocity;
+            worldPosition3D += worldVelocity3D * augmentaManager.positionOffsetFromVelocity;
 
             //Update debug object size
             debugObject.transform.position = worldPosition3D;

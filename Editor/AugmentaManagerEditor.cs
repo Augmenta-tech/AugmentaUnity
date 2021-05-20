@@ -19,6 +19,8 @@ namespace Augmenta
         SerializedProperty augmentaObjectTimeOut;
         SerializedProperty desiredAugmentaObjectType;
         SerializedProperty desiredAugmentaObjectCount;
+        SerializedProperty velocitySmoothing;
+        SerializedProperty positionOffsetFromVelocity;
         SerializedProperty augmentaScenePrefab;
         SerializedProperty augmentaObjectPrefab;
         SerializedProperty customObjectPrefab;
@@ -41,6 +43,8 @@ namespace Augmenta
             augmentaObjectTimeOut = serializedObject.FindProperty("augmentaObjectTimeOut");
             desiredAugmentaObjectType = serializedObject.FindProperty("desiredAugmentaObjectType");
             desiredAugmentaObjectCount = serializedObject.FindProperty("desiredAugmentaObjectCount");
+            velocitySmoothing = serializedObject.FindProperty("velocitySmoothing");
+            positionOffsetFromVelocity = serializedObject.FindProperty("positionOffsetFromVelocity");
             augmentaScenePrefab = serializedObject.FindProperty("augmentaScenePrefab");
             augmentaObjectPrefab = serializedObject.FindProperty("augmentaObjectPrefab");
             customObjectPrefab = serializedObject.FindProperty("customObjectPrefab");
@@ -89,6 +93,10 @@ namespace Augmenta
             if(desiredAugmentaObjectType.enumValueIndex > 0) {
                 EditorGUILayout.PropertyField(desiredAugmentaObjectCount, new GUIContent("Desired Augmenta Object Count"));
             }
+
+            EditorGUILayout.Space();
+            EditorGUILayout.PropertyField(velocitySmoothing, new GUIContent("Velocity Smoothing"));
+            EditorGUILayout.PropertyField(positionOffsetFromVelocity, new GUIContent("Position Offset From Velocity"));
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("AUGMENTA PREFABS", EditorStyles.boldLabel);

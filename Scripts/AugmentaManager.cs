@@ -69,6 +69,9 @@ namespace Augmenta {
 		public DesiredAugmentaObjectType desiredAugmentaObjectType = DesiredAugmentaObjectType.All;
 		public int desiredAugmentaObjectCount = 1;
 
+		public float velocitySmoothing = 0.5f;
+		public float positionOffsetFromVelocity = 0;
+
 		//Augmenta Prefabs
 		public GameObject augmentaScenePrefab;
 		public GameObject augmentaObjectPrefab;
