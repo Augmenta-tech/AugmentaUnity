@@ -70,7 +70,7 @@ namespace Augmenta
 
         void CenterCamera() {
 
-            camera.transform.position = (_topRightCorner - _topLeftCorner - _botRightCorner + _botLeftCorner) * 0.25f - _sceneForward * distanceToScene;
+            camera.transform.position = augmentaManager.augmentaScene.debugObject.transform.TransformPoint(Vector3.zero) - _sceneForward * distanceToScene;
         }
 
         void OrientCamera() {
