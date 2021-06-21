@@ -12,11 +12,11 @@ namespace Augmenta
         /// <summary>
         /// Called when the object is instantiated
         /// </summary>
-        public void Spawn();
+        void Spawn();
 
         /// <summary>
         /// Called when the object should be destroyed
         /// </summary>
-        public void Destroy();
+        void Destroy();
     }
 }
