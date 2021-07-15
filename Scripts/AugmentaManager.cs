@@ -44,8 +44,11 @@ namespace Augmenta {
 		//Augmenta ID
 		public string augmentaId;
 
-		//OSC Settings
+		//Connectivity status
+		[HideInInspector] public bool portBinded = false;
+		[HideInInspector] public bool receivingData = false;
 
+		//OSC Settings
 		[SerializeField] private int _inputPort = 12000;
 		public int inputPort {
 			get { return _inputPort; }
@@ -123,6 +126,8 @@ namespace Augmenta {
 
 		private List<int> _expiredIds = new List<int>(); //Used to remove timed out objects
 
+		private float _receivingDataTimer = 0;
+
 		private bool _initialized = false;
 
 		#region MonoBehaviour Functions
@@ -140,6 +145,9 @@ namespace Augmenta {
 
 			//Check if objects are alive
 			CheckAlive();
+
+			//Update receivingData status
+			UpdateReceivingData();
 		}
 
 		private void OnDisable() {
@@ -426,6 +434,16 @@ namespace Augmenta {
 			}
 		}
 
+		/// <summary>
+		/// Update data received timer
+		/// </summary>
+		void UpdateReceivingData() {
+
+			_receivingDataTimer += Time.deltaTime;
+
+			receivingData = _receivingDataTimer > 2 ? false : true;
+		}
+
 		#endregion
 
 		#region OSC Functions 
@@ -441,8 +459,10 @@ namespace Augmenta {
 
 			if (UnityOSC.OSCMaster.CreateReceiver("Augmenta-" + augmentaId, inputPort) != null) {
 				UnityOSC.OSCMaster.Receivers["Augmenta-" + augmentaId].messageReceived += OSCMessageReceived;
+				portBinded = true;
 			} else {
 				Debug.LogError("Could not create OSC receiver at port " + inputPort + ".");
+				portBinded = false;
 			}
 		}
 
@@ -458,6 +478,7 @@ namespace Augmenta {
 			if (UnityOSC.OSCMaster.Receivers.ContainsKey("Augmenta-" + augmentaId)) {
 				UnityOSC.OSCMaster.Receivers["Augmenta-" + augmentaId].messageReceived -= OSCMessageReceived;
 				UnityOSC.OSCMaster.RemoveReceiver("Augmenta-" + augmentaId);
+				portBinded = false;
 			}
 		}
 
@@ -468,6 +489,8 @@ namespace Augmenta {
 		public void OSCMessageReceived(OSCMessage message) {
 
 			if (mute) return;
+
+			_receivingDataTimer = 0;
 
 			switch (protocolVersion) {
 				case AugmentaProtocolVersion.V1:
