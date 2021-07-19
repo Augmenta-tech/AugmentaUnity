@@ -44,10 +44,6 @@ namespace Augmenta {
 		//Augmenta ID
 		public string augmentaId;
 
-		//Connectivity status
-		[HideInInspector] public bool portBinded = false;
-		[HideInInspector] public bool receivingData = false;
-
 		//OSC Settings
 		[SerializeField] private int _inputPort = 12000;
 		public int inputPort {
@@ -57,6 +53,10 @@ namespace Augmenta {
 				CreateAugmentaOSCReceiver();
 			}
 		}
+
+		//Connectivity status
+		public bool portBinded = false;
+		public bool receivingData = false;
 
 		public AugmentaProtocolVersion protocolVersion = AugmentaProtocolVersion.V2;
 
@@ -127,6 +127,8 @@ namespace Augmenta {
 		private List<int> _expiredIds = new List<int>(); //Used to remove timed out objects
 
 		private float _receivingDataTimer = 0;
+		private float _autoConnectTimer = 0;
+		private const float _autoConnectWaitDuration = 5;
 
 		private bool _initialized = false;
 
@@ -145,6 +147,9 @@ namespace Augmenta {
 
 			//Check if objects are alive
 			CheckAlive();
+
+			//Autoconnect
+			UpdateAutoConnect();
 
 			//Update receivingData status
 			UpdateReceivingData();
@@ -442,6 +447,22 @@ namespace Augmenta {
 			_receivingDataTimer += Time.deltaTime;
 
 			receivingData = _receivingDataTimer > 2 ? false : true;
+		}
+
+		/// <summary>
+		/// Update autoConnect timer and status
+		/// </summary>
+		void UpdateAutoConnect() {
+
+			if (portBinded) {
+				_autoConnectTimer = 0;
+			} else {
+				_autoConnectTimer += Time.deltaTime;
+				if (_autoConnectTimer > _autoConnectWaitDuration) {
+					_autoConnectTimer = 0;
+					CreateAugmentaOSCReceiver();
+				}
+			}
 		}
 
 		#endregion

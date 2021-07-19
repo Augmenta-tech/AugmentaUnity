@@ -8,7 +8,6 @@ namespace Augmenta
     [CustomEditor(typeof(AugmentaManager))]
     public class AugmentaManagerEditor : Editor
     {
-
         SerializedProperty augmentaId;
         SerializedProperty inputPort;
         SerializedProperty protocolVersion;
@@ -73,6 +72,18 @@ namespace Augmenta
             if (EditorGUI.EndChangeCheck() && Application.isPlaying) {
                 serializedObject.ApplyModifiedProperties(); 
                 augmentaManager.CreateAugmentaOSCReceiver(); 
+            }
+
+            if (Application.isPlaying) {
+                if (!augmentaManager.portBinded) {
+                    EditorGUILayout.HelpBox("Port not binded", MessageType.Error);
+                } else {
+                    if (!augmentaManager.receivingData) {
+                        EditorGUILayout.HelpBox("Waiting for data", MessageType.Info);
+                    } else {
+                        EditorGUILayout.HelpBox("Receiving data", MessageType.Info);
+                    }
+                }
             }
 
             EditorGUILayout.PropertyField(protocolVersion, new GUIContent("Protocol Version"));
