@@ -1,6 +1,6 @@
 # Augmenta Unity Library
 
-An example project using this library is available [here](https://github.com/Theoriz/AugmentaUnity-Demo).
+Examples and documentation using this library are available [here](https://github.com/Theoriz/AugmentaUnity-Demo).
 
 # Feature List
 ## Implemented
