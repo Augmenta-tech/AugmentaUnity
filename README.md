@@ -1,4 +1,4 @@
-# Augmenta Unity Library
+# [Augmenta](https://www.augmenta-tech.com) [Unity](https://unity.com/) Library
 
 Examples and documentation using this library are available [here](https://github.com/Theoriz/AugmentaUnity-Demo).
 
