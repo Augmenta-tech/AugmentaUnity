@@ -1,4 +1,4 @@
-# Augmenta Unity
+# Augmenta Unity Library
 
 Example project using this library [here](https://github.com/Theoriz/AugmentaUnity-Demo).
 
