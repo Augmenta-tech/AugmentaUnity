@@ -16,13 +16,11 @@ namespace Augmenta
 		public GameObject debugObject;
 
 		[Header("Augmenta Scene Values")]
-		public float width;
-		public float height;
+		public float width = 1;
+		public float height = 1;
 		public int augmentaObjectCount; //Object count from the scene updated message  /!\ Because of personTimeOut, it can be different from the instantiated person count /!\
 
 		private Material _debugMaterial;
-
-		private bool _isHDRP = false;
 
 		private bool _initialized = false;
 
@@ -54,7 +52,10 @@ namespace Augmenta
 		void OnDrawGizmos() {
 
 			Gizmos.color = Color.blue;
-			DrawGizmoCube(transform.position, transform.rotation, new Vector3(width * augmentaManager.scaling, 0, height * augmentaManager.scaling));
+			if(augmentaManager)
+				DrawGizmoCube(transform.position, transform.rotation, new Vector3(width * augmentaManager.scaling, 0, height * augmentaManager.scaling));
+			else
+				DrawGizmoCube(transform.position, transform.rotation, new Vector3(width, 0, height));
 		}
 
 		#endregion
@@ -75,9 +76,6 @@ namespace Augmenta
 			//Get the debug material
 			_debugMaterial = debugObject.GetComponent<Renderer>().material;
 
-			//Check if HDRP is used from scene debug object shader type
-			_isHDRP = _debugMaterial.shader.name.Contains("HDRP");
-
 			_initialized = true;
 		}
 
@@ -94,13 +92,8 @@ namespace Augmenta
 			debugObject.transform.localScale = new Vector3(width * augmentaManager.scaling, height * augmentaManager.scaling, 0);
 
 			//Update debug material tiling
-			if (_isHDRP) {
-				_debugMaterial.SetTextureScale("_UnlitColorMap", debugObject.transform.localScale * 0.5f);
-				_debugMaterial.SetTextureOffset("_UnlitColorMap", Vector2.down * debugObject.transform.localScale.y * 0.5f);
-			} else {
-				_debugMaterial.mainTextureScale = debugObject.transform.localScale * 0.5f;
-				_debugMaterial.mainTextureOffset = Vector2.down * debugObject.transform.localScale.y * 0.5f;
-			}
+			_debugMaterial.mainTextureScale = debugObject.transform.localScale * 0.5f;
+			_debugMaterial.mainTextureOffset = Vector2.down * debugObject.transform.localScale.y * 0.5f;
 		}
 
 		#endregion

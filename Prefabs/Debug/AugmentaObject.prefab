@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6820061578582001486}
   - component: {fileID: 6277374306744804509}
   - component: {fileID: 4046492468546139849}
-  - component: {fileID: 5147076764659374000}
   m_Layer: 0
   m_Name: Velocity
   m_TagString: Untagged
@@ -56,10 +55,11 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8519c27f3a943a1499e8c625e54e1ce4, type: 2}
+  - {fileID: 2100000, guid: 26e3b8924c944a04f9c8eb7610036aa9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -80,19 +80,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &5147076764659374000
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3129054637571367275}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &7644094214414990225
 GameObject:
   m_ObjectHideFlags: 0
@@ -135,7 +123,6 @@ GameObject:
   - component: {fileID: 3249705111531912429}
   - component: {fileID: 766148864445978909}
   - component: {fileID: 6417012263404541823}
-  - component: {fileID: 1903658815714906682}
   m_Layer: 0
   m_Name: Orientation
   m_TagString: Untagged
@@ -180,10 +167,11 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 5d8dcee932014214e875ed0b9cedbf49, type: 2}
+  - {fileID: 2100000, guid: 720106550ad579446883f2c8f5a30219, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -204,19 +192,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &1903658815714906682
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7788265575643023910}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &9127892026477570146
 GameObject:
   m_ObjectHideFlags: 0
@@ -289,6 +265,12 @@ MonoBehaviour:
   distanceToSensor: 0
   reflectivity: 0
   inactiveTime: 0
+  worldPosition2D: {x: 0, y: 0, z: 0}
+  worldPosition3D: {x: 0, y: 0, z: 0}
+  worldScale: {x: 0, y: 0, z: 0}
+  worldVelocity2D: {x: 0, y: 0, z: 0}
+  worldVelocity3D: {x: 0, y: 0, z: 0}
+  useCustomObject: 0
 --- !u!1 &9127892027014267413
 GameObject:
   m_ObjectHideFlags: 0
@@ -300,7 +282,6 @@ GameObject:
   - component: {fileID: 9127892027014267412}
   - component: {fileID: 9127892027014267625}
   - component: {fileID: 9127892027014267414}
-  - component: {fileID: 9127892027014267415}
   m_Layer: 0
   m_Name: Debug
   m_TagString: Untagged
@@ -345,6 +326,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -369,19 +351,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!65 &9127892027014267415
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9127892027014267413}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &9215737759918594999
 GameObject:
   m_ObjectHideFlags: 0
