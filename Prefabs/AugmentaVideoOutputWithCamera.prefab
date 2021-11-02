@@ -88,7 +88,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraType: 1
-  augmentaVideoOutput: {fileID: 0}
+  augmentaVideoOutput: {fileID: 1478169657122737631}
   distanceToVideoOutput: 10
 --- !u!1001 &7422426882154684574
 PrefabInstance:
@@ -170,3 +170,15 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 7422426882154684574}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1478169657122737631 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8323288267989200193, guid: 3b1a973b921bcfc44b78a997e6497dd7,
+    type: 3}
+  m_PrefabInstance: {fileID: 7422426882154684574}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bc981ad089ad4e468a94af62c1203b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
