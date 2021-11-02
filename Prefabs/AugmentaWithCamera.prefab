@@ -97,12 +97,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1772874338564897810, guid: 3893de5ef0f42a048bd9142972e01291,
-        type: 3}
-      propertyPath: augmentaScenePrefab
-      value: 
-      objectReference: {fileID: 7870137636367897960, guid: 1f88dc5aedbc8814b9b3f0bf73b3c6b6,
-        type: 3}
     - target: {fileID: 1772874338564897812, guid: 3893de5ef0f42a048bd9142972e01291,
         type: 3}
       propertyPath: m_Name
