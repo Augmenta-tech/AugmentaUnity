@@ -41,6 +41,8 @@ namespace Augmenta {
 
 	public class AugmentaManager : MonoBehaviour
 	{
+		#region Public Members
+
 		//Augmenta ID
 		public string augmentaId;
 
@@ -102,8 +104,14 @@ namespace Augmenta {
 
 		//Debug
 		public bool mute = false;
-		public bool showSceneDebug = true;
-		public bool showObjectDebug = true;
+		public bool showSceneDebug {
+			get { return _showSceneDebug; }
+			set { _showSceneDebug = value; ShowDebug(_showSceneDebug, _showObjectDebug); }
+		}
+		public bool showObjectDebug {
+			get { return _showObjectDebug; }
+			set { _showObjectDebug = value; ShowDebug(_showSceneDebug, _showObjectDebug); }
+		}
 
 		//Events
 		public delegate void AugmentaObjectEnter(AugmentaObject augmentaObject, AugmentaDataType augmentaDataType);
@@ -124,13 +132,22 @@ namespace Augmenta {
 		public Dictionary<int, AugmentaObject> augmentaObjects;
 		public AugmentaScene augmentaScene;
 
+		#endregion
+
+		#region Private Members
+
 		private List<int> _expiredIds = new List<int>(); //Used to remove timed out objects
 
 		private float _receivingDataTimer = 0;
 		private float _autoConnectTimer = 0;
 		private const float _autoConnectWaitDuration = 5;
 
+		[SerializeField] private bool _showSceneDebug = true;
+		[SerializeField] private bool _showObjectDebug = true;
+
 		private bool _initialized = false;
+
+		#endregion
 
 		#region MonoBehaviour Functions
 

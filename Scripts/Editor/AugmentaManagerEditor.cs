@@ -51,8 +51,8 @@ namespace Augmenta
             customObjectRotationType = serializedObject.FindProperty("customObjectRotationType");
             customObjectScalingType = serializedObject.FindProperty("customObjectScalingType");
             mute = serializedObject.FindProperty("mute");
-            showSceneDebug = serializedObject.FindProperty("showSceneDebug");
-            showObjectDebug = serializedObject.FindProperty("showObjectDebug");
+            showSceneDebug = serializedObject.FindProperty("_showSceneDebug");
+            showObjectDebug = serializedObject.FindProperty("_showObjectDebug");
         }
 
         public override void OnInspectorGUI() {
