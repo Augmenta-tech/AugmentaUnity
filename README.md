@@ -8,7 +8,10 @@ Examples and documentation using this library are available [here](https://githu
 
    Scene, PersonsArray, SceneUpdatedEvent, PersonEnterEvent, PersonUpdatedEvent,PersonLeftEvent
 
-- Scene Object
-- Person Object
-- Debug View
+- Augmenta scene object
+- Augmenta person object
+- Debug view
+- Custom prefab instantiation on Augmenta objects
+- Custom spawning and destroy behaviours for Augmenta objects
+- Offset object position from its velocity
 
