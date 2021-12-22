@@ -2,6 +2,8 @@
 
 Examples and documentation using this library are available [here](https://github.com/Theoriz/AugmentaUnity-Demo).
 
+Unity Asset store : https://assetstore.unity.com/packages/tools/integration/augmenta-for-unity-206658
+
 # Feature List
 ## Implemented
 - OSC Data Parsing
