@@ -11,14 +11,12 @@ namespace Augmenta.UnityOSC
         public static OSCMaster Instance {
             get {
 
-                if (destroying)
-                    return null;
+				//if (_instance == null) {
+				//    Debug.Log("Creating OSCMaster gameobject");
+				//    _instance = new GameObject("OSCMaster").AddComponent<OSCMaster>();
+				//}
 
-                if (_instance == null) {
-                    _instance = new GameObject("OSCMaster").AddComponent<OSCMaster>();
-                }
-
-                return _instance;
+				return _instance;
             }
             set {
                 _instance = value;
@@ -32,8 +30,6 @@ namespace Augmenta.UnityOSC
 
         public bool LogIncoming;
         public bool LogOutgoing;
-
-        private static bool destroying = false;
 
         void Awake() {
             Instance = this;
@@ -138,9 +134,7 @@ namespace Augmenta.UnityOSC
                 pair.Value.Close();
             }
 
-            _instance = null;
-
-            destroying = true;
+            //_instance = null;
         }
     }
 }

@@ -90,8 +90,10 @@ namespace Augmenta.UnityOSC
 		/// </summary>
 		public void Close()
 		{
-			_udpClient.Close();
-			_udpClient = null;
+			if (_udpClient != null) {
+				_udpClient.Close();
+				_udpClient = null;
+			}
 		}
 		
 		/// <summary>

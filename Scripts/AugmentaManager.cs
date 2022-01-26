@@ -193,6 +193,12 @@ namespace Augmenta {
 			//Initialize objects array
 			augmentaObjects = new Dictionary<int, AugmentaObject>();
 
+			//Check that OSCMaster exists, if not create one
+			if (FindObjectOfType<UnityOSC.OSCMaster>() == null) {
+				GameObject oscMasterObject = new GameObject("OSCMaster");
+				oscMasterObject.AddComponent<UnityOSC.OSCMaster>();
+			}
+
 			//Create OSC Receiver
 			CreateAugmentaOSCReceiver();
 
@@ -508,10 +514,6 @@ namespace Augmenta {
 		/// Remove the Augmenta OSC receiver.
 		/// </summary>
 		public void RemoveAugmentaOSCReceiver() {
-
-			//To avoid errors if UnityOSC.OSCMaster was destroyed before this
-			if (UnityOSC.OSCMaster.Instance == null)
-				return;
 
 			if (UnityOSC.OSCMaster.Receivers.ContainsKey("Augmenta-" + augmentaId)) {
 				UnityOSC.OSCMaster.Receivers["Augmenta-" + augmentaId].messageReceived -= OSCMessageReceived;

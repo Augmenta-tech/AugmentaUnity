@@ -161,7 +161,7 @@ namespace Augmenta.UnityOSC
 		{
 			if(_receiverThread !=null) _receiverThread.Abort();
 			_receiverThread = null;
-			_udpClient.Close();
+			if (_udpClient != null) _udpClient.Close();
 			_udpClient = null;
 		}
 		
