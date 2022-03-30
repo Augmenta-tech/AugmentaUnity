@@ -214,7 +214,7 @@ namespace Augmenta
 
         void CreateOutputRenderTexture() {
 
-            _outputRenderTexture = new RenderTexture(videoOutputSizeInPixels.x, videoOutputSizeInPixels.y, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Default);
+            _outputRenderTexture = new RenderTexture(videoOutputSizeInPixels.x, videoOutputSizeInPixels.y, 0, RenderTextureFormat.ARGB64, RenderTextureReadWrite.Default);
             _outputRenderTexture.Create();
 
             if (!(cameraMode == CameraMode.VideoOutput && !renderVideoOutputCameraToTexture)) {
