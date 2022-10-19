@@ -359,6 +359,12 @@ namespace Augmenta {
 				highest.y = 1 - highest.y;
 			}
 
+			//NaN checks
+			if (float.IsNaN(orientation) || float.IsInfinity(orientation))
+			{
+				orientation = 0;
+			}
+
 			augmentaObject.centroid = centroid;
 			augmentaObject.velocity = velocity;
 			augmentaObject.orientation = orientation;
