@@ -225,6 +225,7 @@ namespace Augmenta
         void InstantiateCustomObject() {
 
             _customObject = Instantiate(augmentaManager.customObjectPrefab, transform.parent);
+			_customObject.name += (" " + id.ToString());
 
             //If it has a behaviour, launch Spawn
             _customObjectBehaviour = _customObject.GetComponentInChildren<IAugmentaObjectBehaviour>();
