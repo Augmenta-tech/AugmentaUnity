@@ -32,7 +32,7 @@ Unity examples using the [Augmenta-Unity](https://github.com/theoriz/augmentauni
 
 To start developping your application you probably need Augmenta data.
 
-> 👋 If you do not have an Augmenta node ready, you can use our [Augmenta simulator](../../doc/broken-reference/).
+> 👋 If you do not have an Augmenta node ready, you can use our [People Moving Simulator](http://localhost:5000/o/WMYiWQEgbBaNqcMYxuGj/s/ckwiO6YnYe34GTO1xUnh/).
 
 * Open your Unity scene.
 * Drop the Augmenta prefab (from Assets/Plugins/Augmenta/Prefabs) in it.
