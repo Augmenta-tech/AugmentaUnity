@@ -53,7 +53,7 @@ namespace Augmenta
 
 			Gizmos.color = Color.blue;
 			if(augmentaManager)
-				DrawGizmoCube(transform.position, transform.rotation, new Vector3(width * augmentaManager.scaling, 0, height * augmentaManager.scaling));
+				DrawGizmoCube(transform.position, transform.rotation, new Vector3(width * augmentaManager.scaling.x, 0, height * augmentaManager.scaling.y));
 			else
 				DrawGizmoCube(transform.position, transform.rotation, new Vector3(width, 0, height));
 		}
@@ -89,7 +89,7 @@ namespace Augmenta
 				Initialize();
 
 			//Update debug object size
-			debugObject.transform.localScale = new Vector3(width * augmentaManager.scaling, height * augmentaManager.scaling, 0);
+			debugObject.transform.localScale = new Vector3(width * augmentaManager.scaling.x, height * augmentaManager.scaling.y, 0);
 
 			//Update debug material tiling
 			_debugMaterial.mainTextureScale = debugObject.transform.localScale * 0.5f;

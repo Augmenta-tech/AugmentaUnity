@@ -43,12 +43,12 @@ namespace Augmenta
 
                 case CameraType.Orthographic:
                     CenterCamera();
-                    ComputeOrthoCamera(augmentaManager.augmentaScene.width * augmentaManager.scaling, augmentaManager.augmentaScene.height * augmentaManager.scaling);
+                    ComputeOrthoCamera(augmentaManager.augmentaScene.width * augmentaManager.scaling.x, augmentaManager.augmentaScene.height * augmentaManager.scaling.y);
                     break;
 
                 case CameraType.Perspective:
                     CenterCamera();
-                    ComputePerspectiveCamera(augmentaManager.augmentaScene.width * augmentaManager.scaling, augmentaManager.augmentaScene.height * augmentaManager.scaling, distanceToScene);
+                    ComputePerspectiveCamera(augmentaManager.augmentaScene.width * augmentaManager.scaling.x, augmentaManager.augmentaScene.height * augmentaManager.scaling.y, distanceToScene);
                     break;
 
                 case CameraType.OffCenter:
