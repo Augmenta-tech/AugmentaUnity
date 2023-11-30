@@ -28,7 +28,8 @@ namespace Augmenta
 
 		private void OnEnable() {
 
-			_initialized = false;
+			if (!_initialized)
+				Initialize();
 		}
 
 		private void Update() {
@@ -44,9 +45,7 @@ namespace Augmenta
 
 		private void OnDisable() {
 
-			//Disconnect from Augmenta SceneUpdated event
-			if(_initialized)
-				augmentaManager.sceneUpdated -= UpdateScene;
+			CleanUp();
 		}
 
 		void OnDrawGizmos() {
@@ -77,6 +76,23 @@ namespace Augmenta
 			_debugMaterial = debugObject.GetComponent<Renderer>().material;
 
 			_initialized = true;
+		}
+
+		/// <summary>
+		/// Clean up the scene elements before removing or disabling the scene
+		/// </summary>
+		void CleanUp()
+		{
+			if (!_initialized)
+				return;
+
+			//Disconnect from Augmenta SceneUpdated event
+			augmentaManager.sceneUpdated -= UpdateScene;
+
+			//Destroy instantiated material
+			Destroy(_debugMaterial);
+
+			_initialized = false;
 		}
 
 		/// <summary>

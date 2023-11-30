@@ -92,19 +92,10 @@ namespace Augmenta
 
         void OnDisable() {
 
-            //Disconnect from person updated event
-            if (_initialized) {
-                CleanUp();
-            }
+             CleanUp();
         }
 
-		private void OnDestroy() {
-
-            //Destroy custom object
-            DestroyCustomObject();
-		}
-
-		#endregion
+        #endregion
 
 		#region Object Handling Functions
 
@@ -127,13 +118,21 @@ namespace Augmenta
         }
 
         /// <summary>
-        /// Clean up the augmenta object before removing it
+        /// Clean up the augmenta object before removing or disabling it
         /// </summary>
-        void CleanUp() {
+        void CleanUp()
+        {
+	        if (!_initialized)
+		        return;
 
+            Destroy(_augmentaObjectMaterialInstance);
+
+            //Destroy custom object
+            DestroyCustomObject();
+
+			_previousPositionIsValid = false;
             _initialized = false;
-            _previousPositionIsValid = false;
-        }
+		}
 
         /// <summary>
         /// Update the Augmenta object Unity parameters
