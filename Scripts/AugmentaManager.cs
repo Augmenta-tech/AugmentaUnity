@@ -198,7 +198,7 @@ namespace Augmenta {
 			augmentaObjects = new Dictionary<int, AugmentaObject>();
 
 			//Check that OSCMaster exists, if not create one
-			if (FindObjectOfType<UnityOSC.OSCMaster>() == null) {
+			if (FindFirstObjectByType<UnityOSC.OSCMaster>() == null) {
 				GameObject oscMasterObject = new GameObject("OSCMaster");
 				oscMasterObject.AddComponent<UnityOSC.OSCMaster>();
 			}
