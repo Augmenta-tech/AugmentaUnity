@@ -28,7 +28,8 @@ namespace Augmenta
 
 		private void OnEnable() {
 
-			_initialized = false;
+			if (!_initialized)
+				Initialize();
 		}
 
 		private void Update() {
@@ -44,16 +45,14 @@ namespace Augmenta
 
 		private void OnDisable() {
 
-			//Disconnect from Augmenta SceneUpdated event
-			if(_initialized)
-				augmentaManager.sceneUpdated -= UpdateScene;
+			CleanUp();
 		}
 
 		void OnDrawGizmos() {
 
 			Gizmos.color = Color.blue;
 			if(augmentaManager)
-				DrawGizmoCube(transform.position, transform.rotation, new Vector3(width * augmentaManager.scaling, 0, height * augmentaManager.scaling));
+				DrawGizmoCube(transform.position, transform.rotation, new Vector3(width * augmentaManager.scaling.x, 0, height * augmentaManager.scaling.y));
 			else
 				DrawGizmoCube(transform.position, transform.rotation, new Vector3(width, 0, height));
 		}
@@ -80,6 +79,23 @@ namespace Augmenta
 		}
 
 		/// <summary>
+		/// Clean up the scene elements before removing or disabling the scene
+		/// </summary>
+		void CleanUp()
+		{
+			if (!_initialized)
+				return;
+
+			//Disconnect from Augmenta SceneUpdated event
+			augmentaManager.sceneUpdated -= UpdateScene;
+
+			//Destroy instantiated material
+			Destroy(_debugMaterial);
+
+			_initialized = false;
+		}
+
+		/// <summary>
 		/// Update the scene object.
 		/// </summary>
 		public void UpdateScene() {
@@ -89,7 +105,7 @@ namespace Augmenta
 				Initialize();
 
 			//Update debug object size
-			debugObject.transform.localScale = new Vector3(width * augmentaManager.scaling, height * augmentaManager.scaling, 0);
+			debugObject.transform.localScale = new Vector3(width * augmentaManager.scaling.x, height * augmentaManager.scaling.y, 0);
 
 			//Update debug material tiling
 			_debugMaterial.mainTextureScale = debugObject.transform.localScale * 0.5f;

@@ -64,7 +64,11 @@ namespace Augmenta {
 
 		//Augmenta Scene Settings
 		public float pixelSize = 0.005f;
-		public float scaling = 1.0f;
+		public Vector2 scaling = Vector2.one;
+		public Vector3 offset {
+			get => transform.localPosition;
+			set => transform.localPosition = value;
+		}
 
 		//Augmenta Objects Settings
 		public bool flipX;

@@ -92,19 +92,10 @@ namespace Augmenta
 
         void OnDisable() {
 
-            //Disconnect from person updated event
-            if (_initialized) {
-                CleanUp();
-            }
+             CleanUp();
         }
 
-		private void OnDestroy() {
-
-            //Destroy custom object
-            DestroyCustomObject();
-		}
-
-		#endregion
+        #endregion
 
 		#region Object Handling Functions
 
@@ -127,13 +118,21 @@ namespace Augmenta
         }
 
         /// <summary>
-        /// Clean up the augmenta object before removing it
+        /// Clean up the augmenta object before removing or disabling it
         /// </summary>
-        void CleanUp() {
+        void CleanUp()
+        {
+	        if (!_initialized)
+		        return;
 
+            Destroy(_augmentaObjectMaterialInstance);
+
+            //Destroy custom object
+            DestroyCustomObject();
+
+			_previousPositionIsValid = false;
             _initialized = false;
-            _previousPositionIsValid = false;
-        }
+		}
 
         /// <summary>
         /// Update the Augmenta object Unity parameters
@@ -169,14 +168,14 @@ namespace Augmenta
 
             //Update debug velocity
             debugVelocityPivot.transform.position = debugObject.transform.position;
-            debugVelocity.transform.localPosition = new Vector3(0, highest.z * augmentaManager.scaling * 0.5f, velocity.magnitude * 0.5f);
+            debugVelocity.transform.localPosition = new Vector3(0, highest.z * 0.5f, velocity.magnitude * 0.5f);
             debugVelocityPivot.transform.localRotation = Quaternion.Euler(0, Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg + 90, 0);
             debugVelocity.transform.localScale = new Vector3(debugVelocity.transform.localScale.x, debugVelocity.transform.localScale.y, velocity.magnitude);
             debugVelocityPivot.transform.localScale = new Vector3(worldScale.x, 1, worldScale.z);
 
             //Update debug orientation
             debugOrientationPivot.transform.position = debugObject.transform.position;
-            debugOrientation.transform.localPosition = new Vector3(0, highest.z * augmentaManager.scaling * 0.5f, 0.25f);
+            debugOrientation.transform.localPosition = new Vector3(0, highest.z * 0.5f, 0.25f);
             debugOrientationPivot.transform.localRotation = Quaternion.Euler(0, 90.0f-orientation, 0);
             debugOrientationPivot.transform.localScale = new Vector3(worldScale.x, 1, worldScale.z);
 
@@ -201,9 +200,9 @@ namespace Augmenta
 
             Vector2 normalizedPosition = augmentaManager.positionFromBoundingBox ? boundingRect.position : centroid;
 
-            return augmentaManager.augmentaScene.transform.TransformPoint((normalizedPosition.x - 0.5f) * augmentaManager.augmentaScene.width * augmentaManager.scaling,
-                                                                          offset ? highest.z * 0.5f * augmentaManager.scaling : 0,
-                                                                          -(normalizedPosition.y - 0.5f) * augmentaManager.augmentaScene.height * augmentaManager.scaling);
+            return augmentaManager.augmentaScene.transform.TransformPoint((normalizedPosition.x - 0.5f) * augmentaManager.augmentaScene.width * augmentaManager.scaling.x,
+                                                                          offset ? highest.z * 0.5f : 0,
+                                                                          -(normalizedPosition.y - 0.5f) * augmentaManager.augmentaScene.height * augmentaManager.scaling.y);
         }
 
         /// <summary>
@@ -212,9 +211,9 @@ namespace Augmenta
         /// <returns></returns>
         Vector3 GetAugmentaObjectWorldScale() {
 
-            return new Vector3(boundingRect.width * augmentaManager.augmentaScene.width * augmentaManager.scaling,
-                               highest.z * augmentaManager.scaling,
-                               boundingRect.height * augmentaManager.augmentaScene.height * augmentaManager.scaling);
+            return new Vector3(boundingRect.width * augmentaManager.augmentaScene.width,
+                               highest.z,
+                               boundingRect.height * augmentaManager.augmentaScene.height);
         }
 
 		#endregion
