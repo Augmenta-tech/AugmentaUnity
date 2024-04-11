@@ -20,6 +20,7 @@ namespace Augmenta
         SerializedProperty desiredAugmentaObjectCount;
         SerializedProperty velocitySmoothing;
         SerializedProperty positionOffsetFromVelocity;
+        SerializedProperty positionFromBoundingBox;
         SerializedProperty augmentaScenePrefab;
         SerializedProperty augmentaObjectPrefab;
         SerializedProperty customObjectPrefab;
@@ -44,6 +45,7 @@ namespace Augmenta
             desiredAugmentaObjectCount = serializedObject.FindProperty("desiredAugmentaObjectCount");
             velocitySmoothing = serializedObject.FindProperty("velocitySmoothing");
             positionOffsetFromVelocity = serializedObject.FindProperty("positionOffsetFromVelocity");
+            positionFromBoundingBox = serializedObject.FindProperty("positionFromBoundingBox");
             augmentaScenePrefab = serializedObject.FindProperty("augmentaScenePrefab");
             augmentaObjectPrefab = serializedObject.FindProperty("augmentaObjectPrefab");
             customObjectPrefab = serializedObject.FindProperty("customObjectPrefab");
@@ -108,6 +110,9 @@ namespace Augmenta
             EditorGUILayout.Space();
             EditorGUILayout.PropertyField(velocitySmoothing, new GUIContent("Velocity Smoothing"));
             EditorGUILayout.PropertyField(positionOffsetFromVelocity, new GUIContent("Position Offset From Velocity"));
+
+            EditorGUILayout.Space();
+            EditorGUILayout.PropertyField(positionFromBoundingBox, new GUIContent("Position From Bounding Box", "Place the object according to the bounding box position, the centroid is used otherwise. Usually this should only be true if you represent the bounding box visually."));
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("AUGMENTA PREFABS", EditorStyles.boldLabel);

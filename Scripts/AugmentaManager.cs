@@ -77,6 +77,8 @@ namespace Augmenta {
 		public float velocitySmoothing = 0.5f;
 		public float positionOffsetFromVelocity = 0;
 
+		public bool positionFromBoundingBox = false;
+
 		//Augmenta Prefabs
 		public GameObject augmentaScenePrefab;
 		public GameObject augmentaObjectPrefab;
@@ -194,7 +196,7 @@ namespace Augmenta {
 			augmentaObjects = new Dictionary<int, AugmentaObject>();
 
 			//Check that OSCMaster exists, if not create one
-			if (FindObjectOfType<UnityOSC.OSCMaster>() == null) {
+			if (FindFirstObjectByType<UnityOSC.OSCMaster>() == null) {
 				GameObject oscMasterObject = new GameObject("OSCMaster");
 				oscMasterObject.AddComponent<UnityOSC.OSCMaster>();
 			}

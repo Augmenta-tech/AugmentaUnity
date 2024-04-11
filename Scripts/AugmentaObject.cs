@@ -199,9 +199,11 @@ namespace Augmenta
         /// <returns></returns>
         Vector3 GetAugmentaObjectWorldPosition(bool offset) {
 
-            return augmentaManager.augmentaScene.transform.TransformPoint((centroid.x - 0.5f) * augmentaManager.augmentaScene.width * augmentaManager.scaling,
+            Vector2 normalizedPosition = augmentaManager.positionFromBoundingBox ? boundingRect.position : centroid;
+
+            return augmentaManager.augmentaScene.transform.TransformPoint((normalizedPosition.x - 0.5f) * augmentaManager.augmentaScene.width * augmentaManager.scaling,
                                                                           offset ? highest.z * 0.5f * augmentaManager.scaling : 0,
-                                                                          -(centroid.y - 0.5f) * augmentaManager.augmentaScene.height * augmentaManager.scaling);
+                                                                          -(normalizedPosition.y - 0.5f) * augmentaManager.augmentaScene.height * augmentaManager.scaling);
         }
 
         /// <summary>
