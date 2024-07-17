@@ -70,8 +70,14 @@ namespace Augmenta {
 			set => transform.localPosition = value;
 		}
 
-		//Augmenta Objects Settings
-		public bool flipX;
+        public Vector3 rotation
+        {
+            get => transform.localRotation.eulerAngles;
+            set => transform.localRotation = Quaternion.Euler(value);
+        }
+
+        //Augmenta Objects Settings
+        public bool flipX;
 		public bool flipY;
 		// Number of seconds before an augmenta object who hasn't been updated is removed
 		public float augmentaObjectTimeOut = 1.0f; // seconds
