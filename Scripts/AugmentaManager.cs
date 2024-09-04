@@ -462,19 +462,22 @@ namespace Augmenta {
 
 			_expiredIds.Clear();
 
-			foreach (int key in augmentaObjects.Keys) {
+            foreach (int key in augmentaObjects.Keys)
+            {
+                if (!mute && augmentaObjects[key].inactiveTime < augmentaObjectTimeOut)
+                {
+                    // We add a frame to the inactiveTime count
+                    augmentaObjects[key].inactiveTime += Time.deltaTime;
+                }
+                else
+                {
+                    // The object hasn't been updated for a certain number of frames : mark for removal
+                    _expiredIds.Add(key);
+                }
+            }
 
-				if (augmentaObjects[key].inactiveTime < augmentaObjectTimeOut) {
-					// We add a frame to the inactiveTime count
-					augmentaObjects[key].inactiveTime += Time.deltaTime;
-				} else {
-					// The object hasn't been updated for a certain number of frames : mark for removal
-					_expiredIds.Add(key);
-				}
-			}
-
-			//Remove expired objects
-			foreach (int id in _expiredIds) {
+            //Remove expired objects
+            foreach (int id in _expiredIds) {
 				SendAugmentaEvent(AugmentaEventType.AugmentaObjectLeave, augmentaObjects[id]);
 				RemoveAugmentaObject(id);
 			}
