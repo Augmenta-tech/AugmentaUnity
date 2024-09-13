@@ -6,7 +6,7 @@ Get it here : [Augmenta Unity Asset (Asset Store)](https://assetstore.unity.com/
 
 ## Getting started
 
-Doc, tutorial and example projects : [👉 here](https://en.unity.docs.augmenta.tech/).
+Doc, tutorial and example projects : [👉 here](https://docs.augmenta.tech/).
 
 ## Install with git (for dev purpose)
 
