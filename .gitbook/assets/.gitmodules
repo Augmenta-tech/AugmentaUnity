@@ -1,9 +1,0 @@
-[submodule "Assets/Librairies/GenUI"]
-	path = Assets/Librairies/GenUI
-	url = http://github.com/theoriz/genui
-[submodule "Assets/Librairies/SharedTexture"]
-	path = Assets/Librairies/SharedTexture
-	url = https://github.com/theoriz/shared-texture-unity
-[submodule "Assets/Librairies/AdvancedBuilder"]
-	path = Assets/Librairies/AdvancedBuilder
-	url = https://github.com/theoriz/unityadvancedbuilder
